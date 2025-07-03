@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import './App.css';
 import { openFile, exportFile } from './FileAgent.js';
 import { parseIni, stringifyIni } from './ParserAgent.js';
@@ -12,6 +12,38 @@ function App() {
   const [newline, setNewline] = useState('\n');
   const [status, setStatus] = useState('');
 
+  useEffect(() => {
+    const saved = localStorage.getItem('mappySession');
+    if (saved) {
+      try {
+        const { text, fileName: name, newline: nl } = JSON.parse(saved);
+        if (window.confirm(`Restore previous session for ${name}?`)) {
+          const parsed = parseIni(text);
+          setIniData(parsed);
+          setLayers(listLayers(parsed));
+          setFileName(name);
+          setNewline(nl);
+          setStatus(`Restored ${name}`);
+        } else {
+          localStorage.removeItem('mappySession');
+        }
+      } catch (err) {
+        console.error(err);
+        localStorage.removeItem('mappySession');
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    if (iniData) {
+      const text = stringifyIni(iniData, newline);
+      localStorage.setItem(
+        'mappySession',
+        JSON.stringify({ text, fileName, newline }),
+      );
+    }
+  }, [iniData, newline, fileName]);
+
   const handleFileChange = async e => {
     const file = e.target.files[0];
     if (!file) return;
@@ -23,6 +55,10 @@ function App() {
       setFileName(file.name);
       setNewline(newline);
       setStatus(`Loaded ${file.name}`);
+      localStorage.setItem(
+        'mappySession',
+        JSON.stringify({ text, fileName: file.name, newline }),
+      );
     } catch (err) {
       console.error(err);
       setStatus('Failed to read file');
@@ -33,6 +69,15 @@ function App() {
     if (!iniData) return;
     const text = stringifyIni(iniData, newline);
     exportFile(text, fileName);
+  };
+
+  const resetSession = () => {
+    setIniData(null);
+    setLayers([]);
+    setFileName('mappingfile.ini');
+    setNewline('\n');
+    setStatus('');
+    localStorage.removeItem('mappySession');
   };
 
   return (
@@ -66,6 +111,7 @@ function App() {
       )}
       <div className="buttons">
         <button onClick={download}>Download</button>
+        <button onClick={resetSession}>Reset</button>
         <span className="status">{status}</span>
       </div>
     </div>

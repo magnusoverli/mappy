@@ -3,6 +3,10 @@
 
 This web app lets you edit NEVION iPath `.ini` mapping files directly in your browser. Open the page, upload an `.ini` file and download the edited version when you're done.
 
+The editor remembers the last loaded file and any edits using `localStorage`. If you refresh the page, you'll be offered the option to restore the previous session.
+
+Use the **Reset** button to clear the stored session and start over with a new file.
+
 ## Development
 
 The project is based on React + Vite with ESLint configured. The usual Vite commands are available:
