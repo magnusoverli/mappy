@@ -1,43 +1,34 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import './App.css';
+import { openFile, exportFile } from './FileAgent.js';
 
 function App() {
   const [text, setText] = useState('');
+  const [fileName, setFileName] = useState('mappingfile.ini');
   const [status, setStatus] = useState('');
 
-  useEffect(() => {
-    fetch('/api/mapping')
-      .then(res => res.text())
-      .then(setText)
-      .catch(err => {
-        console.error(err);
-        setStatus('Failed to load file');
-      });
-  }, []);
-
-  const save = async () => {
-    setStatus('Saving...');
+  const handleFileChange = async e => {
+    const file = e.target.files[0];
+    if (!file) return;
     try {
-      const res = await fetch('/api/mapping', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text })
-      });
-      if (res.ok) {
-        setStatus('Saved');
-      } else {
-        const data = await res.json();
-        setStatus(data.error || 'Error');
-      }
+      const data = await openFile(file);
+      setText(data);
+      setFileName(file.name);
+      setStatus(`Loaded ${file.name}`);
     } catch (err) {
       console.error(err);
-      setStatus('Error');
+      setStatus('Failed to read file');
     }
+  };
+
+  const download = () => {
+    exportFile(text, fileName);
   };
 
   return (
     <div className="container">
       <h1>Mappy INI Editor</h1>
+      <input type="file" accept=".ini" onChange={handleFileChange} />
       <textarea
         value={text}
         onChange={e => setText(e.target.value)}
@@ -45,7 +36,7 @@ function App() {
         cols={80}
       />
       <div>
-        <button onClick={save}>Save</button>
+        <button onClick={download}>Download</button>
         <span className="status">{status}</span>
       </div>
     </div>
