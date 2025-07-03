@@ -5,27 +5,47 @@ export function parseIni(text) {
 }
 
 export function stringifyIni(data, newline = '\n') {
-  const text = ini.stringify(data, { whitespace: true });
-  const lines = text.split(/\r?\n/);
+  let text = ini.stringify(data, { whitespace: false });
+  const hasTrailing = text.endsWith('\n');
+  let lines = text.split(/\r?\n/);
+  if (hasTrailing) {
+    lines.pop();
+  }
+
+  const out = [];
   let inLayers = false;
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i];
+
+  for (const line of lines) {
+    if (line.trim() === '') {
+      continue; // drop blank lines introduced by ini.stringify
+    }
     const trimmed = line.trim();
     if (trimmed === '[Layers]') {
       inLayers = true;
+      out.push(trimmed);
       continue;
     }
     if (trimmed.startsWith('[')) {
       inLayers = false;
+      out.push(trimmed);
+      continue;
     }
-    if (inLayers && /^\d{2}\s*=/.test(line)) {
-      const [key, ...rest] = line.split('=');
-      let val = rest.join('=').trim();
+
+    if (inLayers && /^\d{2}=/.test(trimmed)) {
+      const [key, ...rest] = trimmed.split('=');
+      let val = rest.join('=');
       if (!val.startsWith('"')) {
         val = `"${val}"`;
       }
-      lines[i] = `${key.trim()}=${val}`;
+      out.push(`${key}=${val}`);
+    } else {
+      out.push(trimmed);
     }
   }
-  return lines.join(newline);
+
+  let result = out.join(newline);
+  if (hasTrailing) {
+    result += newline;
+  }
+  return result;
 }
