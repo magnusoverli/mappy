@@ -11,7 +11,6 @@ FROM node:24-alpine
 WORKDIR /app
 COPY --from=build /app/server /app/server
 COPY --from=build /app/client/dist /app/client/dist
-COPY mappingfile.ini /app/mappingfile.ini
 WORKDIR /app/server
 ENV NODE_ENV=production
 CMD ["node", "index.js"]
