@@ -5,7 +5,7 @@ export function parseIni(text) {
 }
 
 export function stringifyIni(data, newline = '\n') {
-  const text = ini.stringify(data);
+  const text = ini.stringify(data, { whitespace: true });
   const lines = text.split(/\r?\n/);
   let inLayers = false;
   for (let i = 0; i < lines.length; i++) {
