@@ -1,9 +1,16 @@
 .container {
   padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
 }
-textarea {
-  width: 100%;
-  font-family: monospace;
+.editor {
+  flex: 1;
+  overflow: auto;
+  margin-top: 1rem;
+}
+.buttons {
+  margin-top: 1rem;
 }
 .status {
   margin-left: 1rem;

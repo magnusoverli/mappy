@@ -1,9 +1,13 @@
 import { useState } from 'react';
 import './App.css';
 import { openFile, exportFile } from './FileAgent.js';
+import { parseIni, stringifyIni } from './ParserAgent.js';
+import { listLayers, updateLayer, addLayer, removeLayer } from './LayersAgent.js';
+import LayerEditor from './LayerEditor.jsx';
 
 function App() {
-  const [text, setText] = useState('');
+  const [iniData, setIniData] = useState(null);
+  const [layers, setLayers] = useState([]);
   const [fileName, setFileName] = useState('mappingfile.ini');
   const [status, setStatus] = useState('');
 
@@ -12,7 +16,9 @@ function App() {
     if (!file) return;
     try {
       const data = await openFile(file);
-      setText(data);
+      const parsed = parseIni(data);
+      setIniData(parsed);
+      setLayers(listLayers(parsed));
       setFileName(file.name);
       setStatus(`Loaded ${file.name}`);
     } catch (err) {
@@ -22,6 +28,8 @@ function App() {
   };
 
   const download = () => {
+    if (!iniData) return;
+    const text = stringifyIni(iniData);
     exportFile(text, fileName);
   };
 
@@ -29,13 +37,32 @@ function App() {
     <div className="container">
       <h1>Mappy INI Editor</h1>
       <input type="file" accept=".ini" onChange={handleFileChange} />
-      <textarea
-        value={text}
-        onChange={e => setText(e.target.value)}
-        rows={20}
-        cols={80}
-      />
-      <div>
+      {iniData && (
+        <div className="editor">
+          <LayerEditor
+            layers={layers}
+            onChange={(i, k, v) => {
+              const dataCopy = { ...iniData, Layers: { ...iniData.Layers } };
+              updateLayer(dataCopy, i, k, v);
+              setIniData(dataCopy);
+              setLayers(listLayers(dataCopy));
+            }}
+            onAdd={() => {
+              const dataCopy = { ...iniData, Layers: { ...iniData.Layers } };
+              addLayer(dataCopy);
+              setIniData(dataCopy);
+              setLayers(listLayers(dataCopy));
+            }}
+            onRemove={key => {
+              const dataCopy = { ...iniData, Layers: { ...iniData.Layers } };
+              removeLayer(dataCopy, key);
+              setIniData(dataCopy);
+              setLayers(listLayers(dataCopy));
+            }}
+          />
+        </div>
+      )}
+      <div className="buttons">
         <button onClick={download}>Download</button>
         <span className="status">{status}</span>
       </div>
