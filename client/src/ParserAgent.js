@@ -6,7 +6,17 @@ export function parseIni(text) {
 
 export function stringifyIni(data, newline = '\n') {
   const text = ini.stringify(data, { whitespace: true });
-  const lines = text.split(/\r?\n/);
+  const rawLines = text.split(/\r?\n/);
+  // remove blank lines inserted before section headers
+  const lines = [];
+  for (const line of rawLines) {
+    const trimmed = line.trim();
+    if (trimmed.startsWith('[') && lines.length && lines[lines.length - 1].trim() === '') {
+      lines.pop();
+    }
+    lines.push(line);
+  }
+
   let inLayers = false;
   let inInternal = false;
   for (let i = 0; i < lines.length; i++) {
