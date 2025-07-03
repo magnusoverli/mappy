@@ -121,7 +121,7 @@ Each INI section gets its own agent to model its rows and enforce section-specif
 ## 8. .ini file structure and syntax description
 
 1. File format
-Encoding: UTF-8, Unix line-endings (\n)
+Encoding: The encoding and metadata of an uploaded file must be maintained.
 
 Sections: Denoted by [SectionName] on its own line
 
