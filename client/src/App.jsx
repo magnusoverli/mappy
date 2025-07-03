@@ -9,17 +9,19 @@ function App() {
   const [iniData, setIniData] = useState(null);
   const [layers, setLayers] = useState([]);
   const [fileName, setFileName] = useState('mappingfile.ini');
+  const [newline, setNewline] = useState('\n');
   const [status, setStatus] = useState('');
 
   const handleFileChange = async e => {
     const file = e.target.files[0];
     if (!file) return;
     try {
-      const data = await openFile(file);
-      const parsed = parseIni(data);
+      const { text, newline } = await openFile(file);
+      const parsed = parseIni(text);
       setIniData(parsed);
       setLayers(listLayers(parsed));
       setFileName(file.name);
+      setNewline(newline);
       setStatus(`Loaded ${file.name}`);
     } catch (err) {
       console.error(err);
@@ -29,7 +31,7 @@ function App() {
 
   const download = () => {
     if (!iniData) return;
-    const text = stringifyIni(iniData);
+    const text = stringifyIni(iniData, newline);
     exportFile(text, fileName);
   };
 

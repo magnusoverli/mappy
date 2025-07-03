@@ -4,9 +4,9 @@ export function parseIni(text) {
   return ini.parse(text);
 }
 
-export function stringifyIni(data) {
+export function stringifyIni(data, newline = '\n') {
   const text = ini.stringify(data);
-  const lines = text.split('\n');
+  const lines = text.split(/\r?\n/);
   let inLayers = false;
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
@@ -27,5 +27,5 @@ export function stringifyIni(data) {
       lines[i] = `${key.trim()}=${val}`;
     }
   }
-  return lines.join('\n');
+  return lines.join(newline);
 }
