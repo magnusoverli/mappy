@@ -27,7 +27,7 @@ function App() {
         setStatus(`Restored ${name}`);
       } catch (err) {
         console.error(err);
-        clearSession();
+        await clearSession();
       }
     })();
   }, []);
