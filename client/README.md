@@ -3,9 +3,9 @@
 
 This web app lets you edit NEVION iPath `.ini` mapping files directly in your browser. Open the page, upload an `.ini` file and download the edited version when you're done.
 
-The editor automatically restores the last loaded file and any edits using the browser's Cache Storage. Refreshing the page resumes your previous session.
+The editor automatically restores the last loaded file and any edits using the browser's `localStorage`. Refreshing the page resumes your previous session.
 
-Upload a new file at any time to start over; the cached session is cleared when a new file is loaded or when the browser cache is emptied.
+Upload a new file at any time to start over; the stored session is cleared when a new file is loaded or when the site's storage (localStorage) is cleared through your browser settings.
 
 ## Development
 
