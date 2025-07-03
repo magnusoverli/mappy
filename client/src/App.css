@@ -1,0 +1,10 @@
+.container {
+  padding: 1rem;
+}
+textarea {
+  width: 100%;
+  font-family: monospace;
+}
+.status {
+  margin-left: 1rem;
+}
