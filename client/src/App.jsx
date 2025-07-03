@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import './App.css';
 import { openFile, exportFile } from './FileAgent.js';
 import { parseIni, stringifyIni } from './ParserAgent.js';
 import { listLayers, updateLayer, addLayer, removeLayer } from './LayersAgent.js';
+import { loadState, saveState, clearState } from './StorageAgent.js';
 import LayerEditor from './LayerEditor.jsx';
 
 function App() {
@@ -11,6 +12,32 @@ function App() {
   const [fileName, setFileName] = useState('mappingfile.ini');
   const [newline, setNewline] = useState('\n');
   const [status, setStatus] = useState('');
+
+  useEffect(() => {
+    const saved = loadState();
+    if (saved) {
+      try {
+        const parsed = parseIni(saved.text);
+        setIniData(parsed);
+        setLayers(listLayers(parsed));
+        setFileName(saved.fileName || 'mappingfile.ini');
+        setNewline(saved.newline || '\n');
+        setStatus('Restored previous session');
+      } catch (err) {
+        console.error(err);
+        clearState();
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    if (iniData) {
+      const text = stringifyIni(iniData, newline);
+      saveState({ text, fileName, newline });
+    } else {
+      clearState();
+    }
+  }, [iniData, fileName, newline]);
 
   const handleFileChange = async e => {
     const file = e.target.files[0];
