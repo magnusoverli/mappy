@@ -9,6 +9,9 @@ app.use(cors());
 app.use(express.json());
 
 const DATA_FILE = path.join(__dirname, '..', 'mappingfile.ini');
+// Serve static files from the React app build
+const CLIENT_DIST = path.join(__dirname, '..', 'client', 'dist');
+app.use(express.static(CLIENT_DIST));
 
 app.get('/api/mapping', (req, res) => {
   fs.readFile(DATA_FILE, 'utf8', (err, data) => {
@@ -32,6 +35,11 @@ app.post('/api/mapping', (req, res) => {
     }
     res.json({ status: 'ok' });
   });
+});
+
+// All other routes serve the React app
+app.use((req, res) => {
+  res.sendFile(path.join(CLIENT_DIST, 'index.html'));
 });
 
 const PORT = process.env.PORT || 3001;
