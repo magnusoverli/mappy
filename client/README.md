@@ -1,6 +1,11 @@
-# React + Vite
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+# Mappy INI Editor
+
+This web app lets you edit NEVION iPath `.ini` mapping files directly in your browser. Open the page, upload an `.ini` file and download the edited version when you're done.
+
+## Development
+
+The project is based on React + Vite with ESLint configured. The usual Vite commands are available:
 
 Currently, two official plugins are available:
 
