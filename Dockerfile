@@ -7,7 +7,7 @@ RUN npm install && npm run build
 WORKDIR /app/server
 RUN npm install
 
-FROM node:20-alpine
+FROM node:24-alpine
 WORKDIR /app
 COPY --from=build /app/server /app/server
 COPY --from=build /app/client/dist /app/client/dist
