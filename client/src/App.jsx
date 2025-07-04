@@ -42,7 +42,7 @@ export default function App({ mode, toggleMode }) {
             onSelect={setSelectedLayer}
             onAdd={handleAddLayer}
           />
-          <Box sx={{ flex: 1, overflow: 'auto', pl: 3 }}>
+          <Box sx={{ flex: 1, overflow: 'auto' }}>
             <LayerPanel
               layer={layers.find(l => l.key === selectedLayer)}
               targets={targets[selectedLayer] || []}
