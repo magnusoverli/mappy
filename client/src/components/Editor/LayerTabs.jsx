@@ -45,13 +45,13 @@ const LayerTabs = ({ layers, selected, onSelect, onAdd }) => {
       }}
     >
       <Typography
-        variant="h5"
+        variant="h4"
         sx={{ fontFamily: '"Baloo 2", sans-serif', fontWeight: 'bold', textAlign: 'center' }}
       >
         Mappy
       </Typography>
       <Paper
-        sx={{ p: 2, borderRadius: 2, boxShadow: 1, flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}
+        sx={{ p: 2, mt: 2, borderRadius: 2, boxShadow: 1, flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}
       >
         <Typography variant="subtitle1" sx={{ mb: 1 }}>
           Layers
