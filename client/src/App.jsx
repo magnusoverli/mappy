@@ -4,11 +4,17 @@ import { openFile, exportFile } from './FileAgent.js';
 import { parseIni, stringifyIni } from './ParserAgent.js';
 import { listLayers, updateLayer, addLayer, removeLayer } from './LayersAgent.js';
 import { loadState, saveState, clearState } from './StorageAgent.js';
-import LayerEditor from './LayerEditor.jsx';
+import { groupTargetsByLayer } from './TargetsAgent.js';
+import { groupSourcesByLayer } from './SourcesAgent.js';
+import LayerTabs from './LayerTabs.jsx';
+import LayerPanel from './LayerPanel.jsx';
 
 function App() {
   const [iniData, setIniData] = useState(null);
   const [layers, setLayers] = useState([]);
+  const [targets, setTargets] = useState({});
+  const [sources, setSources] = useState({});
+  const [selectedLayer, setSelectedLayer] = useState(null);
   const [fileName, setFileName] = useState('mappingfile.ini');
   const [newline, setNewline] = useState('\n');
   const [status, setStatus] = useState('');
@@ -19,7 +25,11 @@ function App() {
       try {
         const parsed = parseIni(saved.text);
         setIniData(parsed);
-        setLayers(listLayers(parsed));
+        const layerList = listLayers(parsed);
+        setLayers(layerList);
+        setTargets(groupTargetsByLayer(parsed));
+        setSources(groupSourcesByLayer(parsed));
+        setSelectedLayer(layerList[0]?.key || null);
         setFileName(saved.fileName || 'mappingfile.ini');
         setNewline(saved.newline || '\n');
         setStatus('Restored previous session');
@@ -46,7 +56,11 @@ function App() {
       const { text, newline } = await openFile(file);
       const parsed = parseIni(text);
       setIniData(parsed);
-      setLayers(listLayers(parsed));
+      const layerList = listLayers(parsed);
+      setLayers(layerList);
+      setTargets(groupTargetsByLayer(parsed));
+      setSources(groupSourcesByLayer(parsed));
+      setSelectedLayer(layerList[0]?.key || null);
       setFileName(file.name);
       setNewline(newline);
       setStatus(`Loaded ${file.name}`);
@@ -62,9 +76,43 @@ function App() {
     exportFile(text, fileName);
   };
 
+  const handlePathChange = (key, value) => {
+    const index = layers.findIndex(l => l.key === key);
+    if (index === -1) return;
+    const dataCopy = { ...iniData, Layers: { ...iniData.Layers } };
+    updateLayer(dataCopy, index, key, value);
+    setIniData(dataCopy);
+    setLayers(listLayers(dataCopy));
+  };
+
+  const handleAddLayer = () => {
+    const dataCopy = { ...iniData, Layers: { ...iniData.Layers } };
+    const newKey = addLayer(dataCopy);
+    setIniData(dataCopy);
+    const updated = listLayers(dataCopy);
+    setLayers(updated);
+    setTargets(groupTargetsByLayer(dataCopy));
+    setSources(groupSourcesByLayer(dataCopy));
+    setSelectedLayer(newKey);
+  };
+
+  const handleRemoveLayer = key => {
+    const dataCopy = { ...iniData, Layers: { ...iniData.Layers } };
+    removeLayer(dataCopy, key);
+    setIniData(dataCopy);
+    const updated = listLayers(dataCopy);
+    setLayers(updated);
+    setTargets(groupTargetsByLayer(dataCopy));
+    setSources(groupSourcesByLayer(dataCopy));
+    setSelectedLayer(updated[0]?.key || null);
+  };
+
   const reset = () => {
     setIniData(null);
     setLayers([]);
+    setTargets({});
+    setSources({});
+    setSelectedLayer(null);
     setFileName('mappingfile.ini');
     setNewline('\n');
     setStatus('');
@@ -77,26 +125,18 @@ function App() {
       <input type="file" accept=".ini" onChange={handleFileChange} />
       {iniData && (
         <div className="editor">
-          <LayerEditor
+          <LayerTabs
             layers={layers}
-            onChange={(i, k, v) => {
-              const dataCopy = { ...iniData, Layers: { ...iniData.Layers } };
-              updateLayer(dataCopy, i, k, v);
-              setIniData(dataCopy);
-              setLayers(listLayers(dataCopy));
-            }}
-            onAdd={() => {
-              const dataCopy = { ...iniData, Layers: { ...iniData.Layers } };
-              addLayer(dataCopy);
-              setIniData(dataCopy);
-              setLayers(listLayers(dataCopy));
-            }}
-            onRemove={key => {
-              const dataCopy = { ...iniData, Layers: { ...iniData.Layers } };
-              removeLayer(dataCopy, key);
-              setIniData(dataCopy);
-              setLayers(listLayers(dataCopy));
-            }}
+            selected={selectedLayer}
+            onSelect={setSelectedLayer}
+            onAdd={handleAddLayer}
+          />
+          <LayerPanel
+            layer={layers.find(l => l.key === selectedLayer)}
+            targets={targets[selectedLayer] || []}
+            sources={sources[selectedLayer] || []}
+            onPathChange={handlePathChange}
+            onRemove={handleRemoveLayer}
           />
         </div>
       )}

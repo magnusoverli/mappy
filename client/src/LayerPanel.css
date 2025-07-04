@@ -1,0 +1,38 @@
+.layer-panel {
+  padding: 0.5rem 0;
+}
+
+.layer-path {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.layer-path .path-input {
+  flex: 1;
+  padding: 0.25rem;
+  border: 1px solid #666;
+  border-radius: 4px;
+}
+
+.layer-section {
+  margin-bottom: 1rem;
+}
+
+.layer-section ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.layer-section li {
+  padding: 0.25rem 0;
+}
+
+.remove-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: #c00;
+}
