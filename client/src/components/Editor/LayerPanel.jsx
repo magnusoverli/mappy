@@ -7,8 +7,8 @@ const LayerPanel = ({ layer, targets, sources, onPathChange, onRemove }) => {
   if (!layer) return null;
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, height: '100%' }}>
-      <Paper sx={{ p: 2, borderRadius: 2, boxShadow: 1 }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+      <Paper sx={{ p: 2, borderRadius: 2, boxShadow: 1, width: '100%' }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, width: '100%' }}>
           <Typography variant="h6" component="div" sx={{ whiteSpace: 'nowrap' }}>
             Layer {layer.key}
           </Typography>
