@@ -9,208 +9,216 @@ Mappy is built to edit and manipulate VSM mapping files. These files describe pa
 ## 1. FileAgent
 
 **Responsibility:**
-
-* Handle all file I/O operations.
-* Open `.ini` files via user file picker.
-* Read raw text from disk.
-* Trigger export of edited content back to a downloadable `.ini` file.
+* Handle all file I/O operations
+* Open `.ini` files via user file picker
+* Read raw text from disk while preserving line endings
+* Trigger export of edited content back to a downloadable `.ini` file
 
 **Key Functions:**
+* `openFile(file: File): Promise<{text: string, newline: string}>` → reads File object into text and detects line ending type
+* `exportFile(data: string, filename: string)` → creates Blob and initiates download
 
-* `openFile()` → reads `File` object into text.
-* `exportFile(data: string)` → creates Blob and initiates download.
+**Implementation Details:**
+* Detects and preserves original line ending format (`\n`, `\r\n`, or `\r`)
+* Uses FileReader API for async file reading
+* Creates temporary download links using blob URLs
 
 ---
 
 ## 2. ParserAgent
 
 **Responsibility:**
-
-* Convert raw INI text into a JavaScript object tree.
-* Serialize JS object back into INI-format text.
+* Convert raw INI text into a JavaScript object tree
+* Serialize JS object back into INI-format text
+* Preserve formatting requirements specific to VSM mapping files
 
 **Dependencies:**
-
-* Uses the `ini` npm package.
+* Uses the `ini` npm package
 
 **Key Functions:**
-
 * `parseIni(text: string): IniData`
-* `stringifyIni(data: IniData): string`
+* `stringifyIni(data: IniData, newline: string): string`
+
+**Special Formatting:**
+* Wraps layer path values in quotes
+* Preserves whitespace around `=` signs
+* Maintains original line ending format
 
 ---
 
-## 3. ValidationAgent
+## 3. LayersAgent
 
 **Responsibility:**
-
-* Enforce syntax rules on sections, keys, and values.
-* Ensure section names only include `Layers`, `Targets`, `Sources`.
-* Validate key formats (`XX`, `XX.YYYY`).
-* Validate values (paths or 8‑digit hex IDs).
+* Manage entries in the `[Layers]` section
+* Handle layer CRUD operations
+* Maintain proper key formatting (2-digit zero-padded)
 
 **Key Functions:**
+* `listLayers(data: IniData): Array<{key: string, value: string}>` → returns sorted layer list
+* `updateLayer(data: IniData, index: number, newKey: string, newValue: string)` → updates layer in-place
+* `addLayer(data: IniData): string` → adds new layer with next available key
+* `removeLayer(data: IniData, key: string)` → removes layer by key
 
-* `validateSection(name: string): boolean`
-* `validateKey(section: string, key: string): boolean`
-* `validateValue(section: string, value: string): boolean`
-* `getValidationErrors(): ValidationError[]`
-
----
-
-## 4. SectionAgents
-
-Each INI section gets its own agent to model its rows and enforce section-specific logic.
-
-### 4.1 LayersAgent
-
-* Manages entries in the `[Layers]` section.
-* Manages keys formatted as `NN`. Values are paths describing the external system (they are not strictly validated).
-
-### 4.2 TargetsAgent
-
-* Manages `[Targets]` entries.
-* Enforces: key = `NN.CCCC`, value = 8‑digit hex.
-
-### 4.3 SourcesAgent
-
-* Manages `[Sources]` entries.
-* Same format rules as `TargetsAgent`.
-
-**Key Functions (common):**
-
-* `addEntry(key: string, value: string)`
-* `removeEntry(key: string)`
-* `updateEntry(key: string, value: string)`
-* `listEntries(): Array<{ key, value }>`
+**Implementation Details:**
+* Automatically finds next available layer key (00-99)
+* Maintains numeric sorting of layers
+* Handles key renaming when updating
 
 ---
 
-## 5. UIAgent
+## 4. TargetsAgent
 
 **Responsibility:**
+* Group and analyze `[Targets]` entries by layer
+* Calculate offset values for validation
+* Provide structured data for UI display
 
-* Coordinate user interactions in React components.
-* Maintain current state: raw text, parsed data, selected section.
-* Dispatch to FileAgent, ParserAgent, ValidationAgent, and SectionAgents.
+**Key Functions:**
+* `groupTargetsByLayer(data: IniData): Record<string, Array<{key: string, value: string, offset: number}>>`
 
-**Key React Hooks & Context:**
-
-* `useState` for text, data, selectedSection.
-* `useEffect` to re-parse on text change.
-* Context provider to expose `data` and update functions.
+**Format Rules:**
+* Key format: `NN.CCCC` (layer.channel, e.g., "03.0005")
+* Value format: 8-digit hex (e.g., "00A1B2C3")
+* Offset calculation: decimal(channel) - hex(value)
 
 ---
 
-## 6. DownloadAgent
+## 5. SourcesAgent
 
 **Responsibility:**
+* Group and analyze `[Sources]` entries by layer
+* Calculate offset values for validation
+* Provide structured data for UI display
 
-* Wraps export logic with UI feedback (e.g., disabled button during generation).
-* Optionally formats timestamped filenames.
+**Key Functions:**
+* `groupSourcesByLayer(data: IniData): Record<string, Array<{key: string, value: string, offset: number}>>`
+
+**Format Rules:**
+* Key format: `NN.SSSS` (layer.source, e.g., "03.0010")
+* Value format: 8-digit hex (e.g., "0000ABCD")
+* Offset calculation: decimal(source) - hex(value)
 
 ---
 
-## 7. (Optional) TelemetryAgent
+## 6. StorageAgent
 
 **Responsibility:**
+* Persist application state to localStorage
+* Restore previous editing sessions
+* Handle storage errors gracefully
 
-* Collect anonymized usage metrics (e.g., section edits, exports).
-* Helps guide future UX improvements.
+**Key Functions:**
+* `loadState(): SavedState | null` → retrieves saved state
+* `saveState(state: {text: string, fileName: string, newline: string})` → persists current state
+* `clearState()` → removes saved state
+
+**Implementation Details:**
+* Stores serialized INI text, filename, and line ending format
+* Enables seamless session recovery on page reload
+* Handles JSON parse/stringify errors
 
 ---
 
-## 8. .ini file structure and syntax description
+## 7. React Integration Layer (useMappingEditor Hook)
 
-1. File format
-Encoding: The encoding and metadata of an uploaded file must be maintained.
+**Responsibility:**
+* Orchestrate all agents in a React-friendly way
+* Manage component state and side effects
+* Provide a clean API for UI components
 
-Sections: Denoted by [SectionName] on its own line
+**Key State:**
+* `iniData` - parsed INI object
+* `layers` - sorted array of layer objects
+* `targets` - targets grouped by layer
+* `sources` - sources grouped by layer
+* `selectedLayer` - currently selected layer key
+* `fileName` - current file name
+* `newline` - line ending format
+* `status` - user feedback messages
+* `loading` - async operation state
 
-Entries: key = value (spaces around = are optional but canonical)
+**Key Functions:**
+* `handleFileChange` - processes file uploads
+* `download` - exports current state
+* `handlePathChange` - updates layer paths
+* `handleAddLayer` - creates new layers
+* `handleRemoveLayer` - deletes layers
+* `reset` - clears all state
 
-Blank lines: Allowed anywhere
+---
 
-Comments: Not used in this file (you can choose to support ; or # if you like)
+## INI File Structure and Syntax
 
-2. Sections
+### 1. File Format
+* **Encoding:** UTF-8 (encoding and metadata of uploaded files must be maintained)
+* **Sections:** Denoted by `[SectionName]` on its own line
+* **Entries:** `key = value` (spaces around `=` are optional but canonical)
+* **Blank lines:** Allowed anywhere
+* **Comments:** Not used in VSM mapping files
+
+### 2. Sections
 This file has exactly three top-level sections, each with its own key-value pattern:
 
-A) [Layers]
-Key: two decimal digits, zero-padded (00 through 41)
+#### A) [Layers]
+* **Key:** Two decimal digits, zero-padded (00 through 99)
+* **Value:** Unix-style path string describing the destination system
+* Path typically ends with `/Matrix`
+* Common formats:
+  - `…/Connection/l<nn>/Matrix`
+  - `…/Device/<DeviceName>/Audio Levels/level_<nn>/Matrix`
+* Example: `03 = "/Nevion/VideoIPath/Version1/Connection/l77/Matrix"`
 
-Value: a Unix-style path string describing the destination system.
-The path typically ends with `/Matrix`.
+#### B) [Targets]
+* **Key:** `<LL>.<CCCC>`
+  - LL = layer ID (same two-digit as in [Layers])
+  - CCCC = channel index, four decimal digits, zero-padded (0000–9999)
+* **Value:** Eight hexadecimal digits, zero-padded (00000000–FFFFFFFF)
+* Example: `03.0005 = 00A1B2C3`
 
-Example formats include:
+#### C) [Sources]
+* **Key:** `<LL>.<SSSS>`
+  - LL = layer ID (two digits)
+  - SSSS = source index, four digits (0000–9999)
+* **Value:** Eight-digit hex ID, same format as [Targets]
+* Example: `03.0010 = 0000ABCD`
 
-…/Connection/l<nn>/Matrix
+### 3. Validation Rules
+* Section names must be exactly `Layers`, `Targets`, or `Sources` (case-sensitive)
+* Keys must match the regexes:
+  - Layers: `^[0-9]{2}$`
+  - Targets/Sources: `^[0-9]{2}\.[0-9]{4}$`
+* Values for hex IDs: `^[0-9A-Fa-f]{8}$`
 
-…/Device/<DeviceName>/Audio Levels/level_<nn>/Matrix
+### 4. Editor Features
+* **Section Management:** View and edit all three sections
+* **Layer Management:** Add, edit, delete layers with automatic key assignment
+* **Path Editing:** Free-text editing of layer paths
+* **Data Visualization:** Display targets/sources grouped by layer with offset calculations
+* **Validation:** Visual indicators for offset mismatches
+* **Session Persistence:** Automatic save/restore of editing sessions
+* **Export:** Download edited files preserving original formatting
 
-Example:
-03 = /Nevion/VideoIPath/Version1/Connection/l77/Matrix
+---
 
-B) [Targets]
-Key: <LL>.<CCCC>
+## Architecture Benefits
 
-LL = layer ID (same two-digit as in [Layers])
+1. **Separation of Concerns:** Each agent has a single, well-defined responsibility
+2. **Testability:** Agents are pure functions/modules that can be unit tested independently
+3. **Reusability:** Agents can be used in different contexts (React, CLI, etc.)
+4. **Maintainability:** Changes to one aspect don't ripple through the entire codebase
+5. **Type Safety:** Clear interfaces make TypeScript adoption straightforward
+6. **Performance:** Efficient data structures and algorithms (e.g., virtualized lists for large files)
 
-CCCC = channel index, four decimal digits, zero-padded (0000–XXXX)
+---
 
-Value: eight hexadecimal digits, zero-padded (00000000–FFFFFFFF), uppercase or lowercase
+## Future Extensibility
 
-Example:
-03.0005 = 00A1B2C3
+The agent architecture makes it easy to add new features:
+* **ValidationAgent:** Could be added for comprehensive syntax/semantic validation
+* **DiffAgent:** Compare two mapping files
+* **BatchAgent:** Process multiple files at once
+* **ImportAgent:** Support additional file formats
+* **HistoryAgent:** Undo/redo functionality
+* **CollaborationAgent:** Real-time multi-user editing
 
-C) [Sources]
-Key: <LL>.<SSSS>
-
-LL = layer ID (two digits)
-
-SSSS = source index, four digits (0000–9999)
-
-Value: eight-digit hex ID, same format as in [Targets]
-
-Example:
-03.0010 = 0000ABCD
-
-3. Validation rules
-Section names must be exactly Layers, Targets or Sources (case-sensitive).
-
-Keys must match the regexes:
-
-Layers: ^[0-9]{2}$
-
-Targets/Sources: ^[0-9]{2}\.[0-9]{4}$
-
-Values for hex IDs: ^[0-9A-Fa-f]{8}$
-
-
-4. Editor features to support
-Section picker (Layers, Targets, Sources)
-
-Key input masks
-
-Layers → 2-digit only
-
-Targets/Sources → 2-digit + dot + 4-digit
-
-Value input validation
-
-Paths (autocomplete or free-text) for Layers
-
-Hex-ID fields (8 hex chars) for Targets/Sources
-
-Add/Delete rows within each section
-
-Live syntax check before export
-
-Export back to .ini preserving:
-
-Section order: Layers → Targets → Sources
-
-Entry order (or sorted, if you choose)
-
-Blank lines between sections
 *End of agents.md*
