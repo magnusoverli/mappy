@@ -1,4 +1,4 @@
-import { StrictMode, useMemo, useState } from 'react'
+import { StrictMode, useEffect, useMemo, useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import { ThemeProvider, createTheme } from '@mui/material/styles'
 import CssBaseline from '@mui/material/CssBaseline'
@@ -6,9 +6,16 @@ import App from './App.jsx'
 import ErrorBoundary from './components/Common/ErrorBoundary.jsx'
 import './index.css'
 
+const STORAGE_KEY = 'mappy_theme'
+
 function Root() {
-  const [mode, setMode] = useState('light')
-  const toggleMode = () => setMode(m => (m === 'light' ? 'dark' : 'light'))
+  const [mode, setMode] = useState(() => localStorage.getItem(STORAGE_KEY) || 'light')
+  const toggleMode = () =>
+    setMode(m => (m === 'light' ? 'dark' : 'light'))
+
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY, mode)
+  }, [mode])
   const theme = useMemo(
     () =>
       createTheme({
