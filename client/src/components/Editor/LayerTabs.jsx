@@ -17,7 +17,7 @@ const LayerTabs = ({ layers, selected, onSelect, onAdd }) => {
   const listWidth = useMemo(() => {
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
-    ctx.font = '16px monospace';
+    ctx.font = '16px "JetBrains Mono", monospace';
     const plusWidth = ctx.measureText('+').width;
     let max = plusWidth;
     for (const label of labels) {
@@ -90,7 +90,7 @@ const LayerTabs = ({ layers, selected, onSelect, onAdd }) => {
                           '&.Mui-selected': { bgcolor: 'action.selected' },
                         }}
                       >
-                        <ListItemText primary={label} sx={{ fontFamily: 'monospace' }} />
+                        <ListItemText primary={label} sx={{ fontFamily: '"JetBrains Mono", monospace' }} />
                       </ListItemButton>
                     </Paper>
                   );
