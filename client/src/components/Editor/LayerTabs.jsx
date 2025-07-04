@@ -1,7 +1,7 @@
 import { Box, ListItemButton, ListItemText, Paper } from '@mui/material';
 import { FixedSizeList } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
-import { memo } from 'react';
+import { memo, useMemo } from 'react';
 import { formatLayerLabel } from '../../utils/formatLayerLabel.js';
 
 const ITEM_HEIGHT = 36;
@@ -9,15 +9,33 @@ const ITEM_HEIGHT = 36;
 const LayerTabs = ({ layers, selected, onSelect, onAdd }) => {
   if (!layers || layers.length === 0) return null;
 
+  const labels = useMemo(
+    () => layers.map(l => formatLayerLabel(l.key, l.value)),
+    [layers]
+  );
+
+  const listWidth = useMemo(() => {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    ctx.font = '16px monospace';
+    const plusWidth = ctx.measureText('+').width;
+    let max = plusWidth;
+    for (const label of labels) {
+      const w = ctx.measureText(label).width;
+      if (w > max) max = w;
+    }
+    return Math.ceil(max + 32); // padding for ListItemButton
+  }, [labels]);
+
   return (
-    <Box sx={{ borderRight: 1, borderColor: 'divider', width: 220, height: '100%' }}>
-      <AutoSizer>
-        {({ height, width }) => (
+    <Box sx={{ borderRight: 1, borderColor: 'divider', width: listWidth, height: '100%' }}>
+      <AutoSizer disableWidth>
+        {({ height }) => (
           <FixedSizeList
             height={height}
             itemCount={layers.length + 1}
             itemSize={ITEM_HEIGHT}
-            width={width}
+            width={listWidth}
           >
           {({ index, style }) => {
             if (index === layers.length) {
