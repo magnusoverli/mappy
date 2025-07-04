@@ -4,11 +4,16 @@ import { memo } from 'react';
 const LayerTabs = ({ layers, selected, onSelect, onAdd }) => {
   if (!layers || layers.length === 0) return null;
   const selectedIndex = layers.findIndex(l => l.key === selected);
+  const handleChange = (e, idx) => {
+    if (idx < layers.length) {
+      onSelect(layers[idx].key);
+    }
+  };
   return (
     <Tabs
       orientation="vertical"
       value={selectedIndex}
-      onChange={(e, idx) => onSelect(layers[idx].key)}
+      onChange={handleChange}
       variant="scrollable"
       sx={{ borderRight: 1, borderColor: 'divider', minWidth: 120, '& .MuiTab-root': { alignItems: 'flex-start' }, '& .MuiTabs-indicator': { width: 4 } }}
     >
