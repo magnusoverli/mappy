@@ -17,14 +17,19 @@ const LayerTabs = ({ layers, selected, onSelect, onAdd }) => {
   const [listWidth, setListWidth] = useState(0);
 
   useEffect(() => {
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
-    ctx.font = '16px "JetBrains Mono", monospace';
+    const span = document.createElement('span');
+    span.style.visibility = 'hidden';
+    span.style.position = 'absolute';
+    span.style.whiteSpace = 'nowrap';
+    span.style.font = '16px "JetBrains Mono", monospace';
+    document.body.appendChild(span);
+
     const measure = () => {
-      const plusWidth = ctx.measureText('+').width;
-      let max = plusWidth;
+      span.textContent = '+';
+      let max = span.getBoundingClientRect().width;
       for (const label of labels) {
-        const w = ctx.measureText(label).width;
+        span.textContent = label;
+        const w = span.getBoundingClientRect().width;
         if (w > max) max = w;
       }
       setListWidth(Math.ceil(max + 32)); // padding for ListItemButton
@@ -34,6 +39,10 @@ const LayerTabs = ({ layers, selected, onSelect, onAdd }) => {
     if (document.fonts && document.fonts.ready) {
       document.fonts.ready.then(measure);
     }
+
+    return () => {
+      document.body.removeChild(span);
+    };
   }, [labels]);
 
   const containerWidth = listWidth + 32; // account for Paper padding
