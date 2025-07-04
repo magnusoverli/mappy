@@ -41,7 +41,7 @@ const LayerTabs = ({ layers, selected, onSelect, onAdd }) => {
         display: 'flex',
         flexDirection: 'column',
         gap: 2,
-        pt: 1,
+        pt: 3,
       }}
     >
       <Typography
