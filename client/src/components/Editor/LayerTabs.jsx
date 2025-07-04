@@ -8,8 +8,6 @@ const LayerTabs = ({ layers, selected, onSelect, onAdd }) => {
   return (
     <Box
       sx={{
-        borderRight: 1,
-        borderColor: 'divider',
         height: '100%',
         display: 'flex',
         flexDirection: 'column',
