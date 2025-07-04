@@ -45,8 +45,13 @@ const LayerTabs = ({ layers, selected, onSelect, onAdd }) => {
       }}
     >
       <Typography
-        variant="h5"
-        sx={{ fontFamily: '"Baloo 2", sans-serif', fontWeight: 'bold', textAlign: 'center' }}
+        variant="h3"
+        sx={{
+          fontFamily: '"Baloo 2", sans-serif',
+          fontWeight: 'bold',
+          textAlign: 'center',
+          lineHeight: 1,
+        }}
       >
         Mappy
       </Typography>
