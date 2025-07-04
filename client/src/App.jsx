@@ -62,6 +62,15 @@ function App() {
     exportFile(text, fileName);
   };
 
+  const reset = () => {
+    setIniData(null);
+    setLayers([]);
+    setFileName('mappingfile.ini');
+    setNewline('\n');
+    setStatus('');
+    clearState();
+  };
+
   return (
     <div className="container">
       <h1>Mappy INI Editor</h1>
@@ -93,6 +102,7 @@ function App() {
       )}
       <div className="buttons">
         <button onClick={download}>Download</button>
+        <button onClick={reset}>Reset</button>
         <span className="status">{status}</span>
       </div>
     </div>
