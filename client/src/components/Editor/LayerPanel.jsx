@@ -25,46 +25,48 @@ const LayerPanel = ({ layer, targets, sources, onPathChange, onRemove }) => {
           )}
         </Box>
       </Paper>
-      <Paper sx={{ p: 2, borderRadius: 2, boxShadow: 1 }}>
-        <Typography variant="subtitle1" sx={{ mb: 1 }}>
-          Targets
-        </Typography>
-        <FixedSizeList
-          height={Math.min(300, targets.length * 36)}
-          itemCount={targets.length}
-          itemSize={36}
-          width="100%"
-        >
-          {({ index, style }) => {
-            const t = targets[index];
-            return (
-              <ListItem style={style} key={t.key} sx={{ mb: 0.5, borderRadius: 1, '&:hover': { boxShadow: 2 } }}>
-                <ListItemText primary={<span className="mono">{t.key} = {t.value}</span>} />
-              </ListItem>
-            );
-          }}
-        </FixedSizeList>
-      </Paper>
-      <Paper sx={{ p: 2, borderRadius: 2, boxShadow: 1 }}>
-        <Typography variant="subtitle1" sx={{ mb: 1 }}>
-          Sources
-        </Typography>
-        <FixedSizeList
-          height={Math.min(300, sources.length * 36)}
-          itemCount={sources.length}
-          itemSize={36}
-          width="100%"
-        >
-          {({ index, style }) => {
-            const s = sources[index];
-            return (
-              <ListItem style={style} key={s.key} sx={{ mb: 0.5, borderRadius: 1, '&:hover': { boxShadow: 2 } }}>
-                <ListItemText primary={<span className="mono">{s.key} = {s.value}</span>} />
-              </ListItem>
-            );
-          }}
-        </FixedSizeList>
-      </Paper>
+      <Box sx={{ display: 'flex', gap: 2 }}>
+        <Paper sx={{ p: 2, borderRadius: 2, boxShadow: 1, flex: 1 }}>
+          <Typography variant="subtitle1" sx={{ mb: 1 }}>
+            Targets
+          </Typography>
+          <FixedSizeList
+            height={Math.min(300, targets.length * 36)}
+            itemCount={targets.length}
+            itemSize={36}
+            width="100%"
+          >
+            {({ index, style }) => {
+              const t = targets[index];
+              return (
+                <ListItem style={style} key={t.key} sx={{ mb: 0.5, borderRadius: 1, '&:hover': { boxShadow: 2 } }}>
+                  <ListItemText primary={<span className="mono">{t.key} = {t.value}</span>} />
+                </ListItem>
+              );
+            }}
+          </FixedSizeList>
+        </Paper>
+        <Paper sx={{ p: 2, borderRadius: 2, boxShadow: 1, flex: 1 }}>
+          <Typography variant="subtitle1" sx={{ mb: 1 }}>
+            Sources
+          </Typography>
+          <FixedSizeList
+            height={Math.min(300, sources.length * 36)}
+            itemCount={sources.length}
+            itemSize={36}
+            width="100%"
+          >
+            {({ index, style }) => {
+              const s = sources[index];
+              return (
+                <ListItem style={style} key={s.key} sx={{ mb: 0.5, borderRadius: 1, '&:hover': { boxShadow: 2 } }}>
+                  <ListItemText primary={<span className="mono">{s.key} = {s.value}</span>} />
+                </ListItem>
+              );
+            }}
+          </FixedSizeList>
+        </Paper>
+      </Box>
     </Box>
   );
 };
