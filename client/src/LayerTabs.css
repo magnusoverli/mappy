@@ -1,0 +1,24 @@
+.layer-tabs {
+  display: flex;
+  border-bottom: 1px solid #ccc;
+  margin-bottom: 0.5rem;
+}
+
+.layer-tabs .tab {
+  padding: 0.5rem 1rem;
+  margin-right: 0.25rem;
+  background: #f9f9f9;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+}
+
+.layer-tabs .tab.active {
+  border-bottom-color: #646cff;
+  font-weight: bold;
+  background: #fff;
+}
+
+.layer-tabs .tab.add {
+  font-weight: bold;
+}
