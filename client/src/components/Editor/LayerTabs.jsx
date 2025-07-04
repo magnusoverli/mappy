@@ -1,4 +1,4 @@
-import { Box, ListItemButton, ListItemText } from '@mui/material';
+import { Box, ListItemButton, ListItemText, Paper } from '@mui/material';
 import { FixedSizeList } from 'react-window';
 import { memo } from 'react';
 
@@ -20,21 +20,31 @@ const LayerTabs = ({ layers, selected, onSelect, onAdd }) => {
         {({ index, style }) => {
           if (index === layers.length) {
             return (
-              <ListItemButton style={style} onClick={onAdd} sx={{ justifyContent: 'center' }}>
-                <ListItemText primary="+" sx={{ textAlign: 'center', fontWeight: 'bold' }} />
-              </ListItemButton>
+              <Paper style={style} sx={{ height: ITEM_HEIGHT, display: 'flex' }} elevation={1}>
+                <ListItemButton onClick={onAdd} sx={{ justifyContent: 'center' }}>
+                  <ListItemText primary="+" sx={{ textAlign: 'center', fontWeight: 'bold' }} />
+                </ListItemButton>
+              </Paper>
             );
           }
           const layer = layers[index];
           return (
-            <ListItemButton
+            <Paper
               style={style}
-              selected={layer.key === selected}
-              onClick={() => onSelect(layer.key)}
-              sx={{ '&.Mui-selected': { bgcolor: 'action.selected' } }}
+              elevation={layer.key === selected ? 2 : 1}
+              sx={{ height: ITEM_HEIGHT, display: 'flex', '&:hover': { boxShadow: 3 } }}
             >
-              <ListItemText primary={layer.key} sx={{ fontFamily: 'monospace' }} />
-            </ListItemButton>
+              <ListItemButton
+                selected={layer.key === selected}
+                onClick={() => onSelect(layer.key)}
+                sx={{
+                  width: '100%',
+                  '&.Mui-selected': { bgcolor: 'action.selected' },
+                }}
+              >
+                <ListItemText primary={layer.key} sx={{ fontFamily: 'monospace', textAlign: 'center' }} />
+              </ListItemButton>
+            </Paper>
           );
         }}
       </FixedSizeList>
