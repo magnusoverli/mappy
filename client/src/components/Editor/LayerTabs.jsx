@@ -1,7 +1,7 @@
 import { Box, ListItemButton, ListItemText, Paper, Typography } from '@mui/material';
 import { FixedSizeList } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
-import { memo, useMemo } from 'react';
+import { memo, useEffect, useMemo, useState } from 'react';
 import { formatLayerLabel } from '../../utils/formatLayerLabel.js';
 
 const ITEM_HEIGHT = 36;
@@ -14,17 +14,26 @@ const LayerTabs = ({ layers, selected, onSelect, onAdd }) => {
     [layers, hasLayers]
   );
 
-  const listWidth = useMemo(() => {
+  const [listWidth, setListWidth] = useState(0);
+
+  useEffect(() => {
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
     ctx.font = '16px "JetBrains Mono", monospace';
-    const plusWidth = ctx.measureText('+').width;
-    let max = plusWidth;
-    for (const label of labels) {
-      const w = ctx.measureText(label).width;
-      if (w > max) max = w;
+    const measure = () => {
+      const plusWidth = ctx.measureText('+').width;
+      let max = plusWidth;
+      for (const label of labels) {
+        const w = ctx.measureText(label).width;
+        if (w > max) max = w;
+      }
+      setListWidth(Math.ceil(max + 32)); // padding for ListItemButton
+    };
+
+    measure();
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(measure);
     }
-    return Math.ceil(max + 32); // padding for ListItemButton
   }, [labels]);
 
   const containerWidth = listWidth + 32; // account for Paper padding
@@ -72,7 +81,7 @@ const LayerTabs = ({ layers, selected, onSelect, onAdd }) => {
                           <ListItemText
                             primary="+"
                             sx={{ textAlign: 'center', fontWeight: 'bold' }}
-                            primaryTypographyProps={{ sx: { fontFamily: '"JetBrains Mono", monospace' } }}
+                            primaryTypographyProps={{ noWrap: true, sx: { fontFamily: '"JetBrains Mono", monospace' } }}
                           />
                         </ListItemButton>
                       </Paper>
@@ -96,7 +105,7 @@ const LayerTabs = ({ layers, selected, onSelect, onAdd }) => {
                       >
                         <ListItemText
                           primary={label}
-                          primaryTypographyProps={{ sx: { fontFamily: '"JetBrains Mono", monospace' } }}
+                          primaryTypographyProps={{ noWrap: true, sx: { fontFamily: '"JetBrains Mono", monospace' } }}
                         />
                       </ListItemButton>
                     </Paper>
