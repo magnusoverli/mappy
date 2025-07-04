@@ -35,7 +35,7 @@ export default function App({ mode, toggleMode }) {
         loading={loading}
       />
       {iniData ? (
-        <Container maxWidth="md" sx={{ flex: 1, display: 'flex', overflow: 'hidden', py: 3 }}>
+        <Container maxWidth={false} sx={{ flex: 1, display: 'flex', overflow: 'hidden', py: 3 }}>
           <LayerTabs
             layers={layers}
             selected={selectedLayer}
