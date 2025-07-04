@@ -1,17 +1,52 @@
-.container {
-  padding: 1rem;
+.app {
   display: flex;
   flex-direction: column;
   height: 100vh;
 }
-.editor {
+
+.app-header {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.editor-grid {
   flex: 1;
-  overflow: auto;
-  margin-top: 1rem;
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  overflow: hidden;
 }
-.buttons {
-  margin-top: 1rem;
+
+.sidebar {
+  overflow-y: auto;
+  border-right: 1px solid #ccc;
 }
-.status {
-  margin-left: 1rem;
+
+.content {
+  overflow-y: auto;
+  padding: 1rem;
+}
+
+.status-bar {
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  color: #888;
+}
+
+@media (max-width: 600px) {
+  .editor-grid {
+    grid-template-columns: 1fr;
+  }
+  .sidebar {
+    border-right: none;
+    border-bottom: 1px solid #ccc;
+  }
 }
