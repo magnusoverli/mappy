@@ -12,6 +12,16 @@ export function formatLayerLabel(key, path) {
   if (trimmed[trimmed.length - 1] && /matrix/i.test(trimmed[trimmed.length - 1])) {
     trimmed = trimmed.slice(0, -1);
   }
+  // Remove generic "Device" prefix and "Audio Levels" folder when present
+  if (
+    trimmed[0] &&
+    /^device$/i.test(trimmed[0]) &&
+    trimmed[1] &&
+    /^device_\d+/i.test(trimmed[1])
+  ) {
+    trimmed.shift();
+  }
+  trimmed = trimmed.filter(seg => !/^audio\s*levels$/i.test(seg));
   const formatted = trimmed.map(seg => {
     let s = seg.replace(/_/g, ' ');
     if (/^device\s*\d+/i.test(s)) {
