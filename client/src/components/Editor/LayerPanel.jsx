@@ -9,7 +9,7 @@ const LayerPanel = ({ layer, targets, sources, onPathChange, onRemove }) => {
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, height: '100%' }}>
       <Paper sx={{ p: 2, borderRadius: 2, boxShadow: 1 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <Typography variant="h6" component="div">
+          <Typography variant="h6" component="div" sx={{ whiteSpace: 'nowrap' }}>
             Layer {layer.key}
           </Typography>
           <TextField
