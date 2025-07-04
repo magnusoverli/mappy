@@ -1,6 +1,6 @@
 # Agents for Mappy INI Editor
 
-This document outlines the core "agents" (logical modules) in the Mappy web application. Each agent encapsulates a specific responsibility in the flow of loading, editing, validating, and exporting NEVION iPath INI configuration files. The goal is to keep each area of functionality cleanly separated, making the codebase easier to maintain and extend.
+This document outlines the core "agents" (logical modules) in the Mappy web application. Each agent encapsulates a specific responsibility in the flow of loading, editing, validating, and exporting VSM mapping files. The goal is to keep each area of functionality cleanly separated, making the codebase easier to maintain and extend.
 
 ---
 
