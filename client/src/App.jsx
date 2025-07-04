@@ -120,31 +120,38 @@ function App() {
   };
 
   return (
-    <div className="container">
-      <h1>Mappy INI Editor</h1>
-      <input type="file" accept=".ini" onChange={handleFileChange} />
+    <div className="app">
+      <header className="app-header">
+        <h1>Mappy INI Editor</h1>
+        <div className="toolbar">
+          <input type="file" accept=".ini" onChange={handleFileChange} />
+          <button onClick={download} disabled={!iniData}>Download</button>
+          <button onClick={reset}>Reset</button>
+        </div>
+      </header>
       {iniData && (
-        <div className="editor">
-          <LayerTabs
-            layers={layers}
-            selected={selectedLayer}
-            onSelect={setSelectedLayer}
-            onAdd={handleAddLayer}
-          />
-          <LayerPanel
-            layer={layers.find(l => l.key === selectedLayer)}
-            targets={targets[selectedLayer] || []}
-            sources={sources[selectedLayer] || []}
-            onPathChange={handlePathChange}
-            onRemove={handleRemoveLayer}
-          />
+        <div className="editor-grid">
+          <aside className="sidebar">
+            <LayerTabs
+              layers={layers}
+              selected={selectedLayer}
+              onSelect={setSelectedLayer}
+              onAdd={handleAddLayer}
+              orientation="vertical"
+            />
+          </aside>
+          <main className="content">
+            <LayerPanel
+              layer={layers.find(l => l.key === selectedLayer)}
+              targets={targets[selectedLayer] || []}
+              sources={sources[selectedLayer] || []}
+              onPathChange={handlePathChange}
+              onRemove={handleRemoveLayer}
+            />
+          </main>
         </div>
       )}
-      <div className="buttons">
-        <button onClick={download}>Download</button>
-        <button onClick={reset}>Reset</button>
-        <span className="status">{status}</span>
-      </div>
+      <footer className="status-bar">{status}</footer>
     </div>
   );
 }

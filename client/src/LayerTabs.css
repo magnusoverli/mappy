@@ -1,24 +1,64 @@
 .layer-tabs {
   display: flex;
-  border-bottom: 1px solid #ccc;
   margin-bottom: 0.5rem;
+}
+
+.layer-tabs.horizontal {
+  flex-direction: row;
+  border-bottom: 1px solid #ccc;
+}
+
+.layer-tabs.vertical {
+  flex-direction: column;
+  border-right: 1px solid #ccc;
 }
 
 .layer-tabs .tab {
   padding: 0.5rem 1rem;
-  margin-right: 0.25rem;
   background: #f9f9f9;
   border: none;
   border-bottom: 2px solid transparent;
   cursor: pointer;
 }
 
-.layer-tabs .tab.active {
+.layer-tabs.horizontal .tab {
+  margin-right: 0.25rem;
+}
+
+.layer-tabs.vertical .tab {
+  margin-bottom: 0.25rem;
+}
+
+.layer-tabs.horizontal .tab.active {
   border-bottom-color: #646cff;
+}
+
+.layer-tabs.vertical .tab.active {
+  border-right: 2px solid #646cff;
+}
+
+.layer-tabs .tab.active {
   font-weight: bold;
   background: #fff;
 }
 
 .layer-tabs .tab.add {
   font-weight: bold;
+}
+
+@media (max-width: 600px) {
+  .layer-tabs.vertical {
+    flex-direction: row;
+    border-right: none;
+    border-bottom: 1px solid #ccc;
+    overflow-x: auto;
+  }
+  .layer-tabs.vertical .tab {
+    margin-right: 0.25rem;
+    margin-bottom: 0;
+  }
+  .layer-tabs.vertical .tab.active {
+    border-right: none;
+    border-bottom-color: #646cff;
+  }
 }
