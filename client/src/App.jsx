@@ -1,15 +1,85 @@
 import { useState, useEffect } from 'react';
-import './App.css';
+import {
+  CssBaseline,
+  AppBar,
+  Toolbar,
+  Typography,
+  Box,
+  Button,
+  Tabs,
+  Tab,
+  TextField,
+  Paper,
+} from '@mui/material';
 import { openFile, exportFile } from './FileAgent.js';
 import { parseIni, stringifyIni } from './ParserAgent.js';
 import { listLayers, updateLayer, addLayer, removeLayer } from './LayersAgent.js';
 import { loadState, saveState, clearState } from './StorageAgent.js';
 import { groupTargetsByLayer } from './TargetsAgent.js';
 import { groupSourcesByLayer } from './SourcesAgent.js';
-import LayerTabs from './LayerTabs.jsx';
-import LayerPanel from './LayerPanel.jsx';
 
-function App() {
+function LayerTabs({ layers, selected, onSelect, onAdd }) {
+  if (!layers || layers.length === 0) return null;
+  return (
+    <Tabs
+      orientation="vertical"
+      value={layers.findIndex(l => l.key === selected)}
+      onChange={(e, idx) => onSelect(layers[idx].key)}
+      variant="scrollable"
+      sx={{ borderRight: 1, borderColor: 'divider', minWidth: 120 }}
+    >
+      {layers.map(layer => (
+        <Tab key={layer.key} label={layer.key} />
+      ))}
+      <Tab label="+" onClick={onAdd} />
+    </Tabs>
+  );
+}
+
+function LayerPanel({ layer, targets, sources, onPathChange, onRemove }) {
+  if (!layer) return null;
+  return (
+    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+      <Paper sx={{ p: 2 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          <Typography variant="h6" component="div">
+            Layer {layer.key}
+          </Typography>
+          <TextField
+            fullWidth
+            size="small"
+            value={layer.value}
+            onChange={e => onPathChange(layer.key, e.target.value)}
+            label="Path"
+          />
+          {onRemove && (
+            <Button color="error" onClick={() => onRemove(layer.key)}>
+              Delete
+            </Button>
+          )}
+        </Box>
+      </Paper>
+      <Paper sx={{ p: 2 }}>
+        <Typography variant="subtitle1">Targets</Typography>
+        <Box component="ul" sx={{ pl: 2, m: 0 }}>
+          {targets.map(t => (
+            <li key={t.key}>{t.key} = {t.value}</li>
+          ))}
+        </Box>
+      </Paper>
+      <Paper sx={{ p: 2 }}>
+        <Typography variant="subtitle1">Sources</Typography>
+        <Box component="ul" sx={{ pl: 2, m: 0 }}>
+          {sources.map(s => (
+            <li key={s.key}>{s.key} = {s.value}</li>
+          ))}
+        </Box>
+      </Paper>
+    </Box>
+  );
+}
+
+export default function App() {
   const [iniData, setIniData] = useState(null);
   const [layers, setLayers] = useState([]);
   const [targets, setTargets] = useState({});
@@ -120,27 +190,42 @@ function App() {
   };
 
   return (
-    <div className="app">
-      <header className="app-header">
-        <h1>Mappy INI Editor</h1>
-        <div className="toolbar">
-          <input type="file" accept=".ini" onChange={handleFileChange} />
-          <button onClick={download} disabled={!iniData}>Download</button>
-          <button onClick={reset}>Reset</button>
-        </div>
-      </header>
+    <Box sx={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
+      <CssBaseline />
+      <AppBar position="static">
+        <Toolbar sx={{ gap: 2 }}>
+          <Typography variant="h6" sx={{ flexGrow: 1 }}>
+            Mappy INI Editor
+          </Typography>
+          <input
+            type="file"
+            accept=".ini"
+            onChange={handleFileChange}
+            style={{ display: 'none' }}
+            id="file-input"
+          />
+          <label htmlFor="file-input">
+            <Button variant="contained" component="span">
+              Open
+            </Button>
+          </label>
+          <Button variant="contained" onClick={download} disabled={!iniData}>
+            Download
+          </Button>
+          <Button color="inherit" onClick={reset}>
+            Reset
+          </Button>
+        </Toolbar>
+      </AppBar>
       {iniData && (
-        <div className="editor-grid">
-          <aside className="sidebar">
-            <LayerTabs
-              layers={layers}
-              selected={selectedLayer}
-              onSelect={setSelectedLayer}
-              onAdd={handleAddLayer}
-              orientation="vertical"
-            />
-          </aside>
-          <main className="content">
+        <Box sx={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
+          <LayerTabs
+            layers={layers}
+            selected={selectedLayer}
+            onSelect={setSelectedLayer}
+            onAdd={handleAddLayer}
+          />
+          <Box sx={{ flex: 1, overflow: 'auto', p: 2 }}>
             <LayerPanel
               layer={layers.find(l => l.key === selectedLayer)}
               targets={targets[selectedLayer] || []}
@@ -148,12 +233,12 @@ function App() {
               onPathChange={handlePathChange}
               onRemove={handleRemoveLayer}
             />
-          </main>
-        </div>
+          </Box>
+        </Box>
       )}
-      <footer className="status-bar">{status}</footer>
-    </div>
+      <Box component="footer" sx={{ p: 1, textAlign: 'center', fontSize: '0.875rem' }}>
+        {status}
+      </Box>
+    </Box>
   );
 }
-
-export default App;
