@@ -1,10 +1,34 @@
-import { StrictMode } from 'react'
+import { StrictMode, useMemo, useState } from 'react'
 import { createRoot } from 'react-dom/client'
+import { ThemeProvider, createTheme } from '@mui/material/styles'
+import CssBaseline from '@mui/material/CssBaseline'
 import './index.css'
 import App from './App.jsx'
 
+function Root() {
+  const [mode, setMode] = useState('light')
+  const toggleMode = () => setMode(m => (m === 'light' ? 'dark' : 'light'))
+  const theme = useMemo(
+    () =>
+      createTheme({
+        palette: { mode, primary: { main: '#5e35b1' } },
+        typography: { fontFamily: 'Inter, sans-serif' },
+      }),
+    [mode]
+  )
+
+  return (
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <App mode={mode} toggleMode={toggleMode} />
+    </ThemeProvider>
+  )
+}
+
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <App />
+    <Root />
   </StrictMode>,
 )
+
+export default Root

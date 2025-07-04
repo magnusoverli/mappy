@@ -1,16 +1,23 @@
 import { useState, useEffect } from 'react';
 import {
-  CssBaseline,
   AppBar,
   Toolbar,
   Typography,
   Box,
   Button,
+  IconButton,
+  Snackbar,
+  Container,
   Tabs,
   Tab,
   TextField,
   Paper,
+  List,
+  ListItem,
+  ListItemText,
 } from '@mui/material';
+import Brightness7Icon from '@mui/icons-material/Brightness7';
+import Brightness4Icon from '@mui/icons-material/Brightness4';
 import { openFile, exportFile } from './FileAgent.js';
 import { parseIni, stringifyIni } from './ParserAgent.js';
 import { listLayers, updateLayer, addLayer, removeLayer } from './LayersAgent.js';
@@ -26,12 +33,12 @@ function LayerTabs({ layers, selected, onSelect, onAdd }) {
       value={layers.findIndex(l => l.key === selected)}
       onChange={(e, idx) => onSelect(layers[idx].key)}
       variant="scrollable"
-      sx={{ borderRight: 1, borderColor: 'divider', minWidth: 120 }}
+      sx={{ borderRight: 1, borderColor: 'divider', minWidth: 120, '& .MuiTab-root': { alignItems: 'flex-start' }, '& .MuiTabs-indicator': { width: 4 } }}
     >
       {layers.map(layer => (
-        <Tab key={layer.key} label={layer.key} />
+        <Tab key={layer.key} label={layer.key} sx={{ transition: 'background-color 0.3s', '&.Mui-selected': { bgcolor: 'action.selected' } }} />
       ))}
-      <Tab label="+" onClick={onAdd} />
+      <Tab label="+" onClick={onAdd} sx={{ fontWeight: 'bold' }} />
     </Tabs>
   );
 }
@@ -40,7 +47,7 @@ function LayerPanel({ layer, targets, sources, onPathChange, onRemove }) {
   if (!layer) return null;
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-      <Paper sx={{ p: 2 }}>
+      <Paper sx={{ p: 2, borderRadius: 2, boxShadow: 1 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
           <Typography variant="h6" component="div">
             Layer {layer.key}
@@ -59,27 +66,39 @@ function LayerPanel({ layer, targets, sources, onPathChange, onRemove }) {
           )}
         </Box>
       </Paper>
-      <Paper sx={{ p: 2 }}>
-        <Typography variant="subtitle1">Targets</Typography>
-        <Box component="ul" sx={{ pl: 2, m: 0 }}>
+      <Paper sx={{ p: 2, borderRadius: 2, boxShadow: 1 }}>
+        <Typography variant="subtitle1" sx={{ mb: 1 }}>
+          Targets
+        </Typography>
+        <List dense disablePadding>
           {targets.map(t => (
-            <li key={t.key}>{t.key} = {t.value}</li>
+            <ListItem key={t.key} sx={{ mb: 0.5, borderRadius: 1, '&:hover': { boxShadow: 2 } }}>
+              <ListItemText
+                primary={<span className="mono">{t.key} = {t.value}</span>}
+              />
+            </ListItem>
           ))}
-        </Box>
+        </List>
       </Paper>
-      <Paper sx={{ p: 2 }}>
-        <Typography variant="subtitle1">Sources</Typography>
-        <Box component="ul" sx={{ pl: 2, m: 0 }}>
+      <Paper sx={{ p: 2, borderRadius: 2, boxShadow: 1 }}>
+        <Typography variant="subtitle1" sx={{ mb: 1 }}>
+          Sources
+        </Typography>
+        <List dense disablePadding>
           {sources.map(s => (
-            <li key={s.key}>{s.key} = {s.value}</li>
+            <ListItem key={s.key} sx={{ mb: 0.5, borderRadius: 1, '&:hover': { boxShadow: 2 } }}>
+              <ListItemText
+                primary={<span className="mono">{s.key} = {s.value}</span>}
+              />
+            </ListItem>
           ))}
-        </Box>
+        </List>
       </Paper>
     </Box>
   );
 }
 
-export default function App() {
+export default function App({ mode, toggleMode }) {
   const [iniData, setIniData] = useState(null);
   const [layers, setLayers] = useState([]);
   const [targets, setTargets] = useState({});
@@ -191,9 +210,8 @@ export default function App() {
 
   return (
     <Box sx={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
-      <CssBaseline />
-      <AppBar position="static">
-        <Toolbar sx={{ gap: 2 }}>
+      <AppBar position="static" sx={{ background: 'linear-gradient(90deg,#283593,#8e24aa)', borderBottom: 1, borderColor: 'divider' }}>
+        <Toolbar sx={{ gap: 2, minHeight: 64 }}>
           <Typography variant="h6" sx={{ flexGrow: 1 }}>
             Mappy INI Editor
           </Typography>
@@ -215,17 +233,20 @@ export default function App() {
           <Button color="inherit" onClick={reset}>
             Reset
           </Button>
+          <IconButton color="inherit" onClick={toggleMode}>
+            {mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
+          </IconButton>
         </Toolbar>
       </AppBar>
-      {iniData && (
-        <Box sx={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
+      {iniData ? (
+        <Container maxWidth="md" sx={{ flex: 1, display: 'flex', overflow: 'hidden', py: 3 }}>
           <LayerTabs
             layers={layers}
             selected={selectedLayer}
             onSelect={setSelectedLayer}
             onAdd={handleAddLayer}
           />
-          <Box sx={{ flex: 1, overflow: 'auto', p: 2 }}>
+          <Box sx={{ flex: 1, overflow: 'auto', pl: 3 }}>
             <LayerPanel
               layer={layers.find(l => l.key === selectedLayer)}
               targets={targets[selectedLayer] || []}
@@ -234,11 +255,21 @@ export default function App() {
               onRemove={handleRemoveLayer}
             />
           </Box>
+        </Container>
+      ) : (
+        <Box sx={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <Typography variant="h5" color="text.secondary" sx={{ textAlign: 'center' }}>
+            Upload an INI file to get started
+          </Typography>
         </Box>
       )}
-      <Box component="footer" sx={{ p: 1, textAlign: 'center', fontSize: '0.875rem' }}>
-        {status}
-      </Box>
+      <Snackbar
+        open={Boolean(status)}
+        onClose={() => setStatus('')}
+        autoHideDuration={3000}
+        message={status}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      />
     </Box>
   );
 }
