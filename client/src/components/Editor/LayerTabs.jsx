@@ -69,7 +69,11 @@ const LayerTabs = ({ layers, selected, onSelect, onAdd }) => {
                         elevation={1}
                       >
                         <ListItemButton onClick={onAdd} sx={{ justifyContent: 'center' }}>
-                          <ListItemText primary="+" sx={{ textAlign: 'center', fontWeight: 'bold' }} />
+                          <ListItemText
+                            primary="+"
+                            sx={{ textAlign: 'center', fontWeight: 'bold' }}
+                            primaryTypographyProps={{ sx: { fontFamily: '"JetBrains Mono", monospace' } }}
+                          />
                         </ListItemButton>
                       </Paper>
                     );
@@ -90,7 +94,10 @@ const LayerTabs = ({ layers, selected, onSelect, onAdd }) => {
                           '&.Mui-selected': { bgcolor: 'action.selected' },
                         }}
                       >
-                        <ListItemText primary={label} sx={{ fontFamily: '"JetBrains Mono", monospace' }} />
+                        <ListItemText
+                          primary={label}
+                          primaryTypographyProps={{ sx: { fontFamily: '"JetBrains Mono", monospace' } }}
+                        />
                       </ListItemButton>
                     </Paper>
                   );
