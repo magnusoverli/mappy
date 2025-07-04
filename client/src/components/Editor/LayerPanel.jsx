@@ -57,7 +57,7 @@ const LayerPanel = ({ layer, targets, sources, onPathChange, onRemove }) => {
                               width: '20%',
                               textAlign: 'right',
                               fontFamily: 'monospace',
-                              color: t.offset === 0 ? 'success.main' : 'error.main',
+                              color: t.offset === 0 ? 'success.light' : 'error.light',
                             }}
                           >
                             {t.offset}
@@ -101,7 +101,7 @@ const LayerPanel = ({ layer, targets, sources, onPathChange, onRemove }) => {
                               width: '20%',
                               textAlign: 'right',
                               fontFamily: 'monospace',
-                              color: s.offset === 0 ? 'success.main' : 'error.main',
+                              color: s.offset === 0 ? 'success.light' : 'error.light',
                             }}
                           >
                             {s.offset}
