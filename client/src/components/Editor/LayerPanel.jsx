@@ -1,4 +1,4 @@
-import { Box, Paper, Typography, TextField, Button, ListItem, ListItemText } from '@mui/material';
+import { Box, Paper, Typography, TextField, Button, ListItem } from '@mui/material';
 import { FixedSizeList } from 'react-window';
 import { memo } from 'react';
 
@@ -30,6 +30,11 @@ const LayerPanel = ({ layer, targets, sources, onPathChange, onRemove }) => {
           <Typography variant="subtitle1" sx={{ mb: 1 }}>
             Targets
           </Typography>
+          <Box sx={{ display: 'flex', px: 1, fontWeight: 'bold', fontFamily: 'monospace' }}>
+            <Box sx={{ width: '40%' }}>Key</Box>
+            <Box sx={{ width: '40%' }}>Value</Box>
+            <Box sx={{ width: '20%', textAlign: 'right' }}>Offset</Box>
+          </Box>
           <FixedSizeList
             height={Math.min(300, targets.length * 36)}
             itemCount={targets.length}
@@ -40,7 +45,20 @@ const LayerPanel = ({ layer, targets, sources, onPathChange, onRemove }) => {
               const t = targets[index];
               return (
                 <ListItem style={style} key={t.key} sx={{ mb: 0.5, borderRadius: 1, '&:hover': { boxShadow: 2 } }}>
-                  <ListItemText primary={<span className="mono">{t.key} = {t.value}</span>} />
+                  <Box sx={{ display: 'flex', width: '100%' }}>
+                    <Box sx={{ width: '40%', fontFamily: 'monospace' }}>{t.key}</Box>
+                    <Box sx={{ width: '40%', fontFamily: 'monospace' }}>{t.value}</Box>
+                    <Box
+                      sx={{
+                        width: '20%',
+                        textAlign: 'right',
+                        fontFamily: 'monospace',
+                        color: t.offset === 0 ? 'success.main' : 'error.main',
+                      }}
+                    >
+                      {t.offset}
+                    </Box>
+                  </Box>
                 </ListItem>
               );
             }}
@@ -50,6 +68,11 @@ const LayerPanel = ({ layer, targets, sources, onPathChange, onRemove }) => {
           <Typography variant="subtitle1" sx={{ mb: 1 }}>
             Sources
           </Typography>
+          <Box sx={{ display: 'flex', px: 1, fontWeight: 'bold', fontFamily: 'monospace' }}>
+            <Box sx={{ width: '40%' }}>Key</Box>
+            <Box sx={{ width: '40%' }}>Value</Box>
+            <Box sx={{ width: '20%', textAlign: 'right' }}>Offset</Box>
+          </Box>
           <FixedSizeList
             height={Math.min(300, sources.length * 36)}
             itemCount={sources.length}
@@ -60,7 +83,20 @@ const LayerPanel = ({ layer, targets, sources, onPathChange, onRemove }) => {
               const s = sources[index];
               return (
                 <ListItem style={style} key={s.key} sx={{ mb: 0.5, borderRadius: 1, '&:hover': { boxShadow: 2 } }}>
-                  <ListItemText primary={<span className="mono">{s.key} = {s.value}</span>} />
+                  <Box sx={{ display: 'flex', width: '100%' }}>
+                    <Box sx={{ width: '40%', fontFamily: 'monospace' }}>{s.key}</Box>
+                    <Box sx={{ width: '40%', fontFamily: 'monospace' }}>{s.value}</Box>
+                    <Box
+                      sx={{
+                        width: '20%',
+                        textAlign: 'right',
+                        fontFamily: 'monospace',
+                        color: s.offset === 0 ? 'success.main' : 'error.main',
+                      }}
+                    >
+                      {s.offset}
+                    </Box>
+                  </Box>
                 </ListItem>
               );
             }}
