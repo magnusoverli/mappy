@@ -2,8 +2,9 @@ import { StrictMode, useMemo, useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import { ThemeProvider, createTheme } from '@mui/material/styles'
 import CssBaseline from '@mui/material/CssBaseline'
-import './index.css'
 import App from './App.jsx'
+import ErrorBoundary from './components/Common/ErrorBoundary.jsx'
+import './index.css'
 
 function Root() {
   const [mode, setMode] = useState('light')
@@ -20,7 +21,9 @@ function Root() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <App mode={mode} toggleMode={toggleMode} />
+      <ErrorBoundary>
+        <App mode={mode} toggleMode={toggleMode} />
+      </ErrorBoundary>
     </ThemeProvider>
   )
 }
