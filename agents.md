@@ -1,6 +1,8 @@
-# Agents for Mappy INI Editor
+# Agents for Mappy
 
 This document outlines the core "agents" (logical modules) in the Mappy web application. Each agent encapsulates a specific responsibility in the flow of loading, editing, validating, and exporting VSM mapping files. The goal is to keep each area of functionality cleanly separated, making the codebase easier to maintain and extend.
+
+Mappy is built to edit and manipulate VSM mapping files. These files describe paths to various external systems that VSM integrates with. Paths may include Nevion or VideoIPath segments but can reference any system name.
 
 ---
 
@@ -63,7 +65,7 @@ Each INI section gets its own agent to model its rows and enforce section-specif
 ### 4.1 LayersAgent
 
 * Manages entries in the `[Layers]` section.
-* Enforces: key = `NN`, value = `/Nevion/VideoIPath/.../Matrix`.
+* Manages keys formatted as `NN`. Values are paths describing the external system (they are not strictly validated).
 
 ### 4.2 TargetsAgent
 
@@ -137,24 +139,18 @@ This file has exactly three top-level sections, each with its own key-value patt
 A) [Layers]
 Key: two decimal digits, zero-padded (00 through 41)
 
-Value: a Unix-style path string, always starting with
+Value: a Unix-style path string describing the destination system.
+The path typically ends with `/Matrix`.
 
-swift
-Copy
-Edit
-/Nevion/VideoIPath/Version1/
-ending in either
+Example formats include:
 
 …/Connection/l<nn>/Matrix
 
 …/Device/<DeviceName>/Audio Levels/level_<nn>/Matrix
 
 Example:
-
-swift
-Copy
-Edit
 03 = /Nevion/VideoIPath/Version1/Connection/l77/Matrix
+
 B) [Targets]
 Key: <LL>.<CCCC>
 
@@ -165,11 +161,8 @@ CCCC = channel index, four decimal digits, zero-padded (0000–XXXX)
 Value: eight hexadecimal digits, zero-padded (00000000–FFFFFFFF), uppercase or lowercase
 
 Example:
-
-ini
-Copy
-Edit
 03.0005 = 00A1B2C3
+
 C) [Sources]
 Key: <LL>.<SSSS>
 
@@ -180,11 +173,8 @@ SSSS = source index, four digits (0000–9999)
 Value: eight-digit hex ID, same format as in [Targets]
 
 Example:
-
-ini
-Copy
-Edit
 03.0010 = 0000ABCD
+
 3. Validation rules
 Section names must be exactly Layers, Targets or Sources (case-sensitive).
 
@@ -196,7 +186,6 @@ Targets/Sources: ^[0-9]{2}\.[0-9]{4}$
 
 Values for hex IDs: ^[0-9A-Fa-f]{8}$
 
-Values for layer paths: must start with /Nevion/VideoIPath/Version1/ and end in /Matrix.
 
 4. Editor features to support
 Section picker (Layers, Targets, Sources)

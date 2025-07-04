@@ -7,7 +7,7 @@ const Header = ({ mode, toggleMode, iniData, onFileSelect, onDownload, onReset, 
   <AppBar position="static" sx={{ background: 'linear-gradient(90deg,#283593,#8e24aa)', borderBottom: 1, borderColor: 'divider' }}>
     <Toolbar sx={{ gap: 2, minHeight: 64 }}>
       <Typography variant="h6" sx={{ flexGrow: 1 }}>
-        Mappy INI Editor
+        Mappy
       </Typography>
       <FileUpload onFileSelect={onFileSelect} />
       <Button variant="contained" onClick={onDownload} disabled={!iniData || loading}>

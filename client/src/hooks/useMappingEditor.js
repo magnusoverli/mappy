@@ -6,7 +6,7 @@ import { loadState, saveState, clearState } from '../StorageAgent.js';
 import { groupTargetsByLayer } from '../TargetsAgent.js';
 import { groupSourcesByLayer } from '../SourcesAgent.js';
 
-export default function useIniEditor() {
+export default function useMappingEditor() {
   const [iniData, setIniData] = useState(null);
   const [layers, setLayers] = useState([]);
   const [targets, setTargets] = useState({});
