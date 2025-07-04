@@ -14,6 +14,9 @@ function Root() {
       createTheme({
         palette: { mode, primary: { main: '#5e35b1' } },
         typography: { fontFamily: 'Inter, sans-serif' },
+        transitions: {
+          duration: { shortest: 100, shorter: 150, enteringScreen: 150, leavingScreen: 100 },
+        },
       }),
     [mode]
   )

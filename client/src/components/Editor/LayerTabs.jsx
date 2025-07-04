@@ -15,10 +15,20 @@ const LayerTabs = ({ layers, selected, onSelect, onAdd }) => {
       value={selectedIndex}
       onChange={handleChange}
       variant="scrollable"
-      sx={{ borderRight: 1, borderColor: 'divider', minWidth: 120, '& .MuiTab-root': { alignItems: 'flex-start' }, '& .MuiTabs-indicator': { width: 4 } }}
+      sx={{
+        borderRight: 1,
+        borderColor: 'divider',
+        minWidth: 120,
+        '& .MuiTab-root': { alignItems: 'flex-start' },
+        '& .MuiTabs-indicator': { width: 4, transitionDuration: '150ms' },
+      }}
     >
       {layers.map(layer => (
-        <Tab key={layer.key} label={layer.key} sx={{ transition: 'background-color 0.3s', '&.Mui-selected': { bgcolor: 'action.selected' } }} />
+        <Tab
+          key={layer.key}
+          label={layer.key}
+          sx={{ transition: 'background-color 0.15s', '&.Mui-selected': { bgcolor: 'action.selected' } }}
+        />
       ))}
       <Tab label="+" onClick={onAdd} sx={{ fontWeight: 'bold' }} />
     </Tabs>
