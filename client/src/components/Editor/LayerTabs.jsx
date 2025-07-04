@@ -1,7 +1,7 @@
 import { Box, ListItemButton, ListItemText, Paper, Typography } from '@mui/material';
 import { FixedSizeList } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
-import { memo, useMemo } from 'react';
+import { memo, useEffect, useMemo, useState } from 'react';
 import { formatLayerLabel } from '../../utils/formatLayerLabel.js';
 
 const ITEM_HEIGHT = 36;
@@ -14,17 +14,40 @@ const LayerTabs = ({ layers, selected, onSelect, onAdd }) => {
     [layers, hasLayers]
   );
 
-  const listWidth = useMemo(() => {
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
-    ctx.font = '16px "JetBrains Mono", monospace';
-    const plusWidth = ctx.measureText('+').width;
-    let max = plusWidth;
-    for (const label of labels) {
-      const w = ctx.measureText(label).width;
-      if (w > max) max = w;
+  const [listWidth, setListWidth] = useState(0);
+
+  useEffect(() => {
+    const span = document.createElement('span');
+    span.style.visibility = 'hidden';
+    span.style.position = 'absolute';
+    span.style.whiteSpace = 'nowrap';
+    span.style.fontFamily = '"JetBrains Mono", monospace';
+    span.style.fontSize = '16px';
+    document.body.appendChild(span);
+
+    const measure = () => {
+      let max = 0;
+      span.textContent = '+';
+      max = span.offsetWidth;
+      for (const label of labels) {
+        span.textContent = label;
+        const w = span.offsetWidth;
+        if (w > max) max = w;
+      }
+      setListWidth(Math.ceil(max + 32)); // padding for ListItemButton
+    };
+
+    measure();
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(measure);
     }
-    return Math.ceil(max + 32); // padding for ListItemButton
+
+    window.addEventListener('resize', measure);
+
+    return () => {
+      span.remove();
+      window.removeEventListener('resize', measure);
+    };
   }, [labels]);
 
   const containerWidth = listWidth + 32; // account for Paper padding
@@ -72,7 +95,7 @@ const LayerTabs = ({ layers, selected, onSelect, onAdd }) => {
                           <ListItemText
                             primary="+"
                             sx={{ textAlign: 'center', fontWeight: 'bold' }}
-                            primaryTypographyProps={{ sx: { fontFamily: '"JetBrains Mono", monospace' } }}
+                            primaryTypographyProps={{ noWrap: true, sx: { fontFamily: '"JetBrains Mono", monospace' } }}
                           />
                         </ListItemButton>
                       </Paper>
@@ -96,7 +119,7 @@ const LayerTabs = ({ layers, selected, onSelect, onAdd }) => {
                       >
                         <ListItemText
                           primary={label}
-                          primaryTypographyProps={{ sx: { fontFamily: '"JetBrains Mono", monospace' } }}
+                          primaryTypographyProps={{ noWrap: true, sx: { fontFamily: '"JetBrains Mono", monospace' } }}
                         />
                       </ListItemButton>
                     </Paper>
