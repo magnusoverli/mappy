@@ -1,5 +1,7 @@
 export function listLayers(data) {
-  return Object.entries(data.Layers || {}).map(([key, value]) => ({ key, value }));
+  return Object.entries(data.Layers || {})
+    .sort((a, b) => parseInt(a[0], 10) - parseInt(b[0], 10))
+    .map(([key, value]) => ({ key, value }));
 }
 
 export function updateLayer(data, index, newKey, newValue) {
