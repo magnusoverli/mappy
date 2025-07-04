@@ -1,7 +1,7 @@
 
-# Mappy INI Editor
+# Mappy
 
-This web app lets you edit NEVION iPath `.ini` mapping files directly in your browser. Open the page, upload an `.ini` file and download the edited version when you're done.
+This web app lets you edit VSM mapping files directly in your browser. Upload a mapping file and download the edited version when you're done.
 
 ## Development
 

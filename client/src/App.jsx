@@ -2,7 +2,7 @@ import { Box, Container, Snackbar, Typography } from '@mui/material';
 import LayerTabs from './components/Editor/LayerTabs.jsx';
 import LayerPanel from './components/Editor/LayerPanel.jsx';
 import Header from './components/Layout/Header.jsx';
-import useIniEditor from './hooks/useIniEditor.js';
+import useMappingEditor from './hooks/useMappingEditor.js';
 
 export default function App({ mode, toggleMode }) {
   const {
@@ -21,7 +21,7 @@ export default function App({ mode, toggleMode }) {
     handleAddLayer,
     handleRemoveLayer,
     reset,
-  } = useIniEditor();
+  } = useMappingEditor();
 
   return (
     <Box sx={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
@@ -55,7 +55,7 @@ export default function App({ mode, toggleMode }) {
       ) : (
         <Box sx={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <Typography variant="h5" color="text.secondary" sx={{ textAlign: 'center' }}>
-            Upload an INI file to get started
+            Upload a mapping file to get started
           </Typography>
         </Box>
       )}
