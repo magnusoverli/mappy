@@ -1,4 +1,4 @@
-import { Box, ListItemButton, ListItemText, Paper } from '@mui/material';
+import { Box, ListItemButton, ListItemText, Paper, Typography } from '@mui/material';
 import { FixedSizeList } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { memo, useMemo } from 'react';
@@ -7,11 +7,11 @@ import { formatLayerLabel } from '../../utils/formatLayerLabel.js';
 const ITEM_HEIGHT = 36;
 
 const LayerTabs = ({ layers, selected, onSelect, onAdd }) => {
-  if (!layers || layers.length === 0) return null;
+  const hasLayers = layers && layers.length > 0;
 
   const labels = useMemo(
-    () => layers.map(l => formatLayerLabel(l.key, l.value)),
-    [layers]
+    () => (hasLayers ? layers.map(l => formatLayerLabel(l.key, l.value)) : []),
+    [layers, hasLayers]
   );
 
   const listWidth = useMemo(() => {
@@ -27,16 +27,25 @@ const LayerTabs = ({ layers, selected, onSelect, onAdd }) => {
     return Math.ceil(max + 32); // padding for ListItemButton
   }, [labels]);
 
+  if (!hasLayers) return null;
+
   return (
-    <Box sx={{ borderRight: 1, borderColor: 'divider', width: listWidth, height: '100%' }}>
-      <AutoSizer disableWidth>
-        {({ height }) => (
-          <FixedSizeList
-            height={height}
-            itemCount={layers.length + 1}
-            itemSize={ITEM_HEIGHT}
-            width={listWidth}
-          >
+    <Box sx={{ borderRight: 1, borderColor: 'divider', width: listWidth, height: '100%', display: 'flex', flexDirection: 'column', pt: 1 }}>
+      <Typography variant="h5" sx={{ fontFamily: '"Baloo 2", sans-serif', fontWeight: 'bold', textAlign: 'center', mb: 1 }}>
+        Mappy
+      </Typography>
+      <Typography variant="subtitle1" sx={{ textAlign: 'center', mb: 1 }}>
+        Layers
+      </Typography>
+      <Box sx={{ flex: 1, minHeight: 0 }}>
+        <AutoSizer disableWidth>
+          {({ height }) => (
+            <FixedSizeList
+              height={height}
+              itemCount={layers.length + 1}
+              itemSize={ITEM_HEIGHT}
+              width={listWidth}
+            >
           {({ index, style }) => {
             if (index === layers.length) {
               return (
@@ -72,6 +81,7 @@ const LayerTabs = ({ layers, selected, onSelect, onAdd }) => {
         )}
       </AutoSizer>
     </Box>
+  </Box>
   );
 };
 
