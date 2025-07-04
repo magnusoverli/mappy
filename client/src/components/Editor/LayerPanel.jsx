@@ -31,7 +31,7 @@ const LayerPanel = ({ layer, targets, sources, onPathChange, onRemove }) => {
           <Typography variant="subtitle1" sx={{ mb: 1 }}>
             Targets
           </Typography>
-          <Box sx={{ display: 'flex', px: 1, fontWeight: 'bold', fontFamily: 'monospace' }}>
+        <Box sx={{ display: 'flex', px: 1, fontWeight: 'bold', fontFamily: '"JetBrains Mono", monospace' }}>
             <Box sx={{ width: '40%' }}>Key</Box>
             <Box sx={{ width: '40%' }}>Value</Box>
             <Box sx={{ width: '20%', textAlign: 'right' }}>Offset</Box>
@@ -50,13 +50,13 @@ const LayerPanel = ({ layer, targets, sources, onPathChange, onRemove }) => {
                     return (
                       <ListItem style={style} key={t.key} sx={{ mb: 0.5, borderRadius: 1, '&:hover': { boxShadow: 2 } }}>
                         <Box sx={{ display: 'flex', width: '100%' }}>
-                          <Box sx={{ width: '40%', fontFamily: 'monospace' }}>{t.key}</Box>
-                          <Box sx={{ width: '40%', fontFamily: 'monospace' }}>{t.value}</Box>
+                          <Box sx={{ width: '40%', fontFamily: '"JetBrains Mono", monospace' }}>{t.key}</Box>
+                          <Box sx={{ width: '40%', fontFamily: '"JetBrains Mono", monospace' }}>{t.value}</Box>
                           <Box
                             sx={{
                               width: '20%',
                               textAlign: 'right',
-                              fontFamily: 'monospace',
+                              fontFamily: '"JetBrains Mono", monospace',
                               color: t.offset === 0 ? 'success.dark' : 'error.dark',
                             }}
                           >
@@ -75,7 +75,7 @@ const LayerPanel = ({ layer, targets, sources, onPathChange, onRemove }) => {
           <Typography variant="subtitle1" sx={{ mb: 1 }}>
             Sources
           </Typography>
-          <Box sx={{ display: 'flex', px: 1, fontWeight: 'bold', fontFamily: 'monospace' }}>
+          <Box sx={{ display: 'flex', px: 1, fontWeight: 'bold', fontFamily: '"JetBrains Mono", monospace' }}>
             <Box sx={{ width: '40%' }}>Key</Box>
             <Box sx={{ width: '40%' }}>Value</Box>
             <Box sx={{ width: '20%', textAlign: 'right' }}>Offset</Box>
@@ -94,13 +94,13 @@ const LayerPanel = ({ layer, targets, sources, onPathChange, onRemove }) => {
                     return (
                       <ListItem style={style} key={s.key} sx={{ mb: 0.5, borderRadius: 1, '&:hover': { boxShadow: 2 } }}>
                         <Box sx={{ display: 'flex', width: '100%' }}>
-                          <Box sx={{ width: '40%', fontFamily: 'monospace' }}>{s.key}</Box>
-                          <Box sx={{ width: '40%', fontFamily: 'monospace' }}>{s.value}</Box>
+                          <Box sx={{ width: '40%', fontFamily: '"JetBrains Mono", monospace' }}>{s.key}</Box>
+                          <Box sx={{ width: '40%', fontFamily: '"JetBrains Mono", monospace' }}>{s.value}</Box>
                           <Box
                             sx={{
                               width: '20%',
                               textAlign: 'right',
-                              fontFamily: 'monospace',
+                              fontFamily: '"JetBrains Mono", monospace',
                               color: s.offset === 0 ? 'success.dark' : 'error.dark',
                             }}
                           >
