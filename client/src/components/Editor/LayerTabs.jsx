@@ -12,7 +12,6 @@ const LayerTabs = ({ layers, selected, onSelect, onAdd }) => {
         display: 'flex',
         flexDirection: 'column',
         gap: 2,
-        pt: 11,
         pr: 2,
         width: 'max-content',
       }}

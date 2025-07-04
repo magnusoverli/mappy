@@ -1,6 +1,7 @@
 import { Box, Container, Snackbar, Typography } from '@mui/material';
 import LayerTabs from './components/Editor/LayerTabs.jsx';
 import LayerPanel from './components/Editor/LayerPanel.jsx';
+import LayerPathRow from './components/Editor/LayerPathRow.jsx';
 import Header from './components/Layout/Header.jsx';
 import useMappingEditor from './hooks/useMappingEditor.js';
 
@@ -35,20 +36,38 @@ export default function App({ mode, toggleMode }) {
         loading={loading}
       />
       {iniData ? (
-        <Container maxWidth={false} disableGutters sx={{ flex: 1, display: 'flex', overflow: 'hidden', py: 3 }}>
-          <LayerTabs
-            layers={layers}
-            selected={selectedLayer}
-            onSelect={setSelectedLayer}
-            onAdd={handleAddLayer}
-          />
-          <Box sx={{ flex: 1, overflow: 'auto' }}>
-            <LayerPanel
+        <Container
+          maxWidth={false}
+          disableGutters
+          sx={{
+            flex: 1,
+            display: 'grid',
+            overflow: 'hidden',
+            py: 3,
+            gridTemplateColumns: 'max-content 1fr',
+            gridTemplateRows: 'auto 1fr',
+            gridTemplateAreas: `"path path" "tabs panel"`,
+          }}
+        >
+          <Box sx={{ gridArea: 'path', mb: 2 }}>
+            <LayerPathRow
               layer={layers.find(l => l.key === selectedLayer)}
-              targets={targets[selectedLayer] || []}
-              sources={sources[selectedLayer] || []}
               onPathChange={handlePathChange}
               onRemove={handleRemoveLayer}
+            />
+          </Box>
+          <Box sx={{ gridArea: 'tabs', pr: 2 }}>
+            <LayerTabs
+              layers={layers}
+              selected={selectedLayer}
+              onSelect={setSelectedLayer}
+              onAdd={handleAddLayer}
+            />
+          </Box>
+          <Box sx={{ gridArea: 'panel', overflow: 'auto' }}>
+            <LayerPanel
+              targets={targets[selectedLayer] || []}
+              sources={sources[selectedLayer] || []}
             />
           </Box>
         </Container>

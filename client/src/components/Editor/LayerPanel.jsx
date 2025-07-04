@@ -1,32 +1,11 @@
-import { Box, Paper, Typography, TextField, Button, ListItem } from '@mui/material';
+import { Box, Paper, Typography, ListItem } from '@mui/material';
 import { FixedSizeList } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { memo } from 'react';
 
-const LayerPanel = ({ layer, targets, sources, onPathChange, onRemove }) => {
-  if (!layer) return null;
+const LayerPanel = ({ targets, sources }) => {
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, height: '100%' }}>
-      <Paper sx={{ p: 2, borderRadius: 2, boxShadow: 1, width: '100%' }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, width: '100%' }}>
-          <Typography variant="h6" component="div" sx={{ whiteSpace: 'nowrap' }}>
-            Layer {layer.key}
-          </Typography>
-          <TextField
-            fullWidth
-            size="small"
-            value={layer.value}
-            onChange={e => onPathChange(layer.key, e.target.value)}
-            label="Path"
-          />
-          {onRemove && (
-            <Button color="error" onClick={() => onRemove(layer.key)}>
-              Delete
-            </Button>
-          )}
-        </Box>
-      </Paper>
-      <Box sx={{ display: 'flex', gap: 2, flex: 1 }}>
+    <Box sx={{ display: 'flex', gap: 2, height: '100%' }}>
         <Paper sx={{ p: 2, borderRadius: 2, boxShadow: 1, flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
           <Typography variant="subtitle1" sx={{ mb: 1 }}>
             Targets
@@ -115,7 +94,6 @@ const LayerPanel = ({ layer, targets, sources, onPathChange, onRemove }) => {
             </AutoSizer>
           </Box>
         </Paper>
-      </Box>
     </Box>
   );
 };
