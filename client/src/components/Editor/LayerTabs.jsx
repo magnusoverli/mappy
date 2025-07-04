@@ -41,7 +41,7 @@ const LayerTabs = ({ layers, selected, onSelect, onAdd }) => {
         display: 'flex',
         flexDirection: 'column',
         gap: 2,
-        pt: 1,
+        pt: 0,
       }}
     >
       <Typography
@@ -51,6 +51,7 @@ const LayerTabs = ({ layers, selected, onSelect, onAdd }) => {
           fontWeight: 'bold',
           textAlign: 'center',
           lineHeight: 1,
+          alignSelf: 'center',
         }}
       >
         Mappy
