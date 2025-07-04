@@ -28,7 +28,7 @@ const LayerTabs = ({ layers, selected, onSelect, onAdd }) => {
   }, [labels]);
 
   const containerWidth = listWidth + 32; // account for Paper padding
-
+  
   if (!hasLayers) return null;
 
   return (
@@ -36,25 +36,15 @@ const LayerTabs = ({ layers, selected, onSelect, onAdd }) => {
       sx={{
         borderRight: 1,
         borderColor: 'divider',
-        width: containerWidth,
+        width: containerWidth + 16,
         height: '100%',
         display: 'flex',
         flexDirection: 'column',
         gap: 2,
-        pt: 6,
+        pt: 12,
+        pr: 2,
       }}
     >
-      <Typography
-        variant="h3"
-        sx={{
-          fontFamily: '"Baloo 2", sans-serif',
-          fontWeight: 'bold',
-          textAlign: 'center',
-          lineHeight: 1,
-        }}
-      >
-        Mappy
-      </Typography>
       <Paper
         sx={{ p: 2, borderRadius: 2, boxShadow: 1, flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}
       >
