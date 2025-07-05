@@ -44,9 +44,8 @@ export default function App({ mode, toggleMode }) {
             display: 'grid',
             overflow: 'hidden',
             py: 3,
-            gridTemplateColumns: 'max-content 1fr',
             gridTemplateRows: 'auto 1fr',
-            gridTemplateAreas: `"path path" "tabs panel"`,
+            gridTemplateAreas: `"path" "lists"`,
           }}
         >
           <Box sx={{ gridArea: 'path', mb: 2 }}>
@@ -56,19 +55,28 @@ export default function App({ mode, toggleMode }) {
               onRemove={handleRemoveLayer}
             />
           </Box>
-          <Box sx={{ gridArea: 'tabs', pr: 2 }}>
-            <LayerTabs
-              layers={layers}
-              selected={selectedLayer}
-              onSelect={setSelectedLayer}
-              onAdd={handleAddLayer}
-            />
-          </Box>
-          <Box sx={{ gridArea: 'panel', overflow: 'auto' }}>
-            <LayerPanel
-              targets={targets[selectedLayer] || []}
-              sources={sources[selectedLayer] || []}
-            />
+          <Box
+            sx={{
+              gridArea: 'lists',
+              display: 'grid',
+              gridTemplateColumns: 'max-content 1fr',
+              overflow: 'hidden',
+            }}
+          >
+            <Box sx={{ pr: 2, height: '100%' }}>
+              <LayerTabs
+                layers={layers}
+                selected={selectedLayer}
+                onSelect={setSelectedLayer}
+                onAdd={handleAddLayer}
+              />
+            </Box>
+            <Box sx={{ overflow: 'auto' }}>
+              <LayerPanel
+                targets={targets[selectedLayer] || []}
+                sources={sources[selectedLayer] || []}
+              />
+            </Box>
           </Box>
         </Container>
       ) : (
