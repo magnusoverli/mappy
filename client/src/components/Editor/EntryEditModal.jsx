@@ -140,14 +140,16 @@ export default function EntryEditModal({
                 onChange={e => handleCellChange(i, 'key', e.target.value)}
                 variant="standard"
                 error={!keyRegex.test(row.key)}
-                sx={{ width: '40%', fontFamily: '"JetBrains Mono", monospace' }}
+                sx={{ width: '40%' }}
+                InputProps={{ sx: { fontFamily: '"JetBrains Mono", monospace' } }}
               />
               <TextField
                 value={row.value}
                 onChange={e => handleCellChange(i, 'value', e.target.value)}
                 variant="standard"
                 error={!valRegex.test(row.value)}
-                sx={{ width: '40%', fontFamily: '"JetBrains Mono", monospace' }}
+                sx={{ width: '40%' }}
+                InputProps={{ sx: { fontFamily: '"JetBrains Mono", monospace' } }}
               />
               <Box
                 sx={{
@@ -170,6 +172,7 @@ export default function EntryEditModal({
             value={batchQty}
             onChange={e => setBatchQty(parseInt(e.target.value, 10) || 0)}
             size="small"
+            InputProps={{ sx: { fontFamily: '"JetBrains Mono", monospace' } }}
           />
           <TextField
             label="Start Index"
@@ -177,6 +180,7 @@ export default function EntryEditModal({
             value={batchStart}
             onChange={e => setBatchStart(parseInt(e.target.value, 10) || 0)}
             size="small"
+            InputProps={{ sx: { fontFamily: '"JetBrains Mono", monospace' } }}
           />
           <TextField
             label="Offset"
@@ -184,6 +188,7 @@ export default function EntryEditModal({
             value={batchOffset}
             onChange={e => setBatchOffset(parseInt(e.target.value, 10) || 0)}
             size="small"
+            InputProps={{ sx: { fontFamily: '"JetBrains Mono", monospace' } }}
           />
           <Button variant="contained" startIcon={<AddIcon />} onClick={handleAddBatch}>
             Add Batch
