@@ -19,7 +19,14 @@ function Root() {
   const theme = useMemo(
     () =>
       createTheme({
-        palette: { mode, primary: { main: '#5e35b1' } },
+        palette: { 
+          mode, 
+          primary: { main: '#5e35b1' },
+          action: {
+            selected: mode === 'light' ? '#d4c5e8' : '#4a3a6b', // More visible soft purple for light mode
+            selectedOpacity: 0.08,
+          }
+        },
         typography: { fontFamily: 'Inter, sans-serif' },
         transitions: {
           duration: { shortest: 100, shorter: 150, enteringScreen: 150, leavingScreen: 100 },
