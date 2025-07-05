@@ -1,9 +1,21 @@
 import { Box, ListItemButton, ListItemText, Paper, Typography } from '@mui/material';
-import { memo } from 'react';
+import { memo, useMemo } from 'react';
 import VirtualizedList from '../Common/VirtualizedList.jsx';
 import { formatLayerLabel } from '../../utils/formatLayerLabel.js';
 
 const LayerTabs = ({ layers, selected, onSelect, onAdd }) => {
+  const tabsWidth = useMemo(() => {
+    if (!layers || layers.length === 0) return 'max-content';
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    ctx.font = '16px "JetBrains Mono", monospace';
+    const max = Math.max(
+      ...layers.map(l => ctx.measureText(formatLayerLabel(l.key, l.value)).width)
+    );
+    // Add some padding for the ListItemButton
+    return `${Math.ceil(max) + 32}px`;
+  }, [layers]);
+
   if (!layers || layers.length === 0) return null;
 
   return (
@@ -14,7 +26,7 @@ const LayerTabs = ({ layers, selected, onSelect, onAdd }) => {
         flexDirection: 'column',
         gap: 2,
         pr: 2,
-        width: 'max-content',
+        width: tabsWidth,
       }}
     >
       <Paper
