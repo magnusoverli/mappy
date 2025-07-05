@@ -1,7 +1,5 @@
 import {
   Dialog,
-  AppBar,
-  Toolbar,
   Typography,
   IconButton,
   Box,
@@ -14,6 +12,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useEffect, useState } from 'react';
+import AppToolbar from '../Layout/AppToolbar.jsx';
 
 export default function EntryEditModal({
   open,
@@ -105,16 +104,18 @@ export default function EntryEditModal({
       onClose={onClose}
       PaperProps={{ sx: { display: 'flex', flexDirection: 'column' } }}
     >
-      <AppBar sx={{ position: 'relative' }}>
-        <Toolbar>
-          <Typography sx={{ flex: 1 }} variant="h6" component="div">
-            {layerLabel} - Editing {type}
-          </Typography>
-          <IconButton edge="end" color="inherit" onClick={onClose}>
-            <CloseIcon />
-          </IconButton>
-        </Toolbar>
-      </AppBar>
+      <AppToolbar position="relative">
+        <Typography
+          sx={{ flex: 1, fontFamily: '"Baloo 2", sans-serif', fontWeight: 'bold' }}
+          variant="h6"
+          component="div"
+        >
+          {layerLabel} - Editing {type}
+        </Typography>
+        <IconButton edge="end" color="inherit" onClick={onClose}>
+          <CloseIcon />
+        </IconButton>
+      </AppToolbar>
       <Box sx={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
         <Box sx={{ flex: 1, p: 2, overflow: 'auto' }}>
           <Box sx={{ display: 'flex', fontWeight: 'bold', mb: 1, fontFamily: '"JetBrains Mono", monospace' }}>
