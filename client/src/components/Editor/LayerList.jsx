@@ -39,9 +39,18 @@ const LayerList = ({ layers = [], selected, onSelect, onAdd }) => {
   const [width, setWidth] = useState('auto');
 
   useLayoutEffect(() => {
-    if (measureRef.current) {
-      setWidth(`${measureRef.current.offsetWidth}px`);
-    }
+    const node = measureRef.current;
+    if (!node) return;
+
+    const updateWidth = () => {
+      setWidth(`${node.offsetWidth}px`);
+    };
+
+    updateWidth();
+
+    const observer = new ResizeObserver(updateWidth);
+    observer.observe(node);
+    return () => observer.disconnect();
   }, [longestLabel]);
 
   return (
