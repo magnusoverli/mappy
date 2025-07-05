@@ -12,7 +12,10 @@ import CloseIcon from '@mui/icons-material/Close';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useEffect, useState } from 'react';
+import { useTheme } from '@mui/material/styles';
+import { useSearch } from '../../hooks/useSearch.jsx';
 import AppToolbar from '../Layout/AppToolbar.jsx';
+import SearchField from '../Common/SearchField.jsx';
 
 export default function EntryEditModal({
   open,
@@ -96,33 +99,37 @@ export default function EntryEditModal({
 
   const keyRegex = /^\d{2}\.\d{4}$/;
   const valRegex = /^[0-9A-Fa-f]{8}$/;
+  const { query, matchSet, currentResult } = useSearch() || {};
+  const theme = useTheme();
+  const highlight = theme.palette.mode === 'light' ? '#fff59d' : '#f9a825';
 
   return (
     <Dialog
-      fullScreen
-      open={open}
-      onClose={onClose}
-      PaperProps={{ sx: { display: 'flex', flexDirection: 'column' } }}
-    >
-      <AppToolbar position="relative">
-        <Typography
-          variant="h4"
-          component="div"
-          sx={{ fontFamily: '"Baloo 2", sans-serif', fontWeight: 'bold', mr: 2 }}
-        >
-          Mappy
-        </Typography>
-        <Typography
-          sx={{ flex: 1, fontFamily: '"Baloo 2", sans-serif', fontWeight: 'bold' }}
-          variant="h6"
-          component="div"
-        >
-          {layerLabel} - Editing {type}
-        </Typography>
-        <IconButton edge="end" color="inherit" onClick={onClose}>
-          <CloseIcon />
-        </IconButton>
-      </AppToolbar>
+        fullScreen
+        open={open}
+        onClose={onClose}
+        PaperProps={{ sx: { display: 'flex', flexDirection: 'column' } }}
+      >
+        <AppToolbar position="relative">
+          <Typography
+            variant="h4"
+            component="div"
+            sx={{ fontFamily: '"Baloo 2", sans-serif', fontWeight: 'bold', mr: 2 }}
+          >
+            Mappy
+          </Typography>
+          <SearchField />
+          <Typography
+            variant="h6"
+            component="div"
+            sx={{ flex: 1, ml: 2, fontFamily: '"Baloo 2", sans-serif', fontWeight: 'bold' }}
+          >
+            {layerLabel} - Editing {type}
+          </Typography>
+          <IconButton edge="end" color="inherit" onClick={onClose}>
+            <CloseIcon />
+          </IconButton>
+        </AppToolbar>
       <Box sx={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
         <Box sx={{ flex: 1, p: 2, overflow: 'auto' }}>
           <Box sx={{ display: 'flex', fontWeight: 'bold', mb: 1, fontFamily: '"JetBrains Mono", monospace' }}>
@@ -130,19 +137,26 @@ export default function EntryEditModal({
             <Box sx={{ width: '40%' }}>Value</Box>
             <Box sx={{ width: '20%', textAlign: 'right' }}>Offset</Box>
           </Box>
-          {rows.map((row, i) => (
-            <Paper
-              key={i}
-              onClick={e => handleRowClick(i, e)}
-              sx={{
-                mb: 0.5,
-                display: 'flex',
-                alignItems: 'center',
-                px: 1,
-                py: 0.5,
-                bgcolor: selected.includes(i) ? 'action.selected' : undefined,
-              }}
-            >
+          {rows.map((row, i) => {
+            const isMatch = matchSet?.has(row.key);
+            const isCurrent = currentResult?.key === row.key;
+            return (
+              <Paper
+                key={i}
+                onClick={e => handleRowClick(i, e)}
+                sx={{
+                  mb: 0.5,
+                  display: 'flex',
+                  alignItems: 'center',
+                  px: 1,
+                  py: 0.5,
+                  bgcolor: selected.includes(i) ? 'action.selected' : undefined,
+                  transition: 'background-color 0.3s',
+                  ...(isMatch && { bgcolor: highlight }),
+                  ...(query && !isMatch && { opacity: 0.7 }),
+                  ...(isCurrent && { animation: 'pulseHighlight 1.5s infinite' }),
+                }}
+              >
               <TextField
                 value={row.key}
                 onChange={e => handleCellChange(i, 'key', e.target.value)}
@@ -170,7 +184,8 @@ export default function EntryEditModal({
                 {row.offset}
               </Box>
             </Paper>
-          ))}
+            );
+          })}
         </Box>
         <Box sx={{ width: 300, borderLeft: 1, borderColor: 'divider', p: 2, display: 'flex', flexDirection: 'column', gap: 2 }}>
           <Typography variant="subtitle1">Add Entries</Typography>
