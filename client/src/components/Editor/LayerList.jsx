@@ -31,8 +31,9 @@ const LayerList = ({ layers = [], selected, onSelect, onDelete, onError }) => {
 
   const { query, matchSet, currentResult, counts } = useSearch() || {};
   const theme = useTheme();
-  const highlight =
-    theme.palette.mode === 'light' ? '#fff59d' : '#f9a825';
+  const highlight = theme.palette.mode === 'light'
+    ? 'rgba(255, 245, 157, 0.5)'
+    : 'rgba(249, 168, 37, 0.3)';
 
   const renderRow = (layer, _i, style) => {
     const isMatch = matchSet?.has(layer.key);

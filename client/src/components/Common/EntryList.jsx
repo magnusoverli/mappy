@@ -22,7 +22,9 @@ export default function EntryList({
 
   const { query, matchSet, currentResult } = useSearch() || {};
   const theme = useTheme();
-  const highlight = theme.palette.mode === 'light' ? '#fff59d' : '#f9a825';
+  const highlight = theme.palette.mode === 'light'
+    ? 'rgba(255, 245, 157, 0.5)'
+    : 'rgba(249, 168, 37, 0.3)';
 
   const defaultRow = (item, _i, style) => (
     <Box style={style} key={item.key}>
