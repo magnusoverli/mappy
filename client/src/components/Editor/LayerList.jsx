@@ -31,7 +31,14 @@ const LayerList = ({ layers = [], selected, onSelect, onAdd }) => {
   );
 
   return (
-    <EntryList title="Layers" items={layers} renderRow={renderRow} header={header} footer={footer} />
+    <EntryList
+      title="Layers"
+      items={layers}
+      renderRow={renderRow}
+      header={header}
+      footer={footer}
+      sx={{ flex: '0 0 auto', width: 'fit-content' }}
+    />
   );
 };
 
