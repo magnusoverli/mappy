@@ -101,7 +101,12 @@ export default function EntryEditModal({
   const valRegex = /^[0-9A-Fa-f]{8}$/;
   const { query, matchSet, currentResult } = useSearch() || {};
   const theme = useTheme();
-  const highlight = theme.palette.mode === 'light' ? '#fff59d' : '#f9a825';
+  const highlight = theme.palette.mode === 'light'
+    ? 'rgba(255, 245, 157, 0.3)'
+    : 'rgba(249, 168, 37, 0.15)';
+  const currentHighlight = theme.palette.mode === 'light'
+    ? 'rgba(255, 245, 157, 0.8)'
+    : 'rgba(249, 168, 37, 0.45)';
 
   return (
     <Dialog
@@ -154,7 +159,7 @@ export default function EntryEditModal({
                   transition: 'background-color 0.3s',
                   ...(isMatch && { bgcolor: highlight }),
                   ...(query && !isMatch && { opacity: 0.7 }),
-                  ...(isCurrent && { animation: 'pulseHighlight 1.5s infinite' }),
+                  ...(isCurrent && { bgcolor: currentHighlight }),
                 }}
               >
               <TextField
