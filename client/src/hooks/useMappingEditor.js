@@ -3,8 +3,14 @@ import { openFile, exportFile } from '../FileAgent.js';
 import { parseIni, stringifyIni } from '../ParserAgent.js';
 import { listLayers, updateLayer, addLayer, removeLayer } from '../LayersAgent.js';
 import { loadState, saveState, clearState } from '../StorageAgent.js';
-import { groupTargetsByLayer } from '../TargetsAgent.js';
-import { groupSourcesByLayer } from '../SourcesAgent.js';
+import {
+  groupTargetsByLayer,
+  removeLayerTargets,
+} from '../TargetsAgent.js';
+import {
+  groupSourcesByLayer,
+  removeLayerSources,
+} from '../SourcesAgent.js';
 
 export default function useMappingEditor() {
   const [iniData, setIniData] = useState(null);
@@ -98,15 +104,25 @@ export default function useMappingEditor() {
   }, [iniData]);
 
   const handleRemoveLayer = useCallback(key => {
-    const dataCopy = { ...iniData, Layers: { ...iniData.Layers } };
+    const idx = layers.findIndex(l => l.key === key);
+    const dataCopy = {
+      ...iniData,
+      Layers: { ...iniData.Layers },
+      Targets: { ...iniData.Targets },
+      Sources: { ...iniData.Sources },
+    };
     removeLayer(dataCopy, key);
+    removeLayerTargets(dataCopy, key);
+    removeLayerSources(dataCopy, key);
     setIniData(dataCopy);
     const updated = listLayers(dataCopy);
     setLayers(updated);
     setTargets(groupTargetsByLayer(dataCopy));
     setSources(groupSourcesByLayer(dataCopy));
-    setSelectedLayer(updated[0]?.key || null);
-  }, [iniData]);
+    const nextKey =
+      idx > 0 ? updated[idx - 1]?.key : updated[0]?.key || null;
+    setSelectedLayer(nextKey);
+  }, [iniData, layers]);
 
   const reset = useCallback(() => {
     setIniData(null);
