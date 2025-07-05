@@ -18,6 +18,7 @@ export default function App({ mode, toggleMode }) {
     handleFileChange,
     download,
     handlePathChange,
+    handleAddLayer,
     handleRemoveLayer,
     reset,
   } = useMappingEditor();
@@ -50,7 +51,7 @@ export default function App({ mode, toggleMode }) {
             <LayerPathRow
               layer={layers.find(l => l.key === selectedLayer)}
               onPathChange={handlePathChange}
-              onRemove={handleRemoveLayer}
+              onAdd={handleAddLayer}
             />
           </Box>
           <Box sx={{ gridArea: 'lists', overflow: 'auto' }}>
@@ -60,6 +61,7 @@ export default function App({ mode, toggleMode }) {
               sources={sources[selectedLayer] || []}
               selectedLayer={selectedLayer}
               onSelectLayer={setSelectedLayer}
+              onRemoveLayer={handleRemoveLayer}
             />
           </Box>
         </Container>

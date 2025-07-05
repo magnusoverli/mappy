@@ -8,12 +8,14 @@ const LayerPanel = ({
   sources,
   selectedLayer,
   onSelectLayer,
+  onRemoveLayer,
 }) => (
   <Box sx={{ display: 'flex', gap: 2, height: '100%' }}>
     <LayerList
       layers={layers}
       selected={selectedLayer}
       onSelect={onSelectLayer}
+      onRemove={onRemoveLayer}
     />
     <EntryList title="Targets" items={targets} />
     <EntryList title="Sources" items={sources} />
