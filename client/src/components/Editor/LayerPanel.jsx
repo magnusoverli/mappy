@@ -8,12 +8,16 @@ const LayerPanel = ({
   sources,
   selectedLayer,
   onSelectLayer,
+  onDeleteLayer,
+  onError,
 }) => (
   <Box sx={{ display: 'flex', gap: 2, height: '100%' }}>
     <LayerList
       layers={layers}
       selected={selectedLayer}
       onSelect={onSelectLayer}
+      onDelete={onDeleteLayer}
+      onError={onError}
     />
     <EntryList title="Targets" items={targets} />
     <EntryList title="Sources" items={sources} />
