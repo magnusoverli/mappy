@@ -18,7 +18,6 @@ export default function App({ mode, toggleMode }) {
     handleFileChange,
     download,
     handlePathChange,
-    handleAddLayer,
     handleRemoveLayer,
     reset,
   } = useMappingEditor();
@@ -61,7 +60,6 @@ export default function App({ mode, toggleMode }) {
               sources={sources[selectedLayer] || []}
               selectedLayer={selectedLayer}
               onSelectLayer={setSelectedLayer}
-              onAddLayer={handleAddLayer}
             />
           </Box>
         </Container>

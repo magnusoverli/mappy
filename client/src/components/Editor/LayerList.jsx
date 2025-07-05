@@ -3,7 +3,7 @@ import { memo, useLayoutEffect, useRef, useState } from 'react';
 import EntryList from '../Common/EntryList.jsx';
 import { formatLayerLabel } from '../../utils/formatLayerLabel.js';
 
-const LayerList = ({ layers = [], selected, onSelect, onAdd }) => {
+const LayerList = ({ layers = [], selected, onSelect }) => {
   const header = null;
   const footer = null; // Remove the "+" button
 
@@ -12,7 +12,14 @@ const LayerList = ({ layers = [], selected, onSelect, onAdd }) => {
       <ListItemButton
         selected={layer.key === selected}
         onClick={() => onSelect(layer.key)}
-        sx={{ mb: 0.5, borderRadius: 1, '&.Mui-selected': { bgcolor: 'action.selected' } }}
+        sx={{
+          height: '100%',
+          minHeight: 0,
+          py: 0,
+          mb: 0.5,
+          borderRadius: 1,
+          '&.Mui-selected': { bgcolor: 'action.selected' },
+        }}
       >
         <ListItemText
           primary={formatLayerLabel(layer.key, layer.value)}
@@ -78,7 +85,14 @@ const LayerList = ({ layers = [], selected, onSelect, onAdd }) => {
       >
         <ListItemButton
           ref={measureRef}
-          sx={{ px: 2, mb: 0.5, borderRadius: 1 }}
+          sx={{
+            px: 2,
+            mb: 0.5,
+            height: '100%',
+            minHeight: 0,
+            py: 0,
+            borderRadius: 1,
+          }}
         >
           <ListItemText
             primary={longestLabel}
