@@ -2,6 +2,7 @@ import { Button, IconButton, Box, Typography } from '@mui/material';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import FileUpload from '../Common/FileUpload.jsx';
+import SearchField from '../Common/SearchField.jsx';
 import AppToolbar from './AppToolbar.jsx';
 
 const Header = ({ mode, toggleMode, iniData, onFileSelect, onDownload, onReset, loading }) => (
@@ -13,6 +14,7 @@ const Header = ({ mode, toggleMode, iniData, onFileSelect, onDownload, onReset, 
     >
       Mappy
     </Typography>
+    <SearchField />
     <Box sx={{ flexGrow: 1 }} />
     <FileUpload onFileSelect={onFileSelect} />
     <Button variant="contained" onClick={onDownload} disabled={!iniData || loading}>

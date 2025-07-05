@@ -88,3 +88,16 @@ button:focus-visible {
 *::-webkit-scrollbar-track {
   background: transparent;
 }
+
+@keyframes pulseHighlight {
+  0% {
+    box-shadow: 0 0 0 0 rgba(249, 168, 37, 0.6);
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgba(249, 168, 37, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(249, 168, 37, 0);
+  }
+}
+
