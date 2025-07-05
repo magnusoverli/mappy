@@ -1,4 +1,4 @@
-import { Box, ListItem, Paper, Typography } from '@mui/material';
+import { Box, ListItemButton, Paper, Typography } from '@mui/material';
 import VirtualizedList from './VirtualizedList.jsx';
 
 export default function EntryList({
@@ -19,10 +19,17 @@ export default function EntryList({
   );
 
   const defaultRow = (item, _i, style) => (
-    <ListItem
+    <ListItemButton
       style={style}
       key={item.key}
-      sx={{ mb: 0.5, borderRadius: 1, '&:hover': { boxShadow: 2 } }}
+      sx={{
+        mb: 0.5,
+        borderRadius: 1,
+        height: '100%',
+        minHeight: 0,
+        py: 0,
+        '&:hover': { boxShadow: 2 },
+      }}
     >
       <Box sx={{ display: 'flex', width: '100%' }}>
         <Box sx={{ width: '40%', fontFamily: '"JetBrains Mono", monospace' }}>{item.key}</Box>
@@ -38,7 +45,7 @@ export default function EntryList({
           {item.offset}
         </Box>
       </Box>
-    </ListItem>
+    </ListItemButton>
   );
 
   return (
