@@ -9,6 +9,7 @@ export default function EntryList({
   footer,
   itemHeight = 36,
   paperProps = {},
+  action,
 }) {
   const defaultHeader = (
     <Box sx={{ display: 'flex', px: 1, fontWeight: 'bold', fontFamily: '"JetBrains Mono", monospace' }}>
@@ -62,8 +63,14 @@ export default function EntryList({
         ...(paperProps.sx || {}),
       }}
     >
-      <Typography variant="subtitle1" sx={{ mb: 1 }}>
-        {title}
+      <Typography
+        variant="subtitle1"
+        sx={{ mb: 1, display: 'flex', alignItems: 'center' }}
+      >
+        <Box component="span" sx={{ flex: 1 }}>
+          {title}
+        </Box>
+        {action || null}
       </Typography>
       {header !== undefined ? header : defaultHeader}
       <Box sx={{ flex: 1, minHeight: 0 }}>
