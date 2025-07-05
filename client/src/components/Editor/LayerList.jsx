@@ -5,15 +5,7 @@ import { formatLayerLabel } from '../../utils/formatLayerLabel.js';
 
 const LayerList = ({ layers = [], selected, onSelect, onAdd }) => {
   const header = null;
-  const footer = (
-    <ListItemButton onClick={onAdd} sx={{ justifyContent: 'center' }}>
-      <ListItemText
-        primary="+"
-        sx={{ textAlign: 'center', fontWeight: 'bold' }}
-        primaryTypographyProps={{ sx: { fontFamily: '"JetBrains Mono", monospace' } }}
-      />
-    </ListItemButton>
-  );
+  const footer = null; // Remove the "+" button
 
   const renderRow = (layer, _i, style) => (
     <Box style={style} key={layer.key}>
@@ -43,14 +35,30 @@ const LayerList = ({ layers = [], selected, onSelect, onAdd }) => {
 
     const measure = () => {
       if (!cancelled && measureRef.current) {
-        setWidth(`${measureRef.current.offsetWidth}px`);
+        // Use getBoundingClientRect for more accurate measurement
+        const rect = measureRef.current.getBoundingClientRect();
+        
+        // Get the scrollWidth to ensure we capture the full content
+        const contentWidth = measureRef.current.scrollWidth;
+        
+        // Use the larger of the two measurements
+        const measuredWidth = Math.max(rect.width, contentWidth);
+        
+        // Add extra padding for the Paper component and some buffer
+        // Paper has theme spacing 2 (16px each side) plus some buffer for safety
+        const totalWidth = Math.ceil(measuredWidth) + 32 + 16;
+        
+        setWidth(`${totalWidth}px`);
       }
     };
 
-    measure();
+    // Delay measurement slightly to ensure DOM is ready
+    setTimeout(measure, 0);
 
     if (document.fonts && typeof document.fonts.ready?.then === 'function') {
-      document.fonts.ready.then(measure);
+      document.fonts.ready.then(() => {
+        setTimeout(measure, 0);
+      });
     }
 
     return () => {
@@ -60,21 +68,24 @@ const LayerList = ({ layers = [], selected, onSelect, onAdd }) => {
 
   return (
     <>
-      <ListItemButton
-        ref={measureRef}
+      <Box
         sx={{
           position: 'absolute',
           visibility: 'hidden',
           pointerEvents: 'none',
-          px: 2,
           whiteSpace: 'nowrap',
         }}
       >
-        <ListItemText
-          primary={longestLabel}
-          primaryTypographyProps={{ sx: { fontFamily: '"JetBrains Mono", monospace' } }}
-        />
-      </ListItemButton>
+        <ListItemButton
+          ref={measureRef}
+          sx={{ px: 2, mb: 0.5, borderRadius: 1 }}
+        >
+          <ListItemText
+            primary={longestLabel}
+            primaryTypographyProps={{ sx: { fontFamily: '"JetBrains Mono", monospace' } }}
+          />
+        </ListItemButton>
+      </Box>
       <EntryList
         title="Layers"
         items={layers}
