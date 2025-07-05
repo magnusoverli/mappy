@@ -7,6 +7,7 @@ export default function EntryList({
   renderRow,
   header,
   footer,
+  titleAction,
   itemHeight = 36,
   paperProps = {},
 }) {
@@ -62,9 +63,12 @@ export default function EntryList({
         ...(paperProps.sx || {}),
       }}
     >
-      <Typography variant="subtitle1" sx={{ mb: 1 }}>
-        {title}
-      </Typography>
+      <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+        <Typography variant="subtitle1" sx={{ flex: 1 }}>
+          {title}
+        </Typography>
+        {titleAction || null}
+      </Box>
       {header !== undefined ? header : defaultHeader}
       <Box sx={{ flex: 1, minHeight: 0 }}>
         <VirtualizedList
