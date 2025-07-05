@@ -104,7 +104,7 @@ const LayerList = ({ layers = [], selected, onSelect, onDelete, onError }) => {
         
         // Add extra padding for the Paper component and some buffer
         // Paper has theme spacing 2 (16px each side) plus some buffer for safety
-        const totalWidth = Math.ceil(measuredWidth) + 32 + 16;
+        const totalWidth = Math.ceil(measuredWidth) + 32 + 24;
         
         setWidth(`${totalWidth}px`);
       }
@@ -158,6 +158,7 @@ const LayerList = ({ layers = [], selected, onSelect, onDelete, onError }) => {
           ref={measureRef}
           sx={{
             px: 2,
+            pr: 4,
             mb: 0.5,
             height: '100%',
             minHeight: 0,
