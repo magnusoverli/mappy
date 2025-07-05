@@ -98,6 +98,7 @@ export default function useMappingEditor() {
   }, [iniData]);
 
   const handleRemoveLayer = useCallback(key => {
+    const idx = layers.findIndex(l => l.key === key);
     const dataCopy = { ...iniData, Layers: { ...iniData.Layers } };
     removeLayer(dataCopy, key);
     setIniData(dataCopy);
@@ -105,8 +106,10 @@ export default function useMappingEditor() {
     setLayers(updated);
     setTargets(groupTargetsByLayer(dataCopy));
     setSources(groupSourcesByLayer(dataCopy));
-    setSelectedLayer(updated[0]?.key || null);
-  }, [iniData]);
+    const nextKey =
+      idx > 0 ? updated[idx - 1]?.key : updated[0]?.key || null;
+    setSelectedLayer(nextKey);
+  }, [iniData, layers]);
 
   const reset = useCallback(() => {
     setIniData(null);
