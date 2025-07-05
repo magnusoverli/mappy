@@ -1,5 +1,5 @@
 import { Box, ListItemButton, Paper, Typography } from '@mui/material';
-import { useTheme } from '@mui/material/styles';
+import useHighlightColors from '../../utils/useHighlightColors.js';
 import VirtualizedList from './VirtualizedList.jsx';
 import { useSearch } from '../../hooks/useSearch.jsx';
 
@@ -21,13 +21,7 @@ export default function EntryList({
   );
 
   const { query, matchSet, currentResult } = useSearch() || {};
-  const theme = useTheme();
-  const highlight = theme.palette.mode === 'light'
-    ? 'rgba(255, 245, 157, 0.3)'
-    : 'rgba(249, 168, 37, 0.15)';
-  const currentHighlight = theme.palette.mode === 'light'
-    ? 'rgba(255, 245, 157, 0.8)'
-    : 'rgba(249, 168, 37, 0.45)';
+  const { highlight, currentHighlight } = useHighlightColors();
 
   const defaultRow = (item, _i, style) => (
     <Box style={style} key={item.key}>
