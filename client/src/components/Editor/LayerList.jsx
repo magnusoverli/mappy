@@ -1,5 +1,5 @@
 import { Box, ListItemButton, ListItemText } from '@mui/material';
-import { memo } from 'react';
+import { memo, useLayoutEffect, useRef, useState } from 'react';
 import EntryList from '../Common/EntryList.jsx';
 import { formatLayerLabel } from '../../utils/formatLayerLabel.js';
 
@@ -30,8 +30,46 @@ const LayerList = ({ layers = [], selected, onSelect, onAdd }) => {
     </Box>
   );
 
+  const longestLabel = layers.reduce((acc, l) => {
+    const label = formatLayerLabel(l.key, l.value);
+    return label.length > acc.length ? label : acc;
+  }, '');
+
+  const measureRef = useRef(null);
+  const [width, setWidth] = useState('auto');
+
+  useLayoutEffect(() => {
+    if (measureRef.current) {
+      setWidth(`${measureRef.current.offsetWidth}px`);
+    }
+  }, [longestLabel]);
+
   return (
-    <EntryList title="Layers" items={layers} renderRow={renderRow} header={header} footer={footer} />
+    <>
+      <ListItemButton
+        ref={measureRef}
+        sx={{
+          position: 'absolute',
+          visibility: 'hidden',
+          pointerEvents: 'none',
+          px: 2,
+          whiteSpace: 'nowrap',
+        }}
+      >
+        <ListItemText
+          primary={longestLabel}
+          primaryTypographyProps={{ sx: { fontFamily: '"JetBrains Mono", monospace' } }}
+        />
+      </ListItemButton>
+      <EntryList
+        title="Layers"
+        items={layers}
+        renderRow={renderRow}
+        header={header}
+        footer={footer}
+        paperProps={{ sx: { flex: '0 0 auto', width } }}
+      />
+    </>
   );
 };
 
