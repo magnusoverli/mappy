@@ -1,5 +1,6 @@
 import { Box, Button } from '@mui/material';
 import { memo, useState } from 'react';
+import { useSearch } from '../../hooks/useSearch.jsx';
 import EntryList from '../Common/EntryList.jsx';
 import LayerList from './LayerList.jsx';
 import EntryEditModal from './EntryEditModal.jsx';
@@ -20,6 +21,8 @@ const LayerPanel = ({
 
   const layer = layers.find(l => l.key === selectedLayer);
   const label = layer ? formatLayerLabel(layer.key, layer.value) : '';
+  const { query, counts } = useSearch() || {};
+  const active = Boolean(query);
 
   return (
     <Box sx={{ display: 'flex', gap: 2, height: '100%' }}>
@@ -33,7 +36,7 @@ const LayerPanel = ({
       <EntryList
         title={
           <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            Targets
+            {`Targets${active ? ` (${counts?.targets || 0})` : ''}`}
             <Button variant="contained" size="small" onClick={() => setEditTargetsOpen(true)}>
               Edit
             </Button>
@@ -44,7 +47,7 @@ const LayerPanel = ({
       <EntryList
         title={
           <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            Sources
+            {`Sources${active ? ` (${counts?.sources || 0})` : ''}`}
             <Button variant="contained" size="small" onClick={() => setEditSourcesOpen(true)}>
               Edit
             </Button>
