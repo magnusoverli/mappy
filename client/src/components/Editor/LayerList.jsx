@@ -39,9 +39,23 @@ const LayerList = ({ layers = [], selected, onSelect, onAdd }) => {
   const [width, setWidth] = useState('auto');
 
   useLayoutEffect(() => {
-    if (measureRef.current) {
-      setWidth(`${measureRef.current.offsetWidth}px`);
+    let cancelled = false;
+
+    const measure = () => {
+      if (!cancelled && measureRef.current) {
+        setWidth(`${measureRef.current.offsetWidth}px`);
+      }
+    };
+
+    measure();
+
+    if (document.fonts && typeof document.fonts.ready?.then === 'function') {
+      document.fonts.ready.then(measure);
     }
+
+    return () => {
+      cancelled = true;
+    };
   }, [longestLabel]);
 
   return (
