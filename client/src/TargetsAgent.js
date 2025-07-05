@@ -18,3 +18,13 @@ export function removeLayerTargets(data, layer) {
     if (key.startsWith(`${layer}.`)) delete data.Targets[key];
   });
 }
+
+export function replaceLayerTargets(data, layer, entries) {
+  if (!data.Targets) data.Targets = {};
+  Object.keys(data.Targets).forEach(key => {
+    if (key.startsWith(`${layer}.`)) delete data.Targets[key];
+  });
+  entries.forEach(({ key, value }) => {
+    data.Targets[key] = value;
+  });
+}

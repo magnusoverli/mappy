@@ -20,6 +20,8 @@ export default function App({ mode, toggleMode }) {
     handlePathChange,
     handleAddLayer,
     handleRemoveLayer,
+    replaceTargetsForLayer,
+    replaceSourcesForLayer,
     reset,
   } = useMappingEditor();
 
@@ -63,6 +65,8 @@ export default function App({ mode, toggleMode }) {
               onSelectLayer={setSelectedLayer}
               onDeleteLayer={handleRemoveLayer}
               onError={setStatus}
+              onEditTargets={entries => replaceTargetsForLayer(selectedLayer, entries)}
+              onEditSources={entries => replaceSourcesForLayer(selectedLayer, entries)}
             />
           </Box>
         </Container>

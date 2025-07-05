@@ -6,10 +6,12 @@ import { loadState, saveState, clearState } from '../StorageAgent.js';
 import {
   groupTargetsByLayer,
   removeLayerTargets,
+  replaceLayerTargets,
 } from '../TargetsAgent.js';
 import {
   groupSourcesByLayer,
   removeLayerSources,
+  replaceLayerSources,
 } from '../SourcesAgent.js';
 
 export default function useMappingEditor() {
@@ -124,6 +126,32 @@ export default function useMappingEditor() {
     setSelectedLayer(nextKey);
   }, [iniData, layers]);
 
+  const replaceTargetsForLayer = useCallback(
+    (layer, entries) => {
+      const dataCopy = {
+        ...iniData,
+        Targets: { ...iniData.Targets },
+      };
+      replaceLayerTargets(dataCopy, layer, entries);
+      setIniData(dataCopy);
+      setTargets(groupTargetsByLayer(dataCopy));
+    },
+    [iniData],
+  );
+
+  const replaceSourcesForLayer = useCallback(
+    (layer, entries) => {
+      const dataCopy = {
+        ...iniData,
+        Sources: { ...iniData.Sources },
+      };
+      replaceLayerSources(dataCopy, layer, entries);
+      setIniData(dataCopy);
+      setSources(groupSourcesByLayer(dataCopy));
+    },
+    [iniData],
+  );
+
   const reset = useCallback(() => {
     setIniData(null);
     setLayers([]);
@@ -153,6 +181,8 @@ export default function useMappingEditor() {
     handlePathChange,
     handleAddLayer,
     handleRemoveLayer,
+    replaceTargetsForLayer,
+    replaceSourcesForLayer,
     reset,
   };
 }

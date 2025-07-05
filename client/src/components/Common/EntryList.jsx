@@ -3,6 +3,7 @@ import VirtualizedList from './VirtualizedList.jsx';
 
 export default function EntryList({
   title,
+  titleAction,
   items = [],
   renderRow,
   header,
@@ -62,9 +63,10 @@ export default function EntryList({
         ...(paperProps.sx || {}),
       }}
     >
-      <Typography variant="subtitle1" sx={{ mb: 1 }}>
-        {title}
-      </Typography>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+        <Typography variant="subtitle1">{title}</Typography>
+        {titleAction || null}
+      </Box>
       {header !== undefined ? header : defaultHeader}
       <Box sx={{ flex: 1, minHeight: 0 }}>
         <VirtualizedList

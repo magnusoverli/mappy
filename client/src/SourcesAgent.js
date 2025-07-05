@@ -18,3 +18,13 @@ export function removeLayerSources(data, layer) {
     if (key.startsWith(`${layer}.`)) delete data.Sources[key];
   });
 }
+
+export function replaceLayerSources(data, layer, entries) {
+  if (!data.Sources) data.Sources = {};
+  Object.keys(data.Sources).forEach(key => {
+    if (key.startsWith(`${layer}.`)) delete data.Sources[key];
+  });
+  entries.forEach(({ key, value }) => {
+    data.Sources[key] = value;
+  });
+}
