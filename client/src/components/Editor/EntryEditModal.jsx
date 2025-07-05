@@ -106,6 +106,13 @@ export default function EntryEditModal({
     >
       <AppToolbar position="relative">
         <Typography
+          variant="h4"
+          component="div"
+          sx={{ fontFamily: '"Baloo 2", sans-serif', fontWeight: 'bold', mr: 2 }}
+        >
+          Mappy
+        </Typography>
+        <Typography
           sx={{ flex: 1, fontFamily: '"Baloo 2", sans-serif', fontWeight: 'bold' }}
           variant="h6"
           component="div"
