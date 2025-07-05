@@ -1,5 +1,4 @@
 import { Box, Container, Snackbar, Typography } from '@mui/material';
-import LayerTabs from './components/Editor/LayerTabs.jsx';
 import LayerPanel from './components/Editor/LayerPanel.jsx';
 import LayerPathRow from './components/Editor/LayerPathRow.jsx';
 import Header from './components/Layout/Header.jsx';
@@ -55,28 +54,15 @@ export default function App({ mode, toggleMode }) {
               onRemove={handleRemoveLayer}
             />
           </Box>
-          <Box
-            sx={{
-              gridArea: 'lists',
-              display: 'grid',
-              gridTemplateColumns: 'max-content 1fr',
-              overflow: 'hidden',
-            }}
-          >
-            <Box sx={{ pr: 2, height: '100%' }}>
-              <LayerTabs
-                layers={layers}
-                selected={selectedLayer}
-                onSelect={setSelectedLayer}
-                onAdd={handleAddLayer}
-              />
-            </Box>
-            <Box sx={{ overflow: 'auto' }}>
-              <LayerPanel
-                targets={targets[selectedLayer] || []}
-                sources={sources[selectedLayer] || []}
-              />
-            </Box>
+          <Box sx={{ gridArea: 'lists', overflow: 'auto' }}>
+            <LayerPanel
+              layers={layers}
+              targets={targets[selectedLayer] || []}
+              sources={sources[selectedLayer] || []}
+              selectedLayer={selectedLayer}
+              onSelectLayer={setSelectedLayer}
+              onAddLayer={handleAddLayer}
+            />
           </Box>
         </Container>
       ) : (
