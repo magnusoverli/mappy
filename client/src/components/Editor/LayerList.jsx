@@ -16,6 +16,8 @@ import {
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { memo, useLayoutEffect, useRef, useState } from 'react';
+import { useTheme } from '@mui/material/styles';
+import { useSearch } from '../../hooks/useSearch.jsx';
 import EntryList from '../Common/EntryList.jsx';
 import { formatLayerLabel } from '../../utils/formatLayerLabel.js';
 
@@ -27,58 +29,75 @@ const LayerList = ({ layers = [], selected, onSelect, onDelete, onError }) => {
   const [activeMenuLayer, setActiveMenuLayer] = useState(null);
   const [confirmLayer, setConfirmLayer] = useState(null);
 
-  const renderRow = (layer, _i, style) => (
-    <Box
-      style={style}
-      key={layer.key}
-      sx={{ position: 'relative', '&:hover .layer-menu-btn': { opacity: 1 } }}
-    >
-      <ListItemButton
-        selected={layer.key === selected}
-        onClick={() => onSelect(layer.key)}
-        sx={{
-          height: '100%',
-          minHeight: 0,
-          py: 0,
-          pr: 4,
-          mb: 0.5,
-          borderRadius: 1,
-          '&.Mui-selected': { bgcolor: 'action.selected' },
-        }}
+  const { query, matchSet, currentResult, counts } = useSearch() || {};
+  const theme = useTheme();
+  const highlight = theme.palette.mode === 'light'
+    ? 'rgba(255, 245, 157, 0.3)'
+    : 'rgba(249, 168, 37, 0.15)';
+  const currentHighlight = theme.palette.mode === 'light'
+    ? 'rgba(255, 245, 157, 0.8)'
+    : 'rgba(249, 168, 37, 0.45)';
+
+  const renderRow = (layer, _i, style) => {
+    const isMatch = matchSet?.has(layer.key);
+    const isCurrent = currentResult?.key === layer.key;
+    return (
+      <Box
+        style={style}
+        key={layer.key}
+        sx={{ position: 'relative', '&:hover .layer-menu-btn': { opacity: 1 } }}
       >
-        <ListItemText
-          primary={formatLayerLabel(layer.key, layer.value)}
-          primaryTypographyProps={{
-            noWrap: true,
-            sx: { fontFamily: '"JetBrains Mono", monospace' },
+        <ListItemButton
+          selected={layer.key === selected}
+          onClick={() => onSelect(layer.key)}
+          sx={{
+            height: '100%',
+            minHeight: 0,
+            py: 0,
+            pr: 4,
+            mb: 0.5,
+            borderRadius: 1,
+            transition: 'background-color 0.3s',
+            '&.Mui-selected': { bgcolor: 'action.selected' },
+            ...(isMatch && { bgcolor: highlight }),
+            ...(query && !isMatch && { opacity: 0.7 }),
+            ...(isCurrent && { bgcolor: currentHighlight }),
           }}
-        />
-      </ListItemButton>
-      <IconButton
-        className="layer-menu-btn"
-        size="small"
-        onClick={e => {
-          e.stopPropagation();
-          const rect = e.currentTarget.getBoundingClientRect();
-          setMenuPosition({ top: rect.bottom, left: rect.left });
-          setActiveMenuLayer(layer.key);
-        }}
-        sx={{
-          position: 'absolute',
-          right: 0,
-          top: '50%',
-          transform: 'translateY(-50%)',
-          opacity: 0,
-          transition: 'opacity 0.1s',
-          color: 'action.disabled',
-          p: '4px',
-          '&:hover': { color: 'action.active' },
-        }}
-      >
-        <MoreVertIcon fontSize="small" />
-      </IconButton>
-    </Box>
-  );
+        >
+          <ListItemText
+            primary={formatLayerLabel(layer.key, layer.value)}
+            primaryTypographyProps={{
+              noWrap: true,
+              sx: { fontFamily: '"JetBrains Mono", monospace' },
+            }}
+          />
+        </ListItemButton>
+        <IconButton
+          className="layer-menu-btn"
+          size="small"
+          onClick={e => {
+            e.stopPropagation();
+            const rect = e.currentTarget.getBoundingClientRect();
+            setMenuPosition({ top: rect.bottom, left: rect.left });
+            setActiveMenuLayer(layer.key);
+          }}
+          sx={{
+            position: 'absolute',
+            right: 0,
+            top: '50%',
+            transform: 'translateY(-50%)',
+            opacity: 0,
+            transition: 'opacity 0.1s',
+            color: 'action.disabled',
+            p: '4px',
+            '&:hover': { color: 'action.active' },
+          }}
+        >
+          <MoreVertIcon fontSize="small" />
+        </IconButton>
+      </Box>
+    );
+  };
 
   const longestLabel = layers.reduce((acc, l) => {
     const label = formatLayerLabel(l.key, l.value);
@@ -173,7 +192,7 @@ const LayerList = ({ layers = [], selected, onSelect, onDelete, onError }) => {
         </ListItemButton>
       </Box>
       <EntryList
-        title="Layers"
+        title={`Layers${query ? ` (${counts?.layers || 0})` : ''}`}
         items={layers}
         renderRow={renderRow}
         header={header}

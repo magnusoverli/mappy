@@ -2,6 +2,7 @@ import { Box, Container, Snackbar, Typography } from '@mui/material';
 import LayerPanel from './components/Editor/LayerPanel.jsx';
 import LayerPathRow from './components/Editor/LayerPathRow.jsx';
 import Header from './components/Layout/Header.jsx';
+import { SearchProvider } from './hooks/useSearch.jsx';
 import useMappingEditor from './hooks/useMappingEditor.js';
 
 export default function App({ mode, toggleMode }) {
@@ -26,16 +27,23 @@ export default function App({ mode, toggleMode }) {
   } = useMappingEditor();
 
   return (
-    <Box sx={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
-      <Header
-        mode={mode}
-        toggleMode={toggleMode}
-        iniData={iniData}
-        onFileSelect={handleFileChange}
-        onDownload={download}
-        onReset={reset}
-        loading={loading}
-      />
+    <SearchProvider
+      layers={layers}
+      targets={targets}
+      sources={sources}
+      selectedLayer={selectedLayer}
+      setSelectedLayer={setSelectedLayer}
+    >
+      <Box sx={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
+        <Header
+          mode={mode}
+          toggleMode={toggleMode}
+          iniData={iniData}
+          onFileSelect={handleFileChange}
+          onDownload={download}
+          onReset={reset}
+          loading={loading}
+        />
       {iniData ? (
         <Container
           maxWidth={false}
@@ -85,5 +93,6 @@ export default function App({ mode, toggleMode }) {
         anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
       />
     </Box>
+    </SearchProvider>
   );
 }
