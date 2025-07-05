@@ -1,5 +1,6 @@
 import { Box, ListItemButton, ListItemText, Paper, Typography } from '@mui/material';
 import { memo } from 'react';
+import VirtualizedList from '../Common/VirtualizedList.jsx';
 import { formatLayerLabel } from '../../utils/formatLayerLabel.js';
 
 const LayerTabs = ({ layers, selected, onSelect, onAdd }) => {
@@ -30,25 +31,30 @@ const LayerTabs = ({ layers, selected, onSelect, onAdd }) => {
         <Typography variant="subtitle1" sx={{ mb: 1 }}>
           Layers
         </Typography>
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
-          {layers.map(layer => (
-            <Paper
-              key={layer.key}
-              elevation={layer.key === selected ? 2 : 1}
-              sx={{ '&:hover': { boxShadow: 3 } }}
-            >
-              <ListItemButton
-                selected={layer.key === selected}
-                onClick={() => onSelect(layer.key)}
-                sx={{ '&.Mui-selected': { bgcolor: 'action.selected' } }}
-              >
-                <ListItemText
-                  primary={formatLayerLabel(layer.key, layer.value)}
-                  primaryTypographyProps={{ noWrap: true, sx: { fontFamily: '"JetBrains Mono", monospace' } }}
-                />
-              </ListItemButton>
-            </Paper>
-          ))}
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5, flex: 1, minHeight: 0 }}>
+          <VirtualizedList
+            items={layers}
+            itemHeight={48}
+            renderRow={(layer, _i, style) => (
+              <Box style={style} key={layer.key}>
+                <Paper
+                  elevation={layer.key === selected ? 2 : 1}
+                  sx={{ '&:hover': { boxShadow: 3 } }}
+                >
+                  <ListItemButton
+                    selected={layer.key === selected}
+                    onClick={() => onSelect(layer.key)}
+                    sx={{ '&.Mui-selected': { bgcolor: 'action.selected' } }}
+                  >
+                    <ListItemText
+                      primary={formatLayerLabel(layer.key, layer.value)}
+                      primaryTypographyProps={{ noWrap: true, sx: { fontFamily: '"JetBrains Mono", monospace' } }}
+                    />
+                  </ListItemButton>
+                </Paper>
+              </Box>
+            )}
+          />
           <Paper elevation={1}>
             <ListItemButton onClick={onAdd} sx={{ justifyContent: 'center' }}>
               <ListItemText
