@@ -10,6 +10,10 @@ export function updateLayer(data, index, newKey, newValue) {
   if (!data.Layers) data.Layers = {};
   if (oldKey && oldKey !== newKey) {
     delete data.Layers[oldKey];
+    if (Array.isArray(data.__layerOrder)) {
+      const i = data.__layerOrder.indexOf(oldKey);
+      if (i !== -1) data.__layerOrder[i] = newKey;
+    }
   }
   data.Layers[newKey] = newValue;
 }
@@ -18,6 +22,11 @@ export function addLayer(data) {
   if (!data.Layers) data.Layers = {};
   const newKey = findNextKey(data);
   data.Layers[newKey] = '';
+  if (Array.isArray(data.__layerOrder)) {
+    data.__layerOrder.push(newKey);
+  } else {
+    data.__layerOrder = [newKey];
+  }
   return newKey;
 }
 
@@ -31,5 +40,9 @@ function findNextKey(data) {
 export function removeLayer(data, key) {
   if (data.Layers) {
     delete data.Layers[key];
+  }
+  if (Array.isArray(data.__layerOrder)) {
+    const idx = data.__layerOrder.indexOf(key);
+    if (idx !== -1) data.__layerOrder.splice(idx, 1);
   }
 }

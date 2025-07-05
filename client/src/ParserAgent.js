@@ -1,12 +1,46 @@
 import ini from 'ini';
 
 export function parseIni(text) {
-  return ini.parse(text);
+  const data = ini.parse(text);
+  const lines = text.split(/\r?\n/);
+  let inLayers = false;
+  const order = [];
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (trimmed === '[Layers]') {
+      inLayers = true;
+      continue;
+    }
+    if (inLayers && trimmed.startsWith('[')) {
+      break;
+    }
+    if (inLayers && /^\d{2}\s*=/.test(line)) {
+      const [key] = line.split('=');
+      order.push(key.trim());
+    }
+  }
+  data.__layerOrder = order;
+  return data;
 }
 
 export function stringifyIni(data, newline = '\n') {
-  const text = ini.stringify(data, { whitespace: true });
+  const dataCopy = { ...data };
+  delete dataCopy.__layerOrder;
+  const text = ini.stringify(dataCopy, { whitespace: true });
   const lines = text.split(/\r?\n/);
+  const layerOrder = Array.isArray(data.__layerOrder) ? data.__layerOrder : [];
+  const layerStart = lines.findIndex(l => l.trim() === '[Layers]');
+  if (layerStart !== -1) {
+    let end = layerStart + 1;
+    while (end < lines.length && !lines[end].startsWith('[')) {
+      end += 1;
+    }
+    const remainingKeys = Object.keys(data.Layers || {}).filter(k => !layerOrder.includes(k));
+    remainingKeys.sort((a, b) => parseInt(a, 10) - parseInt(b, 10));
+    const orderedKeys = [...layerOrder, ...remainingKeys];
+    const newLines = orderedKeys.map(k => `${k} = ${data.Layers[k] ?? ''}`);
+    lines.splice(layerStart + 1, end - layerStart - 1, ...newLines);
+  }
   let inLayers = false;
   let inInternal = false;
   for (let i = 0; i < lines.length; i++) {
