@@ -99,7 +99,12 @@ export default function EntryEditModal({
   const valRegex = /^[0-9A-Fa-f]{8}$/;
 
   return (
-    <Dialog fullScreen open={open} onClose={onClose}>
+    <Dialog
+      fullScreen
+      open={open}
+      onClose={onClose}
+      PaperProps={{ sx: { display: 'flex', flexDirection: 'column' } }}
+    >
       <AppBar sx={{ position: 'relative' }}>
         <Toolbar>
           <Typography sx={{ flex: 1 }} variant="h6" component="div">
@@ -110,7 +115,7 @@ export default function EntryEditModal({
           </IconButton>
         </Toolbar>
       </AppBar>
-      <Box sx={{ display: 'flex', height: '100%' }}>
+      <Box sx={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
         <Box sx={{ flex: 1, p: 2, overflow: 'auto' }}>
           <Box sx={{ display: 'flex', fontWeight: 'bold', mb: 1, fontFamily: '"JetBrains Mono", monospace' }}>
             <Box sx={{ width: '40%' }}>Key</Box>
