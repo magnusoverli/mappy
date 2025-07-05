@@ -1,9 +1,42 @@
 import { Box, ListItemButton, ListItemText, Paper, Typography } from '@mui/material';
-import { memo } from 'react';
+import { memo, useEffect, useState } from 'react';
 import VirtualizedList from '../Common/VirtualizedList.jsx';
 import { formatLayerLabel } from '../../utils/formatLayerLabel.js';
 
 const LayerTabs = ({ layers, selected, onSelect, onAdd }) => {
+  const [tabsWidth, setTabsWidth] = useState('max-content');
+
+  useEffect(() => {
+    if (!layers || layers.length === 0) {
+      setTabsWidth('max-content');
+      return;
+    }
+
+    const measure = () => {
+      const span = document.createElement('span');
+      span.style.visibility = 'hidden';
+      span.style.position = 'absolute';
+      span.style.whiteSpace = 'nowrap';
+      span.style.fontFamily = '"JetBrains Mono", monospace';
+      span.style.fontSize = '16px';
+      document.body.appendChild(span);
+
+      let max = 0;
+      for (const l of layers) {
+        span.textContent = formatLayerLabel(l.key, l.value);
+        max = Math.max(max, span.offsetWidth);
+      }
+      document.body.removeChild(span);
+      setTabsWidth(`${max + 32}px`);
+    };
+
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(measure);
+    } else {
+      measure();
+    }
+  }, [layers]);
+
   if (!layers || layers.length === 0) return null;
 
   return (
@@ -14,7 +47,7 @@ const LayerTabs = ({ layers, selected, onSelect, onAdd }) => {
         flexDirection: 'column',
         gap: 2,
         pr: 2,
-        width: 'max-content',
+        width: tabsWidth,
       }}
     >
       <Paper
