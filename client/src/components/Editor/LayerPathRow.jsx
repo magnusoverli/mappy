@@ -1,5 +1,4 @@
 import { Paper, Box, Typography, TextField, Button } from '@mui/material';
-import AddIcon from '@mui/icons-material/Add';
 import { memo } from 'react';
 
 const LayerPathRow = ({ layer, onPathChange, onAdd }) => {
@@ -20,8 +19,8 @@ const LayerPathRow = ({ layer, onPathChange, onAdd }) => {
         {onAdd && (
           <Button
             variant="contained"
-            startIcon={<AddIcon />}
             onClick={onAdd}
+            sx={{ whiteSpace: 'nowrap' }}
           >
             Add Layer
           </Button>
