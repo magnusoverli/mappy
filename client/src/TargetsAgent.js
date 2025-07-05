@@ -11,3 +11,10 @@ export function groupTargetsByLayer(data) {
   });
   return result;
 }
+
+export function removeLayerTargets(data, layer) {
+  if (!data.Targets) return;
+  Object.keys(data.Targets).forEach(key => {
+    if (key.startsWith(`${layer}.`)) delete data.Targets[key];
+  });
+}

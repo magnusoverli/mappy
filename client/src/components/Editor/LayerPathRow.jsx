@@ -1,7 +1,8 @@
 import { Paper, Box, Typography, TextField, Button } from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
 import { memo } from 'react';
 
-const LayerPathRow = ({ layer, onPathChange, onRemove }) => {
+const LayerPathRow = ({ layer, onPathChange, onAdd }) => {
   if (!layer) return null;
   return (
     <Paper sx={{ p: 2, borderRadius: 2, boxShadow: 1, width: '100%' }}>
@@ -16,9 +17,13 @@ const LayerPathRow = ({ layer, onPathChange, onRemove }) => {
           onChange={e => onPathChange(layer.key, e.target.value)}
           label="Path"
         />
-        {onRemove && (
-          <Button color="error" onClick={() => onRemove(layer.key)}>
-            Delete
+        {onAdd && (
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={onAdd}
+          >
+            Add Layer
           </Button>
         )}
       </Box>
