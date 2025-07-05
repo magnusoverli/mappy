@@ -12,7 +12,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useEffect, useState } from 'react';
-import { useTheme } from '@mui/material/styles';
+import useHighlightColors from '../../utils/useHighlightColors.js';
 import { useSearch } from '../../hooks/useSearch.jsx';
 import AppToolbar from '../Layout/AppToolbar.jsx';
 import SearchField from '../Common/SearchField.jsx';
@@ -100,20 +100,14 @@ export default function EntryEditModal({
   const keyRegex = /^\d{2}\.\d{4}$/;
   const valRegex = /^[0-9A-Fa-f]{8}$/;
   const { query, matchSet, currentResult } = useSearch() || {};
-  const theme = useTheme();
-  const highlight = theme.palette.mode === 'light'
-    ? 'rgba(255, 245, 157, 0.3)'
-    : 'rgba(249, 168, 37, 0.15)';
-  const currentHighlight = theme.palette.mode === 'light'
-    ? 'rgba(255, 245, 157, 0.8)'
-    : 'rgba(249, 168, 37, 0.45)';
+  const { highlight, currentHighlight } = useHighlightColors();
 
   return (
     <Dialog
         fullScreen
         open={open}
         onClose={onClose}
-        PaperProps={{ sx: { display: 'flex', flexDirection: 'column' } }}
+        PaperProps={{ sx: { display: 'flex', flexDirection: 'column', bgcolor: 'background.default' } }}
       >
         <AppToolbar position="relative">
           <Typography
@@ -157,6 +151,7 @@ export default function EntryEditModal({
                   py: 0.5,
                   bgcolor: selected.includes(i) ? 'action.selected' : undefined,
                   transition: 'background-color 0.3s',
+                  '&:hover': { bgcolor: 'action.hover' },
                   ...(isMatch && { bgcolor: highlight }),
                   ...(query && !isMatch && { opacity: 0.7 }),
                   ...(isCurrent && { bgcolor: currentHighlight }),

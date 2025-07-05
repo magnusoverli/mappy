@@ -16,7 +16,7 @@ import {
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { memo, useLayoutEffect, useRef, useState } from 'react';
-import { useTheme } from '@mui/material/styles';
+import useHighlightColors from '../../utils/useHighlightColors.js';
 import { useSearch } from '../../hooks/useSearch.jsx';
 import EntryList from '../Common/EntryList.jsx';
 import { formatLayerLabel } from '../../utils/formatLayerLabel.js';
@@ -30,13 +30,7 @@ const LayerList = ({ layers = [], selected, onSelect, onDelete, onError }) => {
   const [confirmLayer, setConfirmLayer] = useState(null);
 
   const { query, matchSet, currentResult, counts } = useSearch() || {};
-  const theme = useTheme();
-  const highlight = theme.palette.mode === 'light'
-    ? 'rgba(255, 245, 157, 0.3)'
-    : 'rgba(249, 168, 37, 0.15)';
-  const currentHighlight = theme.palette.mode === 'light'
-    ? 'rgba(255, 245, 157, 0.8)'
-    : 'rgba(249, 168, 37, 0.45)';
+  const { highlight, currentHighlight } = useHighlightColors();
 
   const renderRow = (layer, _i, style) => {
     const isMatch = matchSet?.has(layer.key);
