@@ -24,7 +24,23 @@ export function parseIni(text) {
 }
 
 export function stringifyIni(data, newline = '\n') {
-  const dataCopy = { ...data };
+  const sortSection = section =>
+    Object.fromEntries(
+      Object.entries(section || {}).sort((a, b) => {
+        const [la, ia] = a[0].split('.');
+        const [lb, ib] = b[0].split('.');
+        const layerDiff = parseInt(la, 10) - parseInt(lb, 10);
+        return layerDiff !== 0
+          ? layerDiff
+          : parseInt(ia, 10) - parseInt(ib, 10);
+      })
+    );
+
+  const dataCopy = {
+    ...data,
+    Targets: sortSection(data.Targets),
+    Sources: sortSection(data.Sources),
+  };
   delete dataCopy.__layerOrder;
   const text = ini.stringify(dataCopy, { whitespace: true });
   const lines = text.split(/\r?\n/);
