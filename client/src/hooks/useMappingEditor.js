@@ -124,6 +124,32 @@ export default function useMappingEditor() {
     setSelectedLayer(nextKey);
   }, [iniData, layers]);
 
+  const handleSaveTargets = useCallback((entries) => {
+    const dataCopy = {
+      ...iniData,
+      Targets: { ...iniData.Targets }
+    };
+    removeLayerTargets(dataCopy, selectedLayer);
+    entries.forEach(e => {
+      dataCopy.Targets[e.key] = e.value;
+    });
+    setIniData(dataCopy);
+    setTargets(groupTargetsByLayer(dataCopy));
+  }, [iniData, selectedLayer]);
+
+  const handleSaveSources = useCallback((entries) => {
+    const dataCopy = {
+      ...iniData,
+      Sources: { ...iniData.Sources }
+    };
+    removeLayerSources(dataCopy, selectedLayer);
+    entries.forEach(e => {
+      dataCopy.Sources[e.key] = e.value;
+    });
+    setIniData(dataCopy);
+    setSources(groupSourcesByLayer(dataCopy));
+  }, [iniData, selectedLayer]);
+
   const reset = useCallback(() => {
     setIniData(null);
     setLayers([]);
@@ -153,6 +179,8 @@ export default function useMappingEditor() {
     handlePathChange,
     handleAddLayer,
     handleRemoveLayer,
+    handleSaveTargets,
+    handleSaveSources,
     reset,
   };
 }

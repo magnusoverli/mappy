@@ -14,11 +14,12 @@
     "@emotion/styled": "^11.14.1",
     "@mui/icons-material": "^7.2.0",
     "@mui/material": "^7.2.0",
+    "@mui/x-data-grid": "^8.7.0",
     "ini": "^5.0.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
-    "react-window": "^1.8.8",
-    "react-virtualized-auto-sizer": "^1.0.7"
+    "react-virtualized-auto-sizer": "^1.0.7",
+    "react-window": "^1.8.8"
   },
   "devDependencies": {
     "@eslint/js": "^9.29.0",
