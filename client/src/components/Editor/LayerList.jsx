@@ -30,8 +30,22 @@ const LayerList = ({ layers = [], selected, onSelect, onAdd }) => {
     </Box>
   );
 
+  const maxLabelLength = layers.reduce(
+    (max, l) => Math.max(max, formatLayerLabel(l.key, l.value).length),
+    0,
+  );
+
+  const width = `calc(${maxLabelLength}ch + 2rem)`;
+
   return (
-    <EntryList title="Layers" items={layers} renderRow={renderRow} header={header} footer={footer} />
+    <EntryList
+      title="Layers"
+      items={layers}
+      renderRow={renderRow}
+      header={header}
+      footer={footer}
+      paperProps={{ sx: { flex: '0 0 auto', width } }}
+    />
   );
 };
 
