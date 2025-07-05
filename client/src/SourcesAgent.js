@@ -11,3 +11,10 @@ export function groupSourcesByLayer(data) {
   });
   return result;
 }
+
+export function removeLayerSources(data, layer) {
+  if (!data.Sources) return;
+  Object.keys(data.Sources).forEach(key => {
+    if (key.startsWith(`${layer}.`)) delete data.Sources[key];
+  });
+}
