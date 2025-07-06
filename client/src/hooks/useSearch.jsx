@@ -1,7 +1,7 @@
 /* eslint react-refresh/only-export-components: off */
 import { createContext, useContext, useState, useMemo, useEffect } from 'react';
 
-function buildSearchIndex({ layers = [], targets = {}, sources = {} }) {
+export function buildSearchIndex({ layers = [], targets = {}, sources = {} }) {
   const index = [];
   layers.forEach(l => {
     index.push({
@@ -43,13 +43,15 @@ export function SearchProvider({
   layers,
   targets,
   sources,
+  index: customIndex,
   selectedLayer,
   setSelectedLayer,
   children,
 }) {
   const index = useMemo(
-    () => buildSearchIndex({ layers, targets, sources }),
-    [layers, targets, sources]
+    () =>
+      customIndex || buildSearchIndex({ layers, targets, sources }),
+    [customIndex, layers, targets, sources]
   );
 
   const [query, setQuery] = useState('');

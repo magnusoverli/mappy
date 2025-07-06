@@ -24,9 +24,9 @@ import {
   Collapse,
   Tooltip,
 } from '@mui/material';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import useHighlightColors from '../../utils/useHighlightColors.js';
-import { useSearch } from '../../hooks/useSearch.jsx';
+import { SearchProvider, useSearch } from '../../hooks/useSearch.jsx';
 import AppToolbar from '../Layout/AppToolbar.jsx';
 import SearchField from '../Common/SearchField.jsx';
 
@@ -225,15 +225,34 @@ export default function EntryEditModal({
 
   const keyRegex = /^\d{2}\.\d{4}$/;
   const valRegex = /^[0-9A-Fa-f]{8}$/;
-  const { query, matchSet, currentResult } = useSearch() || {};
-  const { highlight, currentHighlight } = useHighlightColors();
+  const searchIndex = useMemo(
+    () =>
+      rows.map(r => ({
+        type: type.toLowerCase(),
+        key: r.key,
+        value: r.value,
+        layerKey,
+        text: `${r.key} ${r.value}`,
+      })),
+    [rows, type, layerKey]
+  );
 
-  return (
-    <Dialog
+  const ModalContent = () => {
+    const { query, matchSet, currentResult } = useSearch() || {};
+    const { highlight, currentHighlight } = useHighlightColors();
+
+    return (
+      <Dialog
         fullScreen
         open={open}
         onClose={onClose}
-        PaperProps={{ sx: { display: 'flex', flexDirection: 'column', bgcolor: 'background.default' } }}
+        PaperProps={{
+          sx: {
+            display: 'flex',
+            flexDirection: 'column',
+            bgcolor: 'background.default',
+          },
+        }}
       >
         <AppToolbar position="relative">
           <Typography
@@ -536,6 +555,13 @@ export default function EntryEditModal({
           Save
         </Button>
       </DialogActions>
-    </Dialog>
+      </Dialog>
+    );
+  };
+
+  return (
+    <SearchProvider index={searchIndex} selectedLayer={layerKey}>
+      <ModalContent />
+    </SearchProvider>
   );
 }
