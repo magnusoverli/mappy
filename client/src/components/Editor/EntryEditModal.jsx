@@ -437,10 +437,10 @@ function EntryEditModal({
                     value={transformType}
                     onChange={e => setTransformType(e.target.value)}
                   >
+                    <MenuItem value="shift">Shift Keys Up/Down</MenuItem>
                     <MenuItem value="adjust">Shift Values Up/Down</MenuItem>
                     <MenuItem value="sequential">Number Values in Order</MenuItem>
                     <MenuItem value="fixed">Set Same Value for All</MenuItem>
-                    <MenuItem value="shift">Shift Keys Up/Down</MenuItem>
                   </Select>
                 </FormControl>
                 <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5 }}>
