@@ -296,7 +296,20 @@ export function SearchProvider({
       prevData.current = currentData;
       isInitialized.current = true;
     } else {
-      // Incremental update
+      // Check if this is a reset (all data is empty)
+      // This optimization prevents expensive change detection when clearing all data
+      const isReset = layers.length === 0 && 
+                      Object.keys(targets).length === 0 && 
+                      Object.keys(sources).length === 0;
+      
+      if (isReset) {
+        // Fast path for reset - just clear the index without expensive change detection
+        setIndex([]);
+        prevData.current = currentData;
+        return;
+      }
+      
+      // Incremental update for normal changes
       const changes = detectChanges(prevData.current, currentData);
       if (changes.hasChanges) {
         setIndex(prevIndex => applyIncrementalChanges(prevIndex, changes));
