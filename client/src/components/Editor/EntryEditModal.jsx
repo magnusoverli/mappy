@@ -7,6 +7,11 @@ import {
   TextField,
   DialogActions,
   Paper,
+  Table,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import AddIcon from '@mui/icons-material/Add';
@@ -335,7 +340,7 @@ function EntryEditModal({
             renderRow={renderRow}
           />
         </Box>
-        <Box sx={{ width: 300, borderLeft: 1, borderColor: 'divider', p: 2, display: 'flex', flexDirection: 'column', gap: 2 }}>
+        <Box sx={{ width: 400, borderLeft: 1, borderColor: 'divider', p: 2, display: 'flex', flexDirection: 'column', gap: 2 }}>
           <Typography variant="subtitle1">Add Entries</Typography>
           <TextField
             label="Quantity"
@@ -501,24 +506,38 @@ function EntryEditModal({
 
                 {selected.length >= 2 && (
                   <Box sx={{ mt: 1 }}>
-                    {generatePreview().map((p, idx) => (
-                      <Typography
-                        key={idx}
-                        sx={{
-                          fontFamily: '"JetBrains Mono", monospace',
-                          color:
-                            p.newOffset < p.oldOffset
-                              ? 'success.main'
-                              : p.newOffset > p.oldOffset
-                                ? 'warning.main'
-                                : undefined,
-                        }}
-                      >
-                        {`${p.key}: ${p.oldValue} → ${p.newValue} (offset ${p.oldOffset} → ${p.newOffset})`}
-                      </Typography>
-                    ))}
+                    <Table size="small" sx={{ fontFamily: '"JetBrains Mono", monospace', '& td, & th': { borderColor: 'divider' } }}>
+                      <TableHead>
+                        <TableRow>
+                          <TableCell>Key</TableCell>
+                          <TableCell>Value Change</TableCell>
+                          <TableCell align="right">Offset</TableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {generatePreview().map((p, idx) => (
+                          <TableRow key={idx}>
+                            <TableCell>{p.key}</TableCell>
+                            <TableCell>{`${p.oldValue} \u2192 ${p.newValue}`}</TableCell>
+                            <TableCell
+                              align="right"
+                              sx={{
+                                color:
+                                  p.newOffset < p.oldOffset
+                                    ? 'success.main'
+                                    : p.newOffset > p.oldOffset
+                                      ? 'warning.main'
+                                      : undefined,
+                              }}
+                            >
+                              {`${p.oldOffset} \u2192 ${p.newOffset}`}
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
                     {selected.length > 5 && (
-                      <Typography variant="body2" color="text.secondary">
+                      <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
                         {`... and ${selected.length - 5} more entries`}
                       </Typography>
                     )}
