@@ -1,5 +1,14 @@
 # Reset Button Freeze Fix Plan
 
+## Plan Metadata
+- **Status**: Not Started
+- **Priority**: High
+- **Effort**: 30 minutes
+- **Created**: 2025-07-06
+- **Last Updated**: 2025-07-06
+- **Assignee**: @opencode
+- **Type**: Bug Fix
+
 ## Current State Analysis
 
 ### Issue Description

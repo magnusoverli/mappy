@@ -83,3 +83,28 @@ Mappy uses an **Agent Pattern** where each agent encapsulates a single responsib
 - Reassess priorities based on project needs
 - Break down large plans into smaller, actionable tasks
 - Ensure all plans remain relevant and up-to-date
+
+### **Plan Synchronization and Consistency**
+- **Always run validation** after making plan changes: `./scripts/validate-plans.sh`
+- **Auto-archive completed plans**: `./scripts/sync-plans.sh auto-archive`
+- **Check consistency regularly**: `./scripts/sync-plans.sh check-consistency`
+- **Update both plan file AND TODO.md** when changing status
+- **Required metadata format** for all plans:
+  ```markdown
+  ## Plan Metadata
+  - **Status**: [Not Started/In Progress/Completed]
+  - **Priority**: [High/Medium/Low]
+  - **Effort**: [time estimate]
+  - **Created**: [YYYY-MM-DD]
+  - **Last Updated**: [YYYY-MM-DD]
+  - **Assignee**: @opencode
+  - **Type**: [Bug Fix/Feature/Enhancement/etc.]
+  ```
+
+### **Plan Lifecycle Management**
+1. **Create Plan**: Use templates in `/plans/templates/`
+2. **Add to TODO.md**: Include in Active Plans section with proper formatting
+3. **Update Status**: Modify both plan file and TODO.md simultaneously
+4. **Complete Plan**: Mark status as "Completed" in plan file
+5. **Archive Plan**: Run `./scripts/sync-plans.sh auto-archive` to move to `/plans/completed/`
+6. **Validate**: Always run `./scripts/validate-plans.sh` after changes

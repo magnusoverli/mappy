@@ -49,8 +49,8 @@ for plan_file in $plan_refs; do
     # Extract status from TODO.md for this plan
     todo_status=$(grep -A 10 "$plan_file" "$TODO_FILE" | grep "Status" | head -1 | sed 's/.*Status.*: *//' | sed 's/ (.*//')
     
-    # Extract status from plan file
-    plan_status=$(grep "Status.*:" "$plan_path" | head -1 | sed 's/.*Status.*: *//')
+    # Extract status from plan file (handle multiple formats)
+    plan_status=$(grep -E "(\*\*Status\*\*:|Status.*:)" "$plan_path" | head -1 | sed 's/.*Status.*: *//')
     
     if [[ -n "$todo_status" && -n "$plan_status" ]]; then
         if [[ "$todo_status" != "$plan_status" ]]; then
@@ -63,10 +63,10 @@ for plan_file in $plan_refs; do
         fi
     fi
     
-    # Check required fields in plan file
+    # Check required fields in plan file (handle multiple formats)
     required_fields=("Status" "Priority" "Effort" "Created" "Last Updated")
     for field in "${required_fields[@]}"; do
-        if ! grep -q "**$field**:" "$plan_path"; then
+        if ! grep -q -E "(\*\*$field\*\*:|$field.*:)" "$plan_path"; then
             echo -e "${RED}❌ Missing required field '$field' in $plan_file${NC}"
             ((validation_errors++))
         fi
@@ -79,12 +79,31 @@ echo "🔍 Checking for orphaned plan files..."
 for plan_file in "$PLANS_DIR"/*.md; do
     if [[ -f "$plan_file" ]]; then
         filename=$(basename "$plan_file")
-        if [[ "$filename" != "search-optimization.md" ]] && ! grep -q "$filename" "$TODO_FILE"; then
+        # Skip template files
+        if [[ "$filename" == *"-template.md" ]]; then
+            continue
+        fi
+        if ! grep -q "$filename" "$TODO_FILE"; then
             echo -e "${YELLOW}⚠️  Plan file not referenced in TODO.md: $filename${NC}"
             ((validation_errors++))
         fi
     fi
 done
+
+# Check for orphaned completed plans
+echo ""
+echo "🔍 Checking completed plans directory..."
+if [[ -d "$PLANS_DIR/completed" ]]; then
+    for plan_file in "$PLANS_DIR/completed"/*.md; do
+        if [[ -f "$plan_file" ]]; then
+            filename=$(basename "$plan_file")
+            if ! grep -q "completed/$filename" "$TODO_FILE"; then
+                echo -e "${YELLOW}⚠️  Completed plan file not referenced in TODO.md: completed/$filename${NC}"
+                ((validation_errors++))
+            fi
+        fi
+    done
+fi
 
 # Summary
 echo ""
