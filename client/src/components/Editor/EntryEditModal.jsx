@@ -251,7 +251,7 @@ function EntryEditModal({
   const canApply = () => {
     if (selected.length < 2) return false;
     if (changedCount === 0) return false;
-    if (transformType === 'fixed' && !/^[0-9A-F]{8}$/.test(fixedValue)) return false;
+    if (transformType === 'fixed' && !/^[0-9A-Fa-f]{8}$/.test(fixedValue)) return false;
     if (transformType === 'shift' && hasShiftConflict()) return false;
     return true;
   };
@@ -505,7 +505,7 @@ function EntryEditModal({
                       size="small"
                       inputProps={{ maxLength: 8 }}
                       helperText="8-digit hex value"
-                      error={!/^([0-9A-F]{8})?$/.test(fixedValue)}
+                      error={!/^([0-9A-Fa-f]{8})?$/.test(fixedValue)}
                       InputProps={{ sx: { fontFamily: '"JetBrains Mono", monospace' } }}
                     />
                     <Box sx={{ display: 'flex', gap: 1 }}>
