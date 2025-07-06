@@ -7,16 +7,10 @@ import {
   TextField,
   DialogActions,
   Paper,
-  Table,
-  TableHead,
-  TableRow,
-  TableCell,
-  TableBody,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
-import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import {
   FormControl,
   InputLabel,
@@ -27,7 +21,6 @@ import {
   Radio,
   Checkbox,
   Collapse,
-  Tooltip,
 } from '@mui/material';
 import { useEffect, useState, memo } from 'react';
 import useHighlightColors from '../../utils/useHighlightColors.js';
@@ -65,6 +58,13 @@ function EntryEditModal({
 
   const [shiftDir, setShiftDir] = useState('up');
   const [shiftAmount, setShiftAmount] = useState(1);
+
+  const helpTexts = {
+    adjust: 'Add or subtract the same amount from all selected values',
+    sequential: 'Renumber values in sequence (like 1, 2, 3...)',
+    fixed: 'Change all selected entries to exactly the same value',
+    shift: 'Move entry keys up or down in the list',
+  };
 
   useEffect(() => {
     if (open) {
@@ -181,13 +181,12 @@ function EntryEditModal({
   const generatePreview = () => {
     const updated = transformRows(rows);
     const preview = [];
-    selected.slice(0, 5).forEach(i => {
+    selected.slice(0, 2).forEach(i => {
       preview.push({
-        key: rows[i].key,
+        oldKey: rows[i].key,
+        newKey: updated[i].key,
         oldValue: rows[i].value,
         newValue: updated[i].value,
-        oldOffset: rows[i].offset,
-        newOffset: updated[i].offset,
       });
     });
     return preview;
@@ -379,11 +378,8 @@ function EntryEditModal({
             Delete Selected
           </Button>
           <Box sx={{ borderTop: 1, borderColor: 'divider', pt: 2 }}>
-            <Typography variant="subtitle1" sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+            <Typography variant="subtitle1">
               {`Transform Selected Entries (${selected.length} selected)`}
-              <Tooltip title="Apply batch transformations to selected entries">
-                <InfoOutlinedIcon fontSize="small" />
-              </Tooltip>
             </Typography>
             {selected.length < 2 ? (
               <Typography variant="body2" color="text.secondary">
@@ -392,18 +388,21 @@ function EntryEditModal({
             ) : (
               <Collapse in={selected.length >= 2}>
                 <FormControl fullWidth size="small" sx={{ mt: 1 }}>
-                  <InputLabel>Transformation Type</InputLabel>
+                  <InputLabel>What do you want to do?</InputLabel>
                   <Select
-                    label="Transformation Type"
+                    label="What do you want to do?"
                     value={transformType}
                     onChange={e => setTransformType(e.target.value)}
                   >
-                    <MenuItem value="adjust">Adjust Values - Add or subtract from hex values</MenuItem>
-                    <MenuItem value="sequential">Sequential Fill - Auto-number entries in sequence</MenuItem>
-                    <MenuItem value="fixed">Set Fixed Value - Apply same value to all selected</MenuItem>
-                    <MenuItem value="shift">Shift Keys - Renumber the key indices</MenuItem>
+                    <MenuItem value="adjust">Adjust All Values</MenuItem>
+                    <MenuItem value="sequential">Number Values in Order</MenuItem>
+                    <MenuItem value="fixed">Set Same Value for All</MenuItem>
+                    <MenuItem value="shift">Move Keys Up or Down</MenuItem>
                   </Select>
                 </FormControl>
+                <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5 }}>
+                  {helpTexts[transformType]}
+                </Typography>
 
                 {transformType === 'adjust' && (
                   <Box sx={{ mt: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
@@ -416,7 +415,7 @@ function EntryEditModal({
                       <FormControlLabel value="subtract" control={<Radio />} label="Subtract" />
                     </RadioGroup>
                     <TextField
-                      label="Amount"
+                      label={adjustMode === 'add' ? 'Amount to add' : 'Amount to subtract'}
                       type="number"
                       value={adjustAmount}
                       onChange={e => setAdjustAmount(parseInt(e.target.value, 10) || 0)}
@@ -434,7 +433,7 @@ function EntryEditModal({
                 {transformType === 'sequential' && (
                   <Box sx={{ mt: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
                     <TextField
-                      label="Starting Value"
+                      label="Start counting from"
                       type="number"
                       value={seqStart}
                       onChange={e => setSeqStart(parseInt(e.target.value, 10) || 0)}
@@ -443,7 +442,7 @@ function EntryEditModal({
                       InputProps={{ sx: { fontFamily: '"JetBrains Mono", monospace' } }}
                     />
                     <TextField
-                      label="Increment"
+                      label="Count by"
                       type="number"
                       value={seqIncrement}
                       onChange={e => setSeqIncrement(parseInt(e.target.value, 10) || 0)}
@@ -454,8 +453,8 @@ function EntryEditModal({
                     <FormControl fullWidth size="small">
                       <InputLabel>Order</InputLabel>
                       <Select label="Order" value={seqOrder} onChange={e => setSeqOrder(e.target.value)}>
-                        <MenuItem value="selection">By selection order</MenuItem>
-                        <MenuItem value="key">By key order</MenuItem>
+                        <MenuItem value="selection">Transform in selection order</MenuItem>
+                        <MenuItem value="key">Transform in key order</MenuItem>
                       </Select>
                     </FormControl>
                   </Box>
@@ -464,7 +463,7 @@ function EntryEditModal({
                 {transformType === 'fixed' && (
                   <Box sx={{ mt: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
                     <TextField
-                      label="Fixed Value"
+                      label="New value for all"
                       value={fixedValue}
                       onChange={e => setFixedValue(e.target.value.toUpperCase())}
                       size="small"
@@ -487,11 +486,11 @@ function EntryEditModal({
                       value={shiftDir}
                       onChange={e => setShiftDir(e.target.value)}
                     >
-                      <FormControlLabel value="up" control={<Radio />} label="Shift up" />
-                      <FormControlLabel value="down" control={<Radio />} label="Shift down" />
+                      <FormControlLabel value="up" control={<Radio />} label="↑ Move to higher keys" />
+                      <FormControlLabel value="down" control={<Radio />} label="↓ Move to lower keys" />
                     </RadioGroup>
                     <TextField
-                      label="Amount"
+                      label="Move by"
                       type="number"
                       value={shiftAmount}
                       onChange={e => setShiftAmount(parseInt(e.target.value, 10) || 0)}
@@ -505,43 +504,31 @@ function EntryEditModal({
                 )}
 
                 {selected.length >= 2 && (
-                  <Box sx={{ mt: 1 }}>
-                    <Table size="small" sx={{ fontFamily: '"JetBrains Mono", monospace', '& td, & th': { borderColor: 'divider' } }}>
-                      <TableHead>
-                        <TableRow>
-                          <TableCell>Key</TableCell>
-                          <TableCell>Value Change</TableCell>
-                          <TableCell align="right">Offset</TableCell>
-                        </TableRow>
-                      </TableHead>
-                      <TableBody>
-                        {generatePreview().map((p, idx) => (
-                          <TableRow key={idx}>
-                            <TableCell>{p.key}</TableCell>
-                            <TableCell>{`${p.oldValue} \u2192 ${p.newValue}`}</TableCell>
-                            <TableCell
-                              align="right"
-                              sx={{
-                                color:
-                                  p.newOffset < p.oldOffset
-                                    ? 'success.main'
-                                    : p.newOffset > p.oldOffset
-                                      ? 'warning.main'
-                                      : undefined,
-                              }}
-                            >
-                              {`${p.oldOffset} \u2192 ${p.newOffset}`}
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                    {selected.length > 5 && (
-                      <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
-                        {`... and ${selected.length - 5} more entries`}
+                  <Paper variant="outlined" sx={{ mt: 1, p: 1 }}>
+                    <Typography variant="subtitle2" sx={{ mb: 0.5 }}>
+                      What will happen:
+                    </Typography>
+                    {generatePreview().map((p, idx) => (
+                      <Box
+                        key={idx}
+                        sx={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          fontFamily: '"JetBrains Mono", monospace',
+                          mb: 0.5,
+                        }}
+                      >
+                        <Box sx={{ flex: 1 }}>{`${p.oldKey} = ${p.oldValue}`}</Box>
+                        <Box sx={{ mx: 1 }}>→</Box>
+                        <Box sx={{ flex: 1, color: 'primary.main' }}>{`${p.newKey} = ${p.newValue}`}</Box>
+                      </Box>
+                    ))}
+                    {selected.length > 2 && (
+                      <Typography variant="body2" color="text.secondary">
+                        {`...and ${selected.length - 2} more entries`}
                       </Typography>
                     )}
-                  </Box>
+                  </Paper>
                 )}
 
                 <Button
