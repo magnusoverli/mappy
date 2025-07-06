@@ -10,6 +10,7 @@ function buildSearchIndex({ layers = [], targets = {}, sources = {} }) {
       value: l.value,
       layerKey: l.key,
       text: `${l.key} ${l.value}`,
+      lowerText: `${l.key} ${l.value}`.toLowerCase(),
     });
   });
   Object.values(targets).forEach(arr => {
@@ -20,6 +21,7 @@ function buildSearchIndex({ layers = [], targets = {}, sources = {} }) {
         value: t.value,
         layerKey: t.key.split('.')[0],
         text: `${t.key} ${t.value}`,
+        lowerText: `${t.key} ${t.value}`.toLowerCase(),
       });
     });
   });
@@ -31,6 +33,7 @@ function buildSearchIndex({ layers = [], targets = {}, sources = {} }) {
         value: s.value,
         layerKey: s.key.split('.')[0],
         text: `${s.key} ${s.value}`,
+        lowerText: `${s.key} ${s.value}`.toLowerCase(),
       });
     });
   });
@@ -53,13 +56,19 @@ export function SearchProvider({
   );
 
   const [query, setQuery] = useState('');
+  const [debouncedQuery, setDebouncedQuery] = useState('');
   const [current, setCurrent] = useState(0);
 
+  useEffect(() => {
+    const id = setTimeout(() => setDebouncedQuery(query), 300);
+    return () => clearTimeout(id);
+  }, [query]);
+
   const results = useMemo(() => {
-    const q = query.trim().toLowerCase();
+    const q = debouncedQuery.trim().toLowerCase();
     if (!q) return [];
-    return index.filter(item => item.text.toLowerCase().includes(q));
-  }, [index, query]);
+    return index.filter(item => item.lowerText.includes(q));
+  }, [index, debouncedQuery]);
 
   const matchSet = useMemo(() => new Set(results.map(r => r.key)), [results]);
 

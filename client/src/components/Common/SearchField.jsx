@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, memo } from 'react';
 import {
   Box,
   IconButton,
@@ -13,7 +13,7 @@ import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import { useSearch } from '../../hooks/useSearch.jsx';
 
-export default function SearchField() {
+function SearchField() {
   const search = useSearch();
   const [open, setOpen] = useState(false);
 
@@ -76,3 +76,5 @@ export default function SearchField() {
     </ClickAwayListener>
   );
 }
+
+export default memo(SearchField);
