@@ -51,6 +51,12 @@
 - **Issue**: Reset button causes browser tab to freeze and become unresponsive
 - **Solution**: Added reset-specific optimization to bypass expensive change detection when clearing all data
 
+### ✅ File Upload Reset Bug (`/plans/completed/fileupload-reset-bug.md`)
+- **Priority**: High | **Assignee**: @opencode
+- **Status**: Completed
+- **Issue**: File input not triggering second onChange after reset
+- **Solution**: Clear the file input's value after file selection
+
 ---
 
 ## Quick Tasks

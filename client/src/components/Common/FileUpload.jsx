@@ -9,7 +9,7 @@ const FileUpload = ({ onFileSelect, id = 'file-input' }) => (
       accept=".ini"
       hidden
       id={id}
-      onChange={onFileSelect}
+      onChange={(e) => { onFileSelect(e); e.target.value = ''; }}
     />
   </Button>
 );
