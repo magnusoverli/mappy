@@ -59,6 +59,7 @@ function EntryEditModal({
   const [shiftAmount, setShiftAmount] = useState(1);
 
   const [preview, setPreview] = useState([]);
+  const [changedCount, setChangedCount] = useState(0);
 
   const dialogRef = useRef(null);
 
@@ -210,15 +211,23 @@ function EntryEditModal({
   useEffect(() => {
     const updated = transformRows(rows);
     const pv = [];
-    selected.slice(0, 10).forEach(i => {
-      pv.push({
-        oldKey: rows[i].key,
-        newKey: updated[i].key,
-        oldValue: rows[i].value,
-        newValue: updated[i].value,
-      });
+    let count = 0;
+    selected.forEach(i => {
+      const changed = rows[i].key !== updated[i].key || rows[i].value !== updated[i].value;
+      if (changed) {
+        count += 1;
+        if (pv.length < 10) {
+          pv.push({
+            oldKey: rows[i].key,
+            newKey: updated[i].key,
+            oldValue: rows[i].value,
+            newValue: updated[i].value,
+          });
+        }
+      }
     });
     setPreview(pv);
+    setChangedCount(count);
   }, [rows, selected, transformType, adjustMode, adjustAmount, skipZero, seqStart, seqIncrement, fixedValue, shiftDir, shiftAmount, transformRows]);
 
   const hasShiftConflict = () => {
@@ -241,6 +250,7 @@ function EntryEditModal({
 
   const canApply = () => {
     if (selected.length < 2) return false;
+    if (changedCount === 0) return false;
     if (transformType === 'fixed' && !/^[0-9A-F]{8}$/.test(fixedValue)) return false;
     if (transformType === 'shift' && hasShiftConflict()) return false;
     return true;
@@ -548,9 +558,9 @@ function EntryEditModal({
                         <Box sx={{ flex: 1, color: 'primary.main' }}>{`${p.newKey} = ${p.newValue}`}</Box>
                       </Box>
                     ))}
-                    {selected.length > 10 && (
+                    {changedCount - preview.length > 0 && (
                       <Typography variant="body2" color="text.secondary">
-                        {`...and ${selected.length - 10} more entries`}
+                        {`...and ${changedCount - preview.length} more entries`}
                       </Typography>
                     )}
                   </Paper>
@@ -562,7 +572,7 @@ function EntryEditModal({
                   disabled={!canApply()}
                   onClick={applyTransform}
                 >
-                  {`Apply to ${selected.length} entries`}
+                  {`Apply to ${changedCount} entries`}
                 </Button>
               </Collapse>
             )}
