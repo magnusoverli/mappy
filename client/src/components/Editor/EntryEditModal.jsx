@@ -59,6 +59,7 @@ function EntryEditModal({
   const [shiftAmount, setShiftAmount] = useState(1);
 
   const [preview, setPreview] = useState([]);
+  const [changedCount, setChangedCount] = useState(0);
 
   const dialogRef = useRef(null);
 
@@ -71,7 +72,7 @@ function EntryEditModal({
 
   useEffect(() => {
     if (open) {
-      const mapped = entries.map(e => ({ ...e }));
+      const mapped = entries.map(e => ({ ...e, value: e.value.toLowerCase() }));
       setRows(mapped);
       const last = mapped[mapped.length - 1];
       const startIdx = last ? parseInt(last.key.split('.')[1], 10) + 1 : 0;
@@ -126,7 +127,7 @@ function EntryEditModal({
 
   const handleCellChange = (index, field, value) => {
     const newRows = rows.slice();
-    newRows[index][field] = value.toUpperCase();
+    newRows[index][field] = value.toLowerCase();
     const dec = parseInt(newRows[index].key.split('.')[1], 10);
     const hex = parseInt(newRows[index].value, 16);
     newRows[index].offset = dec - (isNaN(hex) ? 0 : hex);
@@ -146,7 +147,7 @@ function EntryEditModal({
       const key = `${layerKey}.${String(decIndex).padStart(4, '0')}`;
       const val = (decIndex - batchOffset)
         .toString(16)
-        .toUpperCase()
+        .toLowerCase()
         .padStart(8, '0');
       newRows.push({ key, value: val, offset: batchOffset });
     }
@@ -165,7 +166,7 @@ function EntryEditModal({
         const val = parseInt(row.value, 16) || 0;
         const amt = parseInt(adjustAmount, 10) || 0;
         const newVal = adjustMode === 'add' ? val + amt : val - amt;
-        row.value = (newVal >>> 0).toString(16).toUpperCase().padStart(8, '0');
+        row.value = (newVal >>> 0).toString(16).toLowerCase().padStart(8, '0');
         const dec = parseInt(row.key.split('.')[1], 10);
         row.offset = dec - newVal;
       });
@@ -176,7 +177,7 @@ function EntryEditModal({
         parseInt(updated[b].key.split('.')[1], 10));
       order.forEach(i => {
         const row = updated[i];
-        row.value = (current >>> 0).toString(16).toUpperCase().padStart(8, '0');
+        row.value = (current >>> 0).toString(16).toLowerCase().padStart(8, '0');
         const dec = parseInt(row.key.split('.')[1], 10);
         row.offset = dec - current;
         current += parseInt(seqIncrement, 10) || 0;
@@ -186,7 +187,7 @@ function EntryEditModal({
         const val = parseInt(fixedValue, 16);
         sel.forEach(i => {
           const row = updated[i];
-          row.value = fixedValue.toUpperCase();
+          row.value = fixedValue.toLowerCase();
           const dec = parseInt(row.key.split('.')[1], 10);
           row.offset = dec - val;
         });
@@ -210,15 +211,23 @@ function EntryEditModal({
   useEffect(() => {
     const updated = transformRows(rows);
     const pv = [];
-    selected.slice(0, 10).forEach(i => {
-      pv.push({
-        oldKey: rows[i].key,
-        newKey: updated[i].key,
-        oldValue: rows[i].value,
-        newValue: updated[i].value,
-      });
+    let count = 0;
+    selected.forEach(i => {
+      const changed = rows[i].key !== updated[i].key || rows[i].value !== updated[i].value;
+      if (changed) {
+        count += 1;
+        if (pv.length < 10) {
+          pv.push({
+            oldKey: rows[i].key,
+            newKey: updated[i].key,
+            oldValue: rows[i].value,
+            newValue: updated[i].value,
+          });
+        }
+      }
     });
     setPreview(pv);
+    setChangedCount(count);
   }, [rows, selected, transformType, adjustMode, adjustAmount, skipZero, seqStart, seqIncrement, fixedValue, shiftDir, shiftAmount, transformRows]);
 
   const hasShiftConflict = () => {
@@ -241,6 +250,7 @@ function EntryEditModal({
 
   const canApply = () => {
     if (selected.length < 2) return false;
+    if (changedCount === 0) return false;
     if (transformType === 'fixed' && !/^[0-9A-F]{8}$/.test(fixedValue)) return false;
     if (transformType === 'shift' && hasShiftConflict()) return false;
     return true;
@@ -451,7 +461,7 @@ function EntryEditModal({
                       value={adjustAmount}
                       onChange={e => setAdjustAmount(parseInt(e.target.value, 10) || 0)}
                       size="small"
-                      helperText={`= 0x${(parseInt(adjustAmount, 10) >>> 0).toString(16).toUpperCase().padStart(8, '0')}`}
+                      helperText={`= 0x${(parseInt(adjustAmount, 10) >>> 0).toString(16).toLowerCase().padStart(8, '0')}`}
                       InputProps={{ sx: { fontFamily: '"JetBrains Mono", monospace' } }}
                     />
                     <FormControlLabel
@@ -469,7 +479,7 @@ function EntryEditModal({
                       value={seqStart}
                       onChange={e => setSeqStart(parseInt(e.target.value, 10) || 0)}
                       size="small"
-                      helperText={`= 0x${(parseInt(seqStart, 10) >>> 0).toString(16).toUpperCase().padStart(8, '0')}`}
+                      helperText={`= 0x${(parseInt(seqStart, 10) >>> 0).toString(16).toLowerCase().padStart(8, '0')}`}
                       InputProps={{ sx: { fontFamily: '"JetBrains Mono", monospace' } }}
                     />
                     <TextField
@@ -478,7 +488,7 @@ function EntryEditModal({
                       value={seqIncrement}
                       onChange={e => setSeqIncrement(parseInt(e.target.value, 10) || 0)}
                       size="small"
-                      helperText={`= 0x${(parseInt(seqIncrement, 10) >>> 0).toString(16).toUpperCase().padStart(8, '0')}`}
+                      helperText={`= 0x${(parseInt(seqIncrement, 10) >>> 0).toString(16).toLowerCase().padStart(8, '0')}`}
                       InputProps={{ sx: { fontFamily: '"JetBrains Mono", monospace' } }}
                     />
                   </Box>
@@ -489,7 +499,7 @@ function EntryEditModal({
                     <TextField
                       label="New value for all"
                       value={fixedValue}
-                      onChange={e => setFixedValue(e.target.value.toUpperCase())}
+                      onChange={e => setFixedValue(e.target.value.toLowerCase())}
                       size="small"
                       inputProps={{ maxLength: 8 }}
                       helperText="8-digit hex value"
@@ -548,9 +558,9 @@ function EntryEditModal({
                         <Box sx={{ flex: 1, color: 'primary.main' }}>{`${p.newKey} = ${p.newValue}`}</Box>
                       </Box>
                     ))}
-                    {selected.length > 10 && (
+                    {changedCount - preview.length > 0 && (
                       <Typography variant="body2" color="text.secondary">
-                        {`...and ${selected.length - 10} more entries`}
+                        {`...and ${changedCount - preview.length} more entries`}
                       </Typography>
                     )}
                   </Paper>
@@ -562,7 +572,7 @@ function EntryEditModal({
                   disabled={!canApply()}
                   onClick={applyTransform}
                 >
-                  {`Apply to ${selected.length} entries`}
+                  {`Apply to ${changedCount} entries`}
                 </Button>
               </Collapse>
             )}
