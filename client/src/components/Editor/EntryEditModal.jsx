@@ -148,7 +148,9 @@ export default function EntryEditModal({
                   display: 'flex',
                   alignItems: 'center',
                   px: 1,
-                  py: 0.5,
+                  py: 0,
+                  minHeight: 0,
+                  borderRadius: 1,
                   bgcolor: selected.includes(i) ? 'action.selected' : undefined,
                   transition: 'background-color 0.3s',
                   '&:hover': { bgcolor: 'action.hover' },
@@ -163,7 +165,10 @@ export default function EntryEditModal({
                 variant="standard"
                 error={!keyRegex.test(row.key)}
                 sx={{ width: '40%' }}
-                InputProps={{ sx: { fontFamily: '"JetBrains Mono", monospace' } }}
+                InputProps={{
+                  disableUnderline: true,
+                  sx: { fontFamily: '"JetBrains Mono", monospace' },
+                }}
               />
               <TextField
                 value={row.value}
@@ -171,7 +176,10 @@ export default function EntryEditModal({
                 variant="standard"
                 error={!valRegex.test(row.value)}
                 sx={{ width: '40%' }}
-                InputProps={{ sx: { fontFamily: '"JetBrains Mono", monospace' } }}
+                InputProps={{
+                  disableUnderline: true,
+                  sx: { fontFamily: '"JetBrains Mono", monospace' },
+                }}
               />
               <Box
                 sx={{
