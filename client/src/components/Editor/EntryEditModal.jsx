@@ -45,7 +45,7 @@ function EntryEditModal({
   const [batchStart, setBatchStart] = useState(0);
   const [batchOffset, setBatchOffset] = useState(0);
 
-  const [transformType, setTransformType] = useState('adjust');
+  const [transformType, setTransformType] = useState('shift');
   const [adjustMode, setAdjustMode] = useState('add');
   const [adjustAmount, setAdjustAmount] = useState(0);
   const [skipZero, setSkipZero] = useState(false);
@@ -82,6 +82,7 @@ function EntryEditModal({
       setBatchQty(1);
       setSelected([]);
       setLastIndex(null);
+      setTransformType('shift');
     }
   }, [open, entries]);
 
