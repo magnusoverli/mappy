@@ -60,10 +60,10 @@ function EntryEditModal({
   const [shiftAmount, setShiftAmount] = useState(1);
 
   const helpTexts = {
-    adjust: 'Add or subtract the same amount from all selected values',
+    adjust: 'Shift all selected values up or down by a fixed amount',
     sequential: 'Renumber values in sequence (like 1, 2, 3...)',
     fixed: 'Change all selected entries to exactly the same value',
-    shift: 'Move entry keys up or down in the list',
+    shift: 'Shift entry keys up or down in the list',
   };
 
   useEffect(() => {
@@ -339,7 +339,7 @@ function EntryEditModal({
             renderRow={renderRow}
           />
         </Box>
-        <Box sx={{ width: 400, borderLeft: 1, borderColor: 'divider', p: 2, display: 'flex', flexDirection: 'column', gap: 2 }}>
+        <Box sx={{ width: 500, borderLeft: 1, borderColor: 'divider', p: 2, display: 'flex', flexDirection: 'column', gap: 2 }}>
           <Typography variant="subtitle1">Add Entries</Typography>
           <TextField
             label="Quantity"
@@ -394,10 +394,10 @@ function EntryEditModal({
                     value={transformType}
                     onChange={e => setTransformType(e.target.value)}
                   >
-                    <MenuItem value="adjust">Adjust All Values</MenuItem>
+                    <MenuItem value="adjust">Shift Values Up/Down</MenuItem>
                     <MenuItem value="sequential">Number Values in Order</MenuItem>
                     <MenuItem value="fixed">Set Same Value for All</MenuItem>
-                    <MenuItem value="shift">Move Keys Up or Down</MenuItem>
+                    <MenuItem value="shift">Shift Keys Up/Down</MenuItem>
                   </Select>
                 </FormControl>
                 <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5 }}>
@@ -516,6 +516,7 @@ function EntryEditModal({
                           alignItems: 'center',
                           fontFamily: '"JetBrains Mono", monospace',
                           mb: 0.5,
+                          whiteSpace: 'nowrap',
                         }}
                       >
                         <Box sx={{ flex: 1 }}>{`${p.oldKey} = ${p.oldValue}`}</Box>
