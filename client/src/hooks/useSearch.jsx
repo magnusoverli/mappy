@@ -76,7 +76,13 @@ function detectChanges(prev, current) {
 
   // Check targets
   const prevTargetKeys = new Set();
-  Object.values(prev.targets).forEach(arr => arr.forEach(t => prevTargetKeys.add(t.key)));
+  const prevTargetMap = {};
+  Object.values(prev.targets).forEach(arr => {
+    arr.forEach(t => {
+      prevTargetKeys.add(t.key);
+      prevTargetMap[t.key] = t.value;
+    });
+  });
   const currentTargetKeys = new Set();
   Object.values(current.targets).forEach(arr => arr.forEach(t => currentTargetKeys.add(t.key)));
   
@@ -100,8 +106,8 @@ function detectChanges(prev, current) {
   
   Object.values(current.targets).forEach(arr => {
     arr.forEach(target => {
-      const prevTarget = Object.values(prev.targets).flat().find(t => t.key === target.key);
-      if (prevTarget && prevTarget.value !== target.value) {
+      const prevVal = prevTargetMap[target.key];
+      if (prevVal !== undefined && prevVal !== target.value) {
         changes.targets.modified.push(target);
         changes.hasChanges = true;
       }
@@ -110,7 +116,13 @@ function detectChanges(prev, current) {
 
   // Check sources
   const prevSourceKeys = new Set();
-  Object.values(prev.sources).forEach(arr => arr.forEach(s => prevSourceKeys.add(s.key)));
+  const prevSourceMap = {};
+  Object.values(prev.sources).forEach(arr => {
+    arr.forEach(s => {
+      prevSourceKeys.add(s.key);
+      prevSourceMap[s.key] = s.value;
+    });
+  });
   const currentSourceKeys = new Set();
   Object.values(current.sources).forEach(arr => arr.forEach(s => currentSourceKeys.add(s.key)));
   
@@ -134,8 +146,8 @@ function detectChanges(prev, current) {
   
   Object.values(current.sources).forEach(arr => {
     arr.forEach(source => {
-      const prevSource = Object.values(prev.sources).flat().find(s => s.key === source.key);
-      if (prevSource && prevSource.value !== source.value) {
+      const prevVal = prevSourceMap[source.key];
+      if (prevVal !== undefined && prevVal !== source.value) {
         changes.sources.modified.push(source);
         changes.hasChanges = true;
       }
