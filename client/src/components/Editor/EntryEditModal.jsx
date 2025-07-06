@@ -134,6 +134,14 @@ function EntryEditModal({
     setRows(newRows);
   };
 
+  const handleFieldClick = (e) => {
+    e.stopPropagation();
+  };
+
+  const handleFieldMouseDown = (e) => {
+    e.stopPropagation();
+  };
+
   const handleDelete = () => {
     const remaining = rows.filter((_, i) => !selected.includes(i));
     setRows(remaining);
@@ -306,6 +314,8 @@ function EntryEditModal({
         <TextField
           value={row.key}
           onChange={e => handleCellChange(i, 'key', e.target.value)}
+          onClick={handleFieldClick}
+          onMouseDown={handleFieldMouseDown}
           variant="standard"
           error={!keyRegex.test(row.key)}
           sx={{ width: '40%' }}
@@ -317,6 +327,8 @@ function EntryEditModal({
         <TextField
           value={row.value}
           onChange={e => handleCellChange(i, 'value', e.target.value)}
+          onClick={handleFieldClick}
+          onMouseDown={handleFieldMouseDown}
           variant="standard"
           error={!valRegex.test(row.value)}
           sx={{ width: '40%' }}
