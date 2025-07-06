@@ -94,7 +94,6 @@ Mappy uses an **Agent Pattern** where each agent encapsulates a single responsib
   ## Plan Metadata
   - **Status**: [Not Started/In Progress/Completed]
   - **Priority**: [High/Medium/Low]
-  - **Effort**: [time estimate]
   - **Created**: [YYYY-MM-DD]
   - **Last Updated**: [YYYY-MM-DD]
   - **Assignee**: @opencode

@@ -3,7 +3,7 @@
 ## Plan Metadata
 - **Status**: Completed
 - **Priority**: High
-- **Effort**: 30 minutes
+
 - **Created**: 2025-07-06
 - **Last Updated**: 2025-07-06
 - **Assignee**: @opencode

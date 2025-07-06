@@ -3,7 +3,7 @@
 ## Plan Metadata
 - **Status**: Completed
 - **Priority**: High
-- **Effort**: 1-2 hours
+
 - **Created**: 2025-07-06
 - **Last Updated**: 2025-07-06
 - **Assignee**: @opencode
@@ -55,7 +55,6 @@ Standardize metadata sections in all plan files:
 ## Plan Metadata
 - **Status**: [Status]
 - **Priority**: [Priority]
-- **Effort**: [Effort]
 - **Created**: [Date]
 - **Last Updated**: [Date]
 - **Assignee**: @opencode

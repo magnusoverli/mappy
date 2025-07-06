@@ -3,7 +3,6 @@
 ## Plan Metadata
 - **Status**: Not Started
 - **Priority**: [High/Medium/Low]
-- **Effort**: [X hours/days]
 - **Created**: [YYYY-MM-DD]
 - **Last Updated**: [YYYY-MM-DD]
 - **Assignee**: [Name/Username]

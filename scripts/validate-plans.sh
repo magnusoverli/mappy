@@ -64,7 +64,7 @@ for plan_file in $plan_refs; do
     fi
     
     # Check required fields in plan file (handle multiple formats)
-    required_fields=("Status" "Priority" "Effort" "Created" "Last Updated")
+    required_fields=("Status" "Priority" "Created" "Last Updated")
     for field in "${required_fields[@]}"; do
         if ! grep -q -E "(\*\*$field\*\*:|$field.*:)" "$plan_path"; then
             echo -e "${RED}❌ Missing required field '$field' in $plan_file${NC}"

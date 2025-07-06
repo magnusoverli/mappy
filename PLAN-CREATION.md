@@ -41,7 +41,6 @@ Use the templates in `/plans/templates/`:
 Add entry to TODO.md with:
 - Plan name and file reference
 - Priority level (High/Medium/Low)
-- Estimated effort (hours/days)
 - Current status (Not Started/In Progress/Completed)
 - Brief description (1-2 lines)
 
@@ -59,7 +58,7 @@ Add entry to TODO.md with:
 
 ## Best Practices
 - **Be specific**: Include code examples and technical details
-- **Estimate accurately**: Break down work into measurable chunks
+- **Be specific**: Include code examples and technical details
 - **Update regularly**: Keep status current in both plan file and TODO.md
 - **Reference in commits**: Link implementation commits to plan files
 - **Review weekly**: Reassess priorities and relevance

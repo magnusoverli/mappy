@@ -3,10 +3,10 @@
 ## Plan Metadata
 - **Status**: Not Started
 - **Priority**: [High/Medium/Low]
-- **Effort**: [X hours/days]
 - **Created**: [YYYY-MM-DD]
 - **Last Updated**: [YYYY-MM-DD]
 - **Assignee**: [Name/Username]
+- **Type**: [Bug Fix/Feature/Enhancement/etc.]
 
 ## Current State Analysis
 [Describe the current situation, problems, or areas for improvement]
@@ -30,10 +30,10 @@
 - [ ] Milestone 4: [Description]
 
 ## Performance Impact Estimates
-| Change | Performance Impact | Implementation Effort |
-|--------|-------------------|---------------------|
-| Change 1 | [Impact description] | [Effort level] |
-| Change 2 | [Impact description] | [Effort level] |
+| Change | Performance Impact |
+|--------|-------------------|
+| Change 1 | [Impact description] |
+| Change 2 | [Impact description] |
 
 ## Success Criteria
 - [ ] Criterion 1: [Measurable outcome]

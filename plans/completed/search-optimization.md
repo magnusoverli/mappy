@@ -126,13 +126,13 @@ const searchState = useMemo(() => {
 
 ## **Performance Impact Estimates**
 
-| Optimization | Memory Reduction | Speed Improvement | Implementation Effort |
-|-------------|------------------|-------------------|---------------------|
-| Remove duplicate strings | **50%** | 10% | Low |
-| Incremental indexing | 20% | **300%** | Medium |
-| Single useMemo | 10% | **200%** | Low |
-| Fuzzy search scoring | -10% | Variable | High |
-| Web Workers | 0% | **500%** (large datasets) | High |
+| Optimization | Memory Reduction | Speed Improvement |
+|-------------|------------------|-------------------|
+| Remove duplicate strings | **50%** | 10% |
+| Incremental indexing | 20% | **300%** |
+| Single useMemo | 10% | **200%** |
+| Fuzzy search scoring | -10% | Variable |
+| Web Workers | 0% | **500%** (large datasets) |
 
 ---
 
@@ -157,7 +157,7 @@ The current implementation is **functional but inefficient**. The suggested opti
 ## **Implementation Status**
 - **Status**: Completed
 - **Priority**: High
-- **Effort**: 6-12 hours
+
 - **Created**: 2025-07-06
 - **Last Updated**: 2025-07-06
 - **Assignee**: @opencode
