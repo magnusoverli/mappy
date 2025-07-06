@@ -33,10 +33,10 @@ export default function EntryList({
           mb: 0.5,
           borderRadius: 1,
           transition: 'background-color 0.3s',
-          '&.Mui-selected': { bgcolor: 'action.selected' },
           ...(matchSet?.has(item.key) && { bgcolor: highlight }),
           ...(query && !matchSet?.has(item.key) && { opacity: 0.7 }),
           ...(currentResult?.key === item.key && { bgcolor: currentHighlight }),
+          '&.Mui-selected': { bgcolor: 'action.selected' },
         }}
       >
         <Box sx={{ display: 'flex', width: '100%' }}>

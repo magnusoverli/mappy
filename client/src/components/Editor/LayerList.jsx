@@ -52,10 +52,10 @@ const LayerList = ({ layers = [], selected, onSelect, onDelete, onError }) => {
             mb: 0.5,
             borderRadius: 1,
             transition: 'background-color 0.3s',
-            '&.Mui-selected': { bgcolor: 'action.selected' },
             ...(isMatch && { bgcolor: highlight }),
             ...(query && !isMatch && { opacity: 0.7 }),
             ...(isCurrent && { bgcolor: currentHighlight }),
+            '&.Mui-selected': { bgcolor: 'action.selected' },
           }}
         >
           <ListItemText

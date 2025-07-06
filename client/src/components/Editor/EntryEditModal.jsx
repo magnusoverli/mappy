@@ -277,12 +277,12 @@ export default function EntryEditModal({
                   py: 0,
                   minHeight: 0,
                   borderRadius: 1,
-                  bgcolor: selected.includes(i) ? 'action.selected' : undefined,
                   transition: 'background-color 0.3s',
                   '&:hover': { bgcolor: 'action.hover' },
                   ...(isMatch && { bgcolor: highlight }),
                   ...(query && !isMatch && { opacity: 0.7 }),
                   ...(isCurrent && { bgcolor: currentHighlight }),
+                  bgcolor: selected.includes(i) ? 'action.selected' : undefined,
                 }}
               >
               <TextField
