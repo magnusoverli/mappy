@@ -61,26 +61,30 @@ export function SearchProvider({
     return () => clearTimeout(id);
   }, [query]);
 
-  const results = useMemo(() => {
+  const searchState = useMemo(() => {
     const q = debouncedQuery.trim().toLowerCase();
-    if (!q) return [];
-    return index.filter(item => item.searchText.toLowerCase().includes(q));
+    if (!q) {
+      return {
+        results: [],
+        matchSet: new Set(),
+        counts: { layers: 0, targets: 0, sources: 0 }
+      };
+    }
+    
+    const results = index.filter(item => item.searchText.toLowerCase().includes(q));
+    const matchSet = new Set(results.map(r => r.key));
+    const counts = results.reduce((acc, r) => {
+      acc[r.type + 's'] = (acc[r.type + 's'] || 0) + 1;
+      return acc;
+    }, { layers: 0, targets: 0, sources: 0 });
+    
+    return { results, matchSet, counts };
   }, [index, debouncedQuery]);
 
-  const matchSet = useMemo(() => new Set(results.map(r => r.key)), [results]);
+  const { results, matchSet, counts } = searchState;
 
   useEffect(() => {
     setCurrent(0);
-  }, [results]);
-
-  const counts = useMemo(() => {
-    const c = { layers: 0, targets: 0, sources: 0 };
-    results.forEach(r => {
-      if (r.type === 'layer') c.layers += 1;
-      else if (r.type === 'target') c.targets += 1;
-      else c.sources += 1;
-    });
-    return c;
   }, [results]);
 
   const currentResult = results[current] || null;
