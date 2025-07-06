@@ -61,9 +61,6 @@ function EntryEditModal({
   const [shiftDir, setShiftDir] = useState('up');
   const [shiftAmount, setShiftAmount] = useState(1);
 
-  const search = useSearch();
-
-
   useEffect(() => {
     if (open) {
       const mapped = entries.map(e => ({ ...e }));
@@ -79,11 +76,6 @@ function EntryEditModal({
     }
   }, [open, entries]);
 
-  useEffect(() => {
-    if (open && search && typeof search.setQuery === 'function') {
-      search.setQuery('');
-    }
-  }, [open, search]);
 
   const handleRowClick = (index, e) => {
     if (e.shiftKey && lastIndex !== null) {
