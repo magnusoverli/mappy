@@ -269,20 +269,26 @@ export default function EntryEditModal({
               <Paper
                 key={i}
                 onClick={e => handleRowClick(i, e)}
-                sx={{
-                  mb: 0.5,
-                  display: 'flex',
-                  alignItems: 'center',
-                  px: 1,
-                  py: 0,
-                  minHeight: 0,
-                  borderRadius: 1,
-                  bgcolor: selected.includes(i) ? 'action.selected' : undefined,
-                  transition: 'background-color 0.3s',
-                  '&:hover': { bgcolor: 'action.hover' },
-                  ...(isMatch && { bgcolor: highlight }),
-                  ...(query && !isMatch && { opacity: 0.7 }),
-                  ...(isCurrent && { bgcolor: currentHighlight }),
+                sx={theme => {
+                  const base = {
+                    mb: 0.5,
+                    display: 'flex',
+                    alignItems: 'center',
+                    px: 1,
+                    py: 0,
+                    minHeight: 0,
+                    borderRadius: 1,
+                    transition: 'background-color 0.3s',
+                    '&:hover': { bgcolor: 'action.hover' },
+                  };
+                  if (selected.includes(i)) {
+                    base.boxShadow = `0 0 0 2px ${theme.palette.primary.main} inset`;
+                    if (!isMatch) base.bgcolor = 'action.selected';
+                  }
+                  if (isMatch) base.bgcolor = highlight;
+                  if (query && !isMatch) base.opacity = 0.7;
+                  if (isCurrent) base.bgcolor = currentHighlight;
+                  return base;
                 }}
               >
               <TextField
