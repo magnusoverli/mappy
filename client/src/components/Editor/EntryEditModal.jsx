@@ -22,7 +22,7 @@ import {
   Checkbox,
   Collapse,
 } from '@mui/material';
-import { useEffect, useState, memo, useRef } from 'react';
+import { useEffect, useState, memo, useRef, useCallback } from 'react';
 import useHighlightColors from '../../utils/useHighlightColors.js';
 import { useSearch } from '../../hooks/useSearch.jsx';
 import AppToolbar from '../Layout/AppToolbar.jsx';
@@ -52,12 +52,13 @@ function EntryEditModal({
 
   const [seqStart, setSeqStart] = useState(0);
   const [seqIncrement, setSeqIncrement] = useState(1);
-  const [seqOrder, setSeqOrder] = useState('selection');
 
   const [fixedValue, setFixedValue] = useState('');
 
   const [shiftDir, setShiftDir] = useState('up');
   const [shiftAmount, setShiftAmount] = useState(1);
+
+  const [preview, setPreview] = useState([]);
 
   const dialogRef = useRef(null);
 
@@ -154,7 +155,7 @@ function EntryEditModal({
     setBatchStart(nextStart);
   };
 
-  const transformRows = (sourceRows) => {
+  const transformRows = useCallback((sourceRows) => {
     const updated = sourceRows.map(r => ({ ...r }));
     const sel = selected.slice();
     if (transformType === 'adjust') {
@@ -170,9 +171,9 @@ function EntryEditModal({
       });
     } else if (transformType === 'sequential') {
       let current = parseInt(seqStart, 10) || 0;
-      const order = seqOrder === 'key'
-        ? sel.slice().sort((a, b) => parseInt(updated[a].key.split('.')[1], 10) - parseInt(updated[b].key.split('.')[1], 10))
-        : sel;
+      const order = sel.slice().sort((a, b) =>
+        parseInt(updated[a].key.split('.')[1], 10) -
+        parseInt(updated[b].key.split('.')[1], 10));
       order.forEach(i => {
         const row = updated[i];
         row.value = (current >>> 0).toString(16).toUpperCase().padStart(8, '0');
@@ -204,21 +205,21 @@ function EntryEditModal({
       });
     }
     return updated;
-  };
+  }, [selected, transformType, adjustMode, adjustAmount, skipZero, seqStart, seqIncrement, fixedValue, shiftDir, shiftAmount]);
 
-  const generatePreview = () => {
+  useEffect(() => {
     const updated = transformRows(rows);
-    const preview = [];
-    selected.slice(0, 2).forEach(i => {
-      preview.push({
+    const pv = [];
+    selected.slice(0, 10).forEach(i => {
+      pv.push({
         oldKey: rows[i].key,
         newKey: updated[i].key,
         oldValue: rows[i].value,
         newValue: updated[i].value,
       });
     });
-    return preview;
-  };
+    setPreview(pv);
+  }, [rows, selected, transformType, adjustMode, adjustAmount, skipZero, seqStart, seqIncrement, fixedValue, shiftDir, shiftAmount, transformRows]);
 
   const hasShiftConflict = () => {
     if (transformType !== 'shift') return false;
@@ -480,13 +481,6 @@ function EntryEditModal({
                       helperText={`= 0x${(parseInt(seqIncrement, 10) >>> 0).toString(16).toUpperCase().padStart(8, '0')}`}
                       InputProps={{ sx: { fontFamily: '"JetBrains Mono", monospace' } }}
                     />
-                    <FormControl fullWidth size="small">
-                      <InputLabel>Order</InputLabel>
-                      <Select label="Order" value={seqOrder} onChange={e => setSeqOrder(e.target.value)}>
-                        <MenuItem value="selection">Transform in selection order</MenuItem>
-                        <MenuItem value="key">Transform in key order</MenuItem>
-                      </Select>
-                    </FormControl>
                   </Box>
                 )}
 
@@ -538,7 +532,7 @@ function EntryEditModal({
                     <Typography variant="subtitle2" sx={{ mb: 0.5 }}>
                       What will happen:
                     </Typography>
-                    {generatePreview().map((p, idx) => (
+                    {preview.map((p, idx) => (
                       <Box
                         key={idx}
                         sx={{
@@ -554,9 +548,9 @@ function EntryEditModal({
                         <Box sx={{ flex: 1, color: 'primary.main' }}>{`${p.newKey} = ${p.newValue}`}</Box>
                       </Box>
                     ))}
-                    {selected.length > 2 && (
+                    {selected.length > 10 && (
                       <Typography variant="body2" color="text.secondary">
-                        {`...and ${selected.length - 2} more entries`}
+                        {`...and ${selected.length - 10} more entries`}
                       </Typography>
                     )}
                   </Paper>
