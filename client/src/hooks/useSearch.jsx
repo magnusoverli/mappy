@@ -1,5 +1,5 @@
 /* eslint react-refresh/only-export-components: off */
-import { createContext, useContext, useState, useMemo, useEffect } from 'react';
+import { createContext, useContext, useState, useMemo, useEffect, useRef } from 'react';
 
 function buildSearchIndex({ layers = [], targets = {}, sources = {} }) {
   const index = [];
@@ -37,6 +37,198 @@ function buildSearchIndex({ layers = [], targets = {}, sources = {} }) {
   return index;
 }
 
+function detectChanges(prev, current) {
+  const changes = {
+    hasChanges: false,
+    layers: { added: [], removed: [], modified: [] },
+    targets: { added: [], removed: [], modified: [] },
+    sources: { added: [], removed: [], modified: [] }
+  };
+
+  // Check layers
+  const prevLayerKeys = new Set(prev.layers.map(l => l.key));
+  const currentLayerKeys = new Set(current.layers.map(l => l.key));
+  
+  // Find added layers
+  current.layers.forEach(layer => {
+    if (!prevLayerKeys.has(layer.key)) {
+      changes.layers.added.push(layer);
+      changes.hasChanges = true;
+    }
+  });
+  
+  // Find removed layers
+  prev.layers.forEach(layer => {
+    if (!currentLayerKeys.has(layer.key)) {
+      changes.layers.removed.push(layer);
+      changes.hasChanges = true;
+    }
+  });
+  
+  // Find modified layers
+  current.layers.forEach(layer => {
+    const prevLayer = prev.layers.find(l => l.key === layer.key);
+    if (prevLayer && prevLayer.value !== layer.value) {
+      changes.layers.modified.push(layer);
+      changes.hasChanges = true;
+    }
+  });
+
+  // Check targets
+  const prevTargetKeys = new Set();
+  Object.values(prev.targets).forEach(arr => arr.forEach(t => prevTargetKeys.add(t.key)));
+  const currentTargetKeys = new Set();
+  Object.values(current.targets).forEach(arr => arr.forEach(t => currentTargetKeys.add(t.key)));
+  
+  Object.values(current.targets).forEach(arr => {
+    arr.forEach(target => {
+      if (!prevTargetKeys.has(target.key)) {
+        changes.targets.added.push(target);
+        changes.hasChanges = true;
+      }
+    });
+  });
+  
+  Object.values(prev.targets).forEach(arr => {
+    arr.forEach(target => {
+      if (!currentTargetKeys.has(target.key)) {
+        changes.targets.removed.push(target);
+        changes.hasChanges = true;
+      }
+    });
+  });
+  
+  Object.values(current.targets).forEach(arr => {
+    arr.forEach(target => {
+      const prevTarget = Object.values(prev.targets).flat().find(t => t.key === target.key);
+      if (prevTarget && prevTarget.value !== target.value) {
+        changes.targets.modified.push(target);
+        changes.hasChanges = true;
+      }
+    });
+  });
+
+  // Check sources
+  const prevSourceKeys = new Set();
+  Object.values(prev.sources).forEach(arr => arr.forEach(s => prevSourceKeys.add(s.key)));
+  const currentSourceKeys = new Set();
+  Object.values(current.sources).forEach(arr => arr.forEach(s => currentSourceKeys.add(s.key)));
+  
+  Object.values(current.sources).forEach(arr => {
+    arr.forEach(source => {
+      if (!prevSourceKeys.has(source.key)) {
+        changes.sources.added.push(source);
+        changes.hasChanges = true;
+      }
+    });
+  });
+  
+  Object.values(prev.sources).forEach(arr => {
+    arr.forEach(source => {
+      if (!currentSourceKeys.has(source.key)) {
+        changes.sources.removed.push(source);
+        changes.hasChanges = true;
+      }
+    });
+  });
+  
+  Object.values(current.sources).forEach(arr => {
+    arr.forEach(source => {
+      const prevSource = Object.values(prev.sources).flat().find(s => s.key === source.key);
+      if (prevSource && prevSource.value !== source.value) {
+        changes.sources.modified.push(source);
+        changes.hasChanges = true;
+      }
+    });
+  });
+
+  return changes;
+}
+
+function applyIncrementalChanges(index, changes) {
+  let newIndex = [...index];
+
+  // Remove items
+  changes.layers.removed.forEach(layer => {
+    newIndex = newIndex.filter(item => !(item.type === 'layer' && item.key === layer.key));
+  });
+  changes.targets.removed.forEach(target => {
+    newIndex = newIndex.filter(item => !(item.type === 'target' && item.key === target.key));
+  });
+  changes.sources.removed.forEach(source => {
+    newIndex = newIndex.filter(item => !(item.type === 'source' && item.key === source.key));
+  });
+
+  // Update modified items
+  changes.layers.modified.forEach(layer => {
+    const itemIndex = newIndex.findIndex(item => item.type === 'layer' && item.key === layer.key);
+    if (itemIndex !== -1) {
+      newIndex[itemIndex] = {
+        type: 'layer',
+        key: layer.key,
+        value: layer.value,
+        layerKey: layer.key,
+        searchText: `${layer.key} ${layer.value}`,
+      };
+    }
+  });
+  changes.targets.modified.forEach(target => {
+    const itemIndex = newIndex.findIndex(item => item.type === 'target' && item.key === target.key);
+    if (itemIndex !== -1) {
+      newIndex[itemIndex] = {
+        type: 'target',
+        key: target.key,
+        value: target.value,
+        layerKey: target.key.split('.')[0],
+        searchText: `${target.key} ${target.value}`,
+      };
+    }
+  });
+  changes.sources.modified.forEach(source => {
+    const itemIndex = newIndex.findIndex(item => item.type === 'source' && item.key === source.key);
+    if (itemIndex !== -1) {
+      newIndex[itemIndex] = {
+        type: 'source',
+        key: source.key,
+        value: source.value,
+        layerKey: source.key.split('.')[0],
+        searchText: `${source.key} ${source.value}`,
+      };
+    }
+  });
+
+  // Add new items
+  changes.layers.added.forEach(layer => {
+    newIndex.push({
+      type: 'layer',
+      key: layer.key,
+      value: layer.value,
+      layerKey: layer.key,
+      searchText: `${layer.key} ${layer.value}`,
+    });
+  });
+  changes.targets.added.forEach(target => {
+    newIndex.push({
+      type: 'target',
+      key: target.key,
+      value: target.value,
+      layerKey: target.key.split('.')[0],
+      searchText: `${target.key} ${target.value}`,
+    });
+  });
+  changes.sources.added.forEach(source => {
+    newIndex.push({
+      type: 'source',
+      key: source.key,
+      value: source.value,
+      layerKey: source.key.split('.')[0],
+      searchText: `${source.key} ${source.value}`,
+    });
+  });
+
+  return newIndex;
+}
+
 const SearchContext = createContext(null);
 
 export function SearchProvider({
@@ -47,10 +239,28 @@ export function SearchProvider({
   setSelectedLayer,
   children,
 }) {
-  const index = useMemo(
-    () => buildSearchIndex({ layers, targets, sources }),
-    [layers, targets, sources]
-  );
+  const [index, setIndex] = useState([]);
+  const prevData = useRef({ layers: [], targets: {}, sources: {} });
+  const isInitialized = useRef(false);
+
+  useEffect(() => {
+    const currentData = { layers, targets, sources };
+    
+    if (!isInitialized.current) {
+      // Initial build
+      const initialIndex = buildSearchIndex(currentData);
+      setIndex(initialIndex);
+      prevData.current = currentData;
+      isInitialized.current = true;
+    } else {
+      // Incremental update
+      const changes = detectChanges(prevData.current, currentData);
+      if (changes.hasChanges) {
+        setIndex(prevIndex => applyIncrementalChanges(prevIndex, changes));
+        prevData.current = currentData;
+      }
+    }
+  }, [layers, targets, sources]);
 
   const [query, setQuery] = useState('');
   const [debouncedQuery, setDebouncedQuery] = useState('');
