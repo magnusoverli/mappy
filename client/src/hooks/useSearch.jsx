@@ -1,5 +1,5 @@
 /* eslint react-refresh/only-export-components: off */
-import { createContext, useContext, useState, useMemo, useEffect, useRef } from 'react';
+import { createContext, useContext, useState, useEffect, useRef, useCallback } from 'react';
 
 function buildSearchIndex({ layers = [], targets = {}, sources = {} }) {
   const index = [];
@@ -229,6 +229,49 @@ function applyIncrementalChanges(index, changes) {
   return newIndex;
 }
 
+// Threshold for using Web Workers (items count)
+const WORKER_THRESHOLD = 1000;
+
+// Web Worker management
+let searchWorker = null;
+let workerSupported = null;
+
+function initializeWorker() {
+  if (workerSupported === false) return null;
+  
+  try {
+    if (!searchWorker) {
+      searchWorker = new Worker('/search-worker.js');
+      workerSupported = true;
+    }
+    return searchWorker;
+  } catch (error) {
+    console.warn('Web Workers not supported, falling back to main thread search:', error);
+    workerSupported = false;
+    return null;
+  }
+}
+
+function performMainThreadSearch(query, index) {
+  const q = query.trim().toLowerCase();
+  if (!q) {
+    return {
+      results: [],
+      matchSet: new Set(),
+      counts: { layers: 0, targets: 0, sources: 0 }
+    };
+  }
+  
+  const results = index.filter(item => item.searchText.toLowerCase().includes(q));
+  const matchSet = new Set(results.map(r => r.key));
+  const counts = results.reduce((acc, r) => {
+    acc[r.type + 's'] = (acc[r.type + 's'] || 0) + 1;
+    return acc;
+  }, { layers: 0, targets: 0, sources: 0 });
+  
+  return { results, matchSet, counts };
+}
+
 const SearchContext = createContext(null);
 
 export function SearchProvider({
@@ -265,31 +308,78 @@ export function SearchProvider({
   const [query, setQuery] = useState('');
   const [debouncedQuery, setDebouncedQuery] = useState('');
   const [current, setCurrent] = useState(0);
+  const [searchState, setSearchState] = useState({
+    results: [],
+    matchSet: new Set(),
+    counts: { layers: 0, targets: 0, sources: 0 }
+  });
+  const [isSearching, setIsSearching] = useState(false);
+  
+  const requestIdRef = useRef(0);
+  const workerRef = useRef(null);
 
   useEffect(() => {
     const id = setTimeout(() => setDebouncedQuery(query), 300);
     return () => clearTimeout(id);
   }, [query]);
 
-  const searchState = useMemo(() => {
-    const q = debouncedQuery.trim().toLowerCase();
-    if (!q) {
-      return {
-        results: [],
-        matchSet: new Set(),
-        counts: { layers: 0, targets: 0, sources: 0 }
+  // Initialize worker on mount
+  useEffect(() => {
+    workerRef.current = initializeWorker();
+    
+    return () => {
+      if (workerRef.current) {
+        workerRef.current.terminate();
+        workerRef.current = null;
+        searchWorker = null;
+      }
+    };
+  }, []);
+
+  const performSearch = useCallback((searchQuery, searchIndex) => {
+    const shouldUseWorker = searchIndex.length >= WORKER_THRESHOLD && workerRef.current;
+    
+    if (shouldUseWorker) {
+      setIsSearching(true);
+      const requestId = ++requestIdRef.current;
+      
+      const handleWorkerMessage = (e) => {
+        const { type, requestId: responseId, data, error } = e.data;
+        
+        // Ignore responses from old requests
+        if (responseId !== requestId) return;
+        
+        if (type === 'SEARCH_RESULT') {
+          setSearchState({
+            results: data.results,
+            matchSet: new Set(data.matchSet), // Convert array back to Set
+            counts: data.counts
+          });
+          setIsSearching(false);
+        } else if (type === 'ERROR') {
+          console.error('Search worker error:', error);
+          // Fallback to main thread
+          const result = performMainThreadSearch(searchQuery, searchIndex);
+          setSearchState(result);
+          setIsSearching(false);
+        }
       };
+      
+      workerRef.current.onmessage = handleWorkerMessage;
+      workerRef.current.postMessage({
+        type: 'SEARCH',
+        data: { query: searchQuery, index: searchIndex, requestId }
+      });
+    } else {
+      // Use main thread for small datasets or when workers unavailable
+      const result = performMainThreadSearch(searchQuery, searchIndex);
+      setSearchState(result);
     }
-    
-    const results = index.filter(item => item.searchText.toLowerCase().includes(q));
-    const matchSet = new Set(results.map(r => r.key));
-    const counts = results.reduce((acc, r) => {
-      acc[r.type + 's'] = (acc[r.type + 's'] || 0) + 1;
-      return acc;
-    }, { layers: 0, targets: 0, sources: 0 });
-    
-    return { results, matchSet, counts };
-  }, [index, debouncedQuery]);
+  }, []);
+
+  useEffect(() => {
+    performSearch(debouncedQuery, index);
+  }, [debouncedQuery, index, performSearch]);
 
   const { results, matchSet, counts } = searchState;
 
@@ -329,6 +419,7 @@ export function SearchProvider({
         matchSet,
         next,
         prev,
+        isSearching,
       }}
     >
       {children}

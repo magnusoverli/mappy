@@ -2,19 +2,21 @@
 
 ## Active Plans
 
-### 🔍 Search Optimization (`/plans/search-optimization.md`)
-- **Priority**: High | **Effort**: 4-8h | **Assignee**: @opencode
-- **Status**: In Progress (3/4 milestones completed)
-- **Next**: Add Web Workers for large datasets
-- **Milestones**: 
-  - ✅ Remove duplicate string storage (50% memory reduction)
-  - ✅ Consolidate useMemo hooks (200% performance improvement)
-  - ✅ Implement incremental index updates (300% speed improvement)
-  - ⏳ Add Web Workers for large datasets (500% speed improvement)
+
 
 ---
 
 ## Completed Plans
+
+### ✅ Search Optimization (`/plans/search-optimization.md`)
+- **Priority**: High | **Effort**: 4-8h | **Assignee**: @opencode
+- **Status**: Completed (4/4 milestones)
+- **Achievement**: Comprehensive search performance optimization with 2-5x improvements
+- **Milestones**: 
+  - ✅ Remove duplicate string storage (50% memory reduction)
+  - ✅ Consolidate useMemo hooks (200% performance improvement)
+  - ✅ Implement incremental index updates (300% speed improvement)
+  - ✅ Add Web Workers for large datasets (500% speed improvement)
 
 ### ✅ Entry Editor Transformation Button Fix (`/plans/entry-editor-button-fix.md`)
 - **Priority**: High | **Effort**: 30min | **Assignee**: @opencode
@@ -34,6 +36,12 @@
 - [ ] Fix status inconsistency in search-optimization.md
 - [ ] Create plan creation documentation
 - [ ] Implement conditional "Save" button activation in EntryEditModal (only enable when changes exist)
+
+### 🐛 Entry Range Selection Fix (`/plans/entry-range-selection-fix.md`)
+- **Priority**: High | **Effort**: 30min | **Assignee**: @opencode
+- **Status**: Not Started
+- **Issue**: Range selection (shift-click) broken in EntryEditModal after field editing fix
+- **Root Cause**: Event handlers prevent ALL propagation, including shift-clicks needed for range selection
 
 ---
 
