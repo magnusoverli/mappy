@@ -11,6 +11,19 @@ import {
 import CloseIcon from '@mui/icons-material/Close';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import {
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  FormControlLabel,
+  RadioGroup,
+  Radio,
+  Checkbox,
+  Collapse,
+  Tooltip,
+} from '@mui/material';
 import { useEffect, useState } from 'react';
 import useHighlightColors from '../../utils/useHighlightColors.js';
 import { useSearch } from '../../hooks/useSearch.jsx';
@@ -32,6 +45,21 @@ export default function EntryEditModal({
   const [batchQty, setBatchQty] = useState(1);
   const [batchStart, setBatchStart] = useState(0);
   const [batchOffset, setBatchOffset] = useState(0);
+
+  const [transformType, setTransformType] = useState('adjust');
+  const [adjustMode, setAdjustMode] = useState('add');
+  const [adjustAmount, setAdjustAmount] = useState(0);
+  const [skipZero, setSkipZero] = useState(false);
+
+  const [seqStart, setSeqStart] = useState(0);
+  const [seqIncrement, setSeqIncrement] = useState(1);
+  const [seqOrder, setSeqOrder] = useState('selection');
+
+  const [fixedValue, setFixedValue] = useState('');
+
+  const [shiftDir, setShiftDir] = useState('up');
+  const [shiftAmount, setShiftAmount] = useState(1);
+
 
   useEffect(() => {
     if (open) {
@@ -90,6 +118,104 @@ export default function EntryEditModal({
     setRows(newRows);
     const nextStart = batchStart + batchQty;
     setBatchStart(nextStart);
+  };
+
+  const transformRows = (sourceRows) => {
+    const updated = sourceRows.map(r => ({ ...r }));
+    const sel = selected.slice();
+    if (transformType === 'adjust') {
+      sel.forEach(i => {
+        const row = updated[i];
+        if (skipZero && row.offset === 0) return;
+        const val = parseInt(row.value, 16) || 0;
+        const amt = parseInt(adjustAmount, 10) || 0;
+        const newVal = adjustMode === 'add' ? val + amt : val - amt;
+        row.value = (newVal >>> 0).toString(16).toUpperCase().padStart(8, '0');
+        const dec = parseInt(row.key.split('.')[1], 10);
+        row.offset = dec - newVal;
+      });
+    } else if (transformType === 'sequential') {
+      let current = parseInt(seqStart, 10) || 0;
+      const order = seqOrder === 'key'
+        ? sel.slice().sort((a, b) => parseInt(updated[a].key.split('.')[1], 10) - parseInt(updated[b].key.split('.')[1], 10))
+        : sel;
+      order.forEach(i => {
+        const row = updated[i];
+        row.value = (current >>> 0).toString(16).toUpperCase().padStart(8, '0');
+        const dec = parseInt(row.key.split('.')[1], 10);
+        row.offset = dec - current;
+        current += parseInt(seqIncrement, 10) || 0;
+      });
+    } else if (transformType === 'fixed') {
+      if (/^[0-9A-Fa-f]{8}$/.test(fixedValue)) {
+        const val = parseInt(fixedValue, 16);
+        sel.forEach(i => {
+          const row = updated[i];
+          row.value = fixedValue.toUpperCase();
+          const dec = parseInt(row.key.split('.')[1], 10);
+          row.offset = dec - val;
+        });
+      }
+    } else if (transformType === 'shift') {
+      const amt = parseInt(shiftAmount, 10) || 0;
+      const dir = shiftDir === 'up' ? 1 : -1;
+      sel.forEach(i => {
+        const row = updated[i];
+        const parts = row.key.split('.');
+        const dec = parseInt(parts[1], 10) + dir * amt;
+        parts[1] = String(dec).padStart(4, '0');
+        row.key = parts.join('.');
+        const val = parseInt(row.value, 16) || 0;
+        row.offset = dec - val;
+      });
+    }
+    return updated;
+  };
+
+  const generatePreview = () => {
+    const updated = transformRows(rows);
+    const preview = [];
+    selected.slice(0, 5).forEach(i => {
+      preview.push({
+        key: rows[i].key,
+        oldValue: rows[i].value,
+        newValue: updated[i].value,
+        oldOffset: rows[i].offset,
+        newOffset: updated[i].offset,
+      });
+    });
+    return preview;
+  };
+
+  const hasShiftConflict = () => {
+    if (transformType !== 'shift') return false;
+    const amt = parseInt(shiftAmount, 10) || 0;
+    const dir = shiftDir === 'up' ? 1 : -1;
+    const newKeys = new Set();
+    const existing = new Set(rows.map(r => r.key));
+    selected.forEach(i => {
+      const parts = rows[i].key.split('.');
+      const dec = parseInt(parts[1], 10) + dir * amt;
+      const key = `${parts[0]}.${String(dec).padStart(4, '0')}`;
+      newKeys.add(key);
+    });
+    for (const key of newKeys) {
+      if (existing.has(key) && !selected.some(i => rows[i].key === key)) return true;
+    }
+    return false;
+  };
+
+  const canApply = () => {
+    if (selected.length < 2) return false;
+    if (transformType === 'fixed' && !/^[0-9A-F]{8}$/.test(fixedValue)) return false;
+    if (transformType === 'shift' && hasShiftConflict()) return false;
+    return true;
+  };
+
+  const applyTransform = () => {
+    if (!canApply()) return;
+    const updated = transformRows(rows);
+    setRows(updated);
   };
 
   const handleSave = () => {
@@ -233,6 +359,169 @@ export default function EntryEditModal({
           >
             Delete Selected
           </Button>
+          <Box sx={{ borderTop: 1, borderColor: 'divider', pt: 2 }}>
+            <Typography variant="subtitle1" sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+              {`Transform Selected Entries (${selected.length} selected)`}
+              <Tooltip title="Apply batch transformations to selected entries">
+                <InfoOutlinedIcon fontSize="small" />
+              </Tooltip>
+            </Typography>
+            {selected.length < 2 ? (
+              <Typography variant="body2" color="text.secondary">
+                Select 2 or more entries to enable transformations.
+              </Typography>
+            ) : (
+              <Collapse in={selected.length >= 2}>
+                <FormControl fullWidth size="small" sx={{ mt: 1 }}>
+                  <InputLabel>Transformation Type</InputLabel>
+                  <Select
+                    label="Transformation Type"
+                    value={transformType}
+                    onChange={e => setTransformType(e.target.value)}
+                  >
+                    <MenuItem value="adjust">Adjust Values - Add or subtract from hex values</MenuItem>
+                    <MenuItem value="sequential">Sequential Fill - Auto-number entries in sequence</MenuItem>
+                    <MenuItem value="fixed">Set Fixed Value - Apply same value to all selected</MenuItem>
+                    <MenuItem value="shift">Shift Keys - Renumber the key indices</MenuItem>
+                  </Select>
+                </FormControl>
+
+                {transformType === 'adjust' && (
+                  <Box sx={{ mt: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
+                    <RadioGroup
+                      row
+                      value={adjustMode}
+                      onChange={e => setAdjustMode(e.target.value)}
+                    >
+                      <FormControlLabel value="add" control={<Radio />} label="Add" />
+                      <FormControlLabel value="subtract" control={<Radio />} label="Subtract" />
+                    </RadioGroup>
+                    <TextField
+                      label="Amount"
+                      type="number"
+                      value={adjustAmount}
+                      onChange={e => setAdjustAmount(parseInt(e.target.value, 10) || 0)}
+                      size="small"
+                      helperText={`= 0x${(parseInt(adjustAmount, 10) >>> 0).toString(16).toUpperCase().padStart(8, '0')}`}
+                      InputProps={{ sx: { fontFamily: '"JetBrains Mono", monospace' } }}
+                    />
+                    <FormControlLabel
+                      control={<Checkbox checked={skipZero} onChange={e => setSkipZero(e.target.checked)} />}
+                      label="Skip entries with zero offset"
+                    />
+                  </Box>
+                )}
+
+                {transformType === 'sequential' && (
+                  <Box sx={{ mt: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
+                    <TextField
+                      label="Starting Value"
+                      type="number"
+                      value={seqStart}
+                      onChange={e => setSeqStart(parseInt(e.target.value, 10) || 0)}
+                      size="small"
+                      helperText={`= 0x${(parseInt(seqStart, 10) >>> 0).toString(16).toUpperCase().padStart(8, '0')}`}
+                      InputProps={{ sx: { fontFamily: '"JetBrains Mono", monospace' } }}
+                    />
+                    <TextField
+                      label="Increment"
+                      type="number"
+                      value={seqIncrement}
+                      onChange={e => setSeqIncrement(parseInt(e.target.value, 10) || 0)}
+                      size="small"
+                      helperText={`= 0x${(parseInt(seqIncrement, 10) >>> 0).toString(16).toUpperCase().padStart(8, '0')}`}
+                      InputProps={{ sx: { fontFamily: '"JetBrains Mono", monospace' } }}
+                    />
+                    <FormControl fullWidth size="small">
+                      <InputLabel>Order</InputLabel>
+                      <Select label="Order" value={seqOrder} onChange={e => setSeqOrder(e.target.value)}>
+                        <MenuItem value="selection">By selection order</MenuItem>
+                        <MenuItem value="key">By key order</MenuItem>
+                      </Select>
+                    </FormControl>
+                  </Box>
+                )}
+
+                {transformType === 'fixed' && (
+                  <Box sx={{ mt: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
+                    <TextField
+                      label="Fixed Value"
+                      value={fixedValue}
+                      onChange={e => setFixedValue(e.target.value.toUpperCase())}
+                      size="small"
+                      inputProps={{ maxLength: 8 }}
+                      helperText="8-digit hex value"
+                      error={!/^([0-9A-F]{8})?$/.test(fixedValue)}
+                      InputProps={{ sx: { fontFamily: '"JetBrains Mono", monospace' } }}
+                    />
+                    <Box sx={{ display: 'flex', gap: 1 }}>
+                      <Button size="small" onClick={() => setFixedValue('00000000')}>All 0</Button>
+                      <Button size="small" onClick={() => setFixedValue('FFFFFFFF')}>All F</Button>
+                    </Box>
+                  </Box>
+                )}
+
+                {transformType === 'shift' && (
+                  <Box sx={{ mt: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
+                    <RadioGroup
+                      row
+                      value={shiftDir}
+                      onChange={e => setShiftDir(e.target.value)}
+                    >
+                      <FormControlLabel value="up" control={<Radio />} label="Shift up" />
+                      <FormControlLabel value="down" control={<Radio />} label="Shift down" />
+                    </RadioGroup>
+                    <TextField
+                      label="Amount"
+                      type="number"
+                      value={shiftAmount}
+                      onChange={e => setShiftAmount(parseInt(e.target.value, 10) || 0)}
+                      size="small"
+                      InputProps={{ sx: { fontFamily: '"JetBrains Mono", monospace' } }}
+                    />
+                    <Typography variant="body2" color="warning.main">
+                      Shifting keys may create conflicts if new keys already exist.
+                    </Typography>
+                  </Box>
+                )}
+
+                {selected.length >= 2 && (
+                  <Box sx={{ mt: 1 }}>
+                    {generatePreview().map((p, idx) => (
+                      <Typography
+                        key={idx}
+                        sx={{
+                          fontFamily: '"JetBrains Mono", monospace',
+                          color:
+                            p.newOffset < p.oldOffset
+                              ? 'success.main'
+                              : p.newOffset > p.oldOffset
+                                ? 'warning.main'
+                                : undefined,
+                        }}
+                      >
+                        {`${p.key}: ${p.oldValue} → ${p.newValue} (offset ${p.oldOffset} → ${p.newOffset})`}
+                      </Typography>
+                    ))}
+                    {selected.length > 5 && (
+                      <Typography variant="body2" color="text.secondary">
+                        {`... and ${selected.length - 5} more entries`}
+                      </Typography>
+                    )}
+                  </Box>
+                )}
+
+                <Button
+                  variant="contained"
+                  sx={{ mt: 1 }}
+                  disabled={!canApply()}
+                  onClick={applyTransform}
+                >
+                  {`Apply to ${selected.length} entries`}
+                </Button>
+              </Collapse>
+            )}
+          </Box>
         </Box>
       </Box>
       <DialogActions>
