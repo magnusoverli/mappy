@@ -48,3 +48,40 @@ Mappy uses an **Agent Pattern** where each agent encapsulates a single responsib
 - **Always commit when tasks are completed**: Create commits immediately after completing any task or feature
 - Use descriptive commit messages that explain the purpose of changes
 - Follow conventional commit format when possible
+
+## Plan Management Guidelines
+
+### **Creating Development Plans**
+- **Always create detailed plans** in the `/plans` folder for any significant feature, optimization, or architectural change
+- Plan files should be named descriptively: `search-optimization.md`, `ui-redesign.md`, `performance-improvements.md`
+- Each plan must include:
+  - Current state analysis
+  - Proposed solutions with code examples
+  - Performance impact estimates
+  - Implementation priority/timeline
+  - Success criteria
+
+### **TODO Management**
+- **Always maintain TODO.md** in the project root with brief summaries of all active plans
+- Each plan entry in TODO.md should include:
+  - Plan name and file reference
+  - Priority level (High/Medium/Low)
+  - Estimated effort (hours/days)
+  - Current status (Not Started/In Progress/Completed)
+  - Brief description (1-2 lines)
+
+### **Plan Implementation Tracking**
+- **Update TODO.md immediately** when:
+  - Creating new plans
+  - Starting implementation of a plan
+  - Completing plan milestones
+  - Finishing entire plans
+- **Reference plan files** in commit messages when implementing planned features
+- **Archive completed plans** by moving them to `/plans/completed/` folder
+- **Update plan status** in both the plan file and TODO.md simultaneously
+
+### **Plan Review Process**
+- Review and update all active plans weekly
+- Reassess priorities based on project needs
+- Break down large plans into smaller, actionable tasks
+- Ensure all plans remain relevant and up-to-date

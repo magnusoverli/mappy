@@ -9,8 +9,7 @@ function buildSearchIndex({ layers = [], targets = {}, sources = {} }) {
       key: l.key,
       value: l.value,
       layerKey: l.key,
-      text: `${l.key} ${l.value}`,
-      lowerText: `${l.key} ${l.value}`.toLowerCase(),
+      searchText: `${l.key} ${l.value}`,
     });
   });
   Object.values(targets).forEach(arr => {
@@ -20,8 +19,7 @@ function buildSearchIndex({ layers = [], targets = {}, sources = {} }) {
         key: t.key,
         value: t.value,
         layerKey: t.key.split('.')[0],
-        text: `${t.key} ${t.value}`,
-        lowerText: `${t.key} ${t.value}`.toLowerCase(),
+        searchText: `${t.key} ${t.value}`,
       });
     });
   });
@@ -32,8 +30,7 @@ function buildSearchIndex({ layers = [], targets = {}, sources = {} }) {
         key: s.key,
         value: s.value,
         layerKey: s.key.split('.')[0],
-        text: `${s.key} ${s.value}`,
-        lowerText: `${s.key} ${s.value}`.toLowerCase(),
+        searchText: `${s.key} ${s.value}`,
       });
     });
   });
@@ -67,7 +64,7 @@ export function SearchProvider({
   const results = useMemo(() => {
     const q = debouncedQuery.trim().toLowerCase();
     if (!q) return [];
-    return index.filter(item => item.lowerText.includes(q));
+    return index.filter(item => item.searchText.toLowerCase().includes(q));
   }, [index, debouncedQuery]);
 
   const matchSet = useMemo(() => new Set(results.map(r => r.key)), [results]);
