@@ -22,7 +22,7 @@ import {
   Checkbox,
   Collapse,
 } from '@mui/material';
-import { useEffect, useState, memo } from 'react';
+import { useEffect, useState, memo, useRef } from 'react';
 import useHighlightColors from '../../utils/useHighlightColors.js';
 import { useSearch } from '../../hooks/useSearch.jsx';
 import AppToolbar from '../Layout/AppToolbar.jsx';
@@ -59,6 +59,8 @@ function EntryEditModal({
   const [shiftDir, setShiftDir] = useState('up');
   const [shiftAmount, setShiftAmount] = useState(1);
 
+  const dialogRef = useRef(null);
+
   const helpTexts = {
     adjust: 'Shift all selected values up or down by a fixed amount',
     sequential: 'Renumber values in sequence (like 1, 2, 3...)',
@@ -81,6 +83,25 @@ function EntryEditModal({
     }
   }, [open, entries]);
 
+  useEffect(() => {
+    if (!open) return undefined;
+    const handleKeyDown = e => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'a') {
+        if (dialogRef.current && dialogRef.current.contains(e.target)) {
+          const tag = e.target.tagName;
+          const editable = tag === 'INPUT' || tag === 'TEXTAREA' || e.target.isContentEditable;
+          if (!editable) {
+            e.preventDefault();
+            setSelected(rows.map((_, idx) => idx));
+            setLastIndex(rows.length - 1);
+          }
+        }
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [open, rows]);
+
 
   const handleRowClick = (index, e) => {
     if (e.shiftKey && lastIndex !== null) {
@@ -92,6 +113,13 @@ function EntryEditModal({
     } else {
       setSelected([index]);
       setLastIndex(index);
+    }
+  };
+
+  const handleRowMouseDown = (e) => {
+    if (e.shiftKey) {
+      e.preventDefault();
+      e.stopPropagation();
     }
   };
 
@@ -240,6 +268,7 @@ function EntryEditModal({
       <Paper
         style={style}
         key={i}
+        onMouseDown={handleRowMouseDown}
         onClick={e => handleRowClick(i, e)}
         sx={theme => {
           const base = {
@@ -301,6 +330,7 @@ function EntryEditModal({
 
   return (
     <Dialog
+        ref={dialogRef}
         fullScreen
         open={open}
         onClose={onClose}
