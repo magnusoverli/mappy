@@ -557,32 +557,38 @@ function EntryEditModal({
                 )}
 
                 {selected.length >= 2 && (
-                  <Paper variant="outlined" sx={{ mt: 1, p: 1 }}>
-                    <Typography variant="subtitle2" sx={{ mb: 0.5 }}>
+                  <>
+                    <Typography variant="subtitle2" sx={{ mt: 1, mb: 0.5 }}>
                       What will happen:
                     </Typography>
-                    {preview.map((p, idx) => (
-                      <Box
-                        key={idx}
-                        sx={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          fontFamily: '"JetBrains Mono", monospace',
-                          mb: 0.5,
-                          whiteSpace: 'nowrap',
-                        }}
-                      >
-                        <Box sx={{ flex: 1 }}>{`${p.oldKey} = ${p.oldValue}`}</Box>
-                        <Box sx={{ mx: 1 }}>→</Box>
-                        <Box sx={{ flex: 1, color: 'primary.main' }}>{`${p.newKey} = ${p.newValue}`}</Box>
-                      </Box>
-                    ))}
-                    {changedCount - preview.length > 0 && (
-                      <Typography variant="body2" color="text.secondary">
-                        {`...and ${changedCount - preview.length} more entries`}
-                      </Typography>
-                    )}
-                  </Paper>
+                    <Paper variant="outlined" sx={{ p: 1 }}>
+                      {changedCount === 0 && (
+                        <Typography variant="body2">No changes</Typography>
+                      )}
+                      {changedCount > 0 &&
+                        preview.map((p, idx) => (
+                          <Box
+                            key={idx}
+                            sx={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              fontFamily: '"JetBrains Mono", monospace',
+                              mb: 0.5,
+                              whiteSpace: 'nowrap',
+                            }}
+                          >
+                            <Box sx={{ flex: 1 }}>{`${p.oldKey} = ${p.oldValue}`}</Box>
+                            <Box sx={{ mx: 2 }}>→</Box>
+                            <Box sx={{ flex: 1 }}>{`${p.newKey} = ${p.newValue}`}</Box>
+                          </Box>
+                        ))}
+                      {changedCount > 0 && changedCount - preview.length > 0 && (
+                        <Typography variant="body2" color="text.secondary">
+                          {`...and ${changedCount - preview.length} more entries`}
+                        </Typography>
+                      )}
+                    </Paper>
+                  </>
                 )}
 
                 <Button
