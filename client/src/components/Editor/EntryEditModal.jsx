@@ -39,6 +39,7 @@ function EntryEditModal({
   type = 'Targets',
 }) {
   const [rows, setRows] = useState([]);
+  const [originalEntries, setOriginalEntries] = useState([]);
   const [selected, setSelected] = useState([]);
   const [lastIndex, setLastIndex] = useState(null);
   const [batchQty, setBatchQty] = useState(1);
@@ -74,6 +75,7 @@ function EntryEditModal({
     if (open) {
       const mapped = entries.map(e => ({ ...e, value: e.value.toLowerCase() }));
       setRows(mapped);
+      setOriginalEntries(mapped.map(e => ({ ...e })));
       const last = mapped[mapped.length - 1];
       const startIdx = last ? parseInt(last.key.split('.')[1], 10) + 1 : 0;
       const off = last ? last.offset : 0;
@@ -262,6 +264,14 @@ function EntryEditModal({
     if (transformType === 'fixed' && !/^[0-9A-Fa-f]{8}$/.test(fixedValue)) return false;
     if (transformType === 'shift' && hasShiftConflict()) return false;
     return true;
+  };
+
+  const hasChanges = () => {
+    if (rows.length !== originalEntries.length) return true;
+    return rows.some((row, i) => {
+      const original = originalEntries[i];
+      return !original || row.key !== original.key || row.value !== original.value;
+    });
   };
 
   const applyTransform = () => {
@@ -595,7 +605,7 @@ function EntryEditModal({
       </Box>
       <DialogActions>
         <Button onClick={onClose}>Cancel</Button>
-        <Button variant="contained" onClick={handleSave}>
+        <Button variant="contained" onClick={handleSave} disabled={!hasChanges()}>
           Save
         </Button>
       </DialogActions>

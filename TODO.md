@@ -33,9 +33,8 @@
 ---
 
 ## Quick Tasks
-- [ ] Fix status inconsistency in search-optimization.md
-- [ ] Create plan creation documentation
-- [ ] Implement conditional "Save" button activation in EntryEditModal (only enable when changes exist)
+- [x] Create plan creation documentation
+- [x] Implement conditional "Save" button activation in EntryEditModal (only enable when changes exist)
 
 ### 🐛 Entry Range Selection Fix (`/plans/entry-range-selection-fix.md`)
 - **Priority**: High | **Effort**: 30min | **Assignee**: @opencode
