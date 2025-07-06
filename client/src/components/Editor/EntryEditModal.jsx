@@ -16,8 +16,6 @@ import {
   InputLabel,
   Select,
   MenuItem,
-  FormControlLabel,
-  Checkbox,
   Collapse,
 } from '@mui/material';
 import { useEffect, useState, memo, useRef, useCallback } from 'react';
@@ -46,7 +44,6 @@ function EntryEditModal({
 
   const [transformType, setTransformType] = useState('shift');
   const [adjustAmount, setAdjustAmount] = useState(0);
-  const [skipZero, setSkipZero] = useState(false);
 
   const [seqStart, setSeqStart] = useState(0);
   const [seqIncrement, setSeqIncrement] = useState(1);
@@ -61,7 +58,7 @@ function EntryEditModal({
   const dialogRef = useRef(null);
 
   const helpTexts = {
-    adjust: 'Shift selected values by a fixed amount (use negative numbers to move down)',
+    adjust: 'Shift entry values by a fixed amount (use negative numbers to move down)',
     sequential: 'Renumber values in sequence (like 1, 2, 3...)',
     fixed: 'Change all selected entries to exactly the same value',
     shift: 'Shift entry keys by a fixed amount (use negative numbers to move down)',
@@ -169,7 +166,6 @@ function EntryEditModal({
     if (transformType === 'adjust') {
       sel.forEach(i => {
         const row = updated[i];
-        if (skipZero && row.offset === 0) return;
         const val = parseInt(row.value, 16) || 0;
         const amt = parseInt(adjustAmount, 10) || 0;
         const newVal = val + amt;
@@ -212,7 +208,7 @@ function EntryEditModal({
       });
     }
     return updated;
-  }, [selected, transformType, adjustAmount, skipZero, seqStart, seqIncrement, fixedValue, shiftAmount]);
+  }, [selected, transformType, adjustAmount, seqStart, seqIncrement, fixedValue, shiftAmount]);
 
   useEffect(() => {
     const updated = transformRows(rows);
@@ -234,7 +230,7 @@ function EntryEditModal({
     });
     setPreview(pv);
     setChangedCount(count);
-  }, [rows, selected, transformType, adjustAmount, skipZero, seqStart, seqIncrement, fixedValue, shiftAmount, transformRows]);
+  }, [rows, selected, transformType, adjustAmount, seqStart, seqIncrement, fixedValue, shiftAmount, transformRows]);
 
   const hasShiftConflict = () => {
     if (transformType !== 'shift') return false;
@@ -253,11 +249,29 @@ function EntryEditModal({
     return false;
   };
 
+  const hasAdjustConflict = () => {
+    if (transformType !== 'adjust') return false;
+    const amt = parseInt(adjustAmount, 10) || 0;
+    const newVals = new Set();
+    const existing = new Set(rows.map(r => r.value));
+    selected.forEach(i => {
+      const val = parseInt(rows[i].value, 16) || 0;
+      const newVal = (val + amt) >>> 0;
+      const valStr = newVal.toString(16).toLowerCase().padStart(8, '0');
+      newVals.add(valStr);
+    });
+    for (const val of newVals) {
+      if (existing.has(val) && !selected.some(i => rows[i].value === val)) return true;
+    }
+    return false;
+  };
+
   const canApply = () => {
     if (selected.length < 2) return false;
     if (changedCount === 0) return false;
     if (transformType === 'fixed' && !/^[0-9A-Fa-f]{8}$/.test(fixedValue)) return false;
     if (transformType === 'shift' && hasShiftConflict()) return false;
+    if (transformType === 'adjust' && hasAdjustConflict()) return false;
     return true;
   };
 
@@ -472,13 +486,13 @@ function EntryEditModal({
                       value={adjustAmount}
                       onChange={e => setAdjustAmount(parseInt(e.target.value, 10) || 0)}
                       size="small"
-                      helperText={`= 0x${(parseInt(adjustAmount, 10) >>> 0).toString(16).toLowerCase().padStart(8, '0')}`}
                       InputProps={{ sx: { fontFamily: '"JetBrains Mono", monospace' } }}
                     />
-                    <FormControlLabel
-                      control={<Checkbox checked={skipZero} onChange={e => setSkipZero(e.target.checked)} />}
-                      label="Skip entries with zero offset"
-                    />
+                    {hasAdjustConflict() && (
+                      <Typography variant="body2" color="warning.main">
+                        Shifting values will overwrite existing values.
+                      </Typography>
+                    )}
                   </Box>
                 )}
 
@@ -534,9 +548,11 @@ function EntryEditModal({
                       size="small"
                       InputProps={{ sx: { fontFamily: '"JetBrains Mono", monospace' } }}
                     />
-                    <Typography variant="body2" color="warning.main">
-                      Shifting keys may create conflicts if new keys already exist.
-                    </Typography>
+                    {hasShiftConflict() && (
+                      <Typography variant="body2" color="warning.main">
+                        Shifting keys will overwrite existing keys.
+                      </Typography>
+                    )}
                   </Box>
                 )}
 
