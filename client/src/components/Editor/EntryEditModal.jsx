@@ -368,17 +368,19 @@ function EntryEditModal({
           </IconButton>
         </AppToolbar>
       <Box sx={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
-        <Box sx={{ flex: 1, p: 2, overflow: 'auto' }}>
+        <Box sx={{ flex: 1, p: 2, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
           <Box sx={{ display: 'flex', fontWeight: 'bold', mb: 1, fontFamily: '"JetBrains Mono", monospace' }}>
             <Box sx={{ width: '40%' }}>Key</Box>
             <Box sx={{ width: '40%' }}>Value</Box>
             <Box sx={{ width: '20%', textAlign: 'right' }}>Offset</Box>
           </Box>
-          <VirtualizedList
-            items={rows}
-            itemHeight={36}
-            renderRow={renderRow}
-          />
+          <Box sx={{ flex: 1, minHeight: 0 }}>
+            <VirtualizedList
+              items={rows}
+              itemHeight={36}
+              renderRow={renderRow}
+            />
+          </Box>
         </Box>
         <Box sx={{ width: 500, borderLeft: 1, borderColor: 'divider', p: 2, display: 'flex', flexDirection: 'column', gap: 2 }}>
           <Typography variant="subtitle1">Add Entries</Typography>
