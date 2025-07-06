@@ -5,6 +5,7 @@
 - **Client build**: `cd client && npm run build` (production build)
 - **Client lint**: `cd client && npm run lint` (ESLint check)
 - **Server start**: `cd server && npm start` (Express server)
+- **Docker restart**: `docker compose down -v && docker compose build && docker compose up -d && docker compose logs -f` (restart container after changes)
 - **No test commands configured** - add tests using your preferred framework
 
 ## Architecture Overview
