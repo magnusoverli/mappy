@@ -425,7 +425,7 @@ function EntryEditModal({
             InputProps={{ sx: { fontFamily: '"JetBrains Mono", monospace' } }}
           />
           <TextField
-            label="Start Index"
+            label="First Key"
             type="number"
             value={batchStart}
             onChange={e => setBatchStart(parseInt(e.target.value, 10) || 0)}
