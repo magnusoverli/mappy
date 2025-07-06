@@ -17,8 +17,6 @@ import {
   Select,
   MenuItem,
   FormControlLabel,
-  RadioGroup,
-  Radio,
   Checkbox,
   Collapse,
 } from '@mui/material';
@@ -47,7 +45,6 @@ function EntryEditModal({
   const [batchOffset, setBatchOffset] = useState(0);
 
   const [transformType, setTransformType] = useState('shift');
-  const [adjustMode, setAdjustMode] = useState('add');
   const [adjustAmount, setAdjustAmount] = useState(0);
   const [skipZero, setSkipZero] = useState(false);
 
@@ -56,7 +53,6 @@ function EntryEditModal({
 
   const [fixedValue, setFixedValue] = useState('');
 
-  const [shiftDir, setShiftDir] = useState('up');
   const [shiftAmount, setShiftAmount] = useState(1);
 
   const [preview, setPreview] = useState([]);
@@ -65,10 +61,10 @@ function EntryEditModal({
   const dialogRef = useRef(null);
 
   const helpTexts = {
-    adjust: 'Shift all selected values up or down by a fixed amount',
+    adjust: 'Shift selected values by a fixed amount (use negative numbers to move down)',
     sequential: 'Renumber values in sequence (like 1, 2, 3...)',
     fixed: 'Change all selected entries to exactly the same value',
-    shift: 'Shift entry keys up or down in the list',
+    shift: 'Shift entry keys by a fixed amount (use negative numbers to move down)',
   };
 
   useEffect(() => {
@@ -176,7 +172,7 @@ function EntryEditModal({
         if (skipZero && row.offset === 0) return;
         const val = parseInt(row.value, 16) || 0;
         const amt = parseInt(adjustAmount, 10) || 0;
-        const newVal = adjustMode === 'add' ? val + amt : val - amt;
+        const newVal = val + amt;
         row.value = (newVal >>> 0).toString(16).toLowerCase().padStart(8, '0');
         const dec = parseInt(row.key.split('.')[1], 10);
         row.offset = dec - newVal;
@@ -205,11 +201,10 @@ function EntryEditModal({
       }
     } else if (transformType === 'shift') {
       const amt = parseInt(shiftAmount, 10) || 0;
-      const dir = shiftDir === 'up' ? 1 : -1;
       sel.forEach(i => {
         const row = updated[i];
         const parts = row.key.split('.');
-        const dec = parseInt(parts[1], 10) + dir * amt;
+        const dec = parseInt(parts[1], 10) + amt;
         parts[1] = String(dec).padStart(4, '0');
         row.key = parts.join('.');
         const val = parseInt(row.value, 16) || 0;
@@ -217,7 +212,7 @@ function EntryEditModal({
       });
     }
     return updated;
-  }, [selected, transformType, adjustMode, adjustAmount, skipZero, seqStart, seqIncrement, fixedValue, shiftDir, shiftAmount]);
+  }, [selected, transformType, adjustAmount, skipZero, seqStart, seqIncrement, fixedValue, shiftAmount]);
 
   useEffect(() => {
     const updated = transformRows(rows);
@@ -239,17 +234,16 @@ function EntryEditModal({
     });
     setPreview(pv);
     setChangedCount(count);
-  }, [rows, selected, transformType, adjustMode, adjustAmount, skipZero, seqStart, seqIncrement, fixedValue, shiftDir, shiftAmount, transformRows]);
+  }, [rows, selected, transformType, adjustAmount, skipZero, seqStart, seqIncrement, fixedValue, shiftAmount, transformRows]);
 
   const hasShiftConflict = () => {
     if (transformType !== 'shift') return false;
     const amt = parseInt(shiftAmount, 10) || 0;
-    const dir = shiftDir === 'up' ? 1 : -1;
     const newKeys = new Set();
     const existing = new Set(rows.map(r => r.key));
     selected.forEach(i => {
       const parts = rows[i].key.split('.');
-      const dec = parseInt(parts[1], 10) + dir * amt;
+      const dec = parseInt(parts[1], 10) + amt;
       const key = `${parts[0]}.${String(dec).padStart(4, '0')}`;
       newKeys.add(key);
     });
@@ -472,16 +466,8 @@ function EntryEditModal({
 
                 {transformType === 'adjust' && (
                   <Box sx={{ mt: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
-                    <RadioGroup
-                      row
-                      value={adjustMode}
-                      onChange={e => setAdjustMode(e.target.value)}
-                    >
-                      <FormControlLabel value="add" control={<Radio />} label="Add" />
-                      <FormControlLabel value="subtract" control={<Radio />} label="Subtract" />
-                    </RadioGroup>
                     <TextField
-                      label={adjustMode === 'add' ? 'Amount to add' : 'Amount to subtract'}
+                      label="Move by"
                       type="number"
                       value={adjustAmount}
                       onChange={e => setAdjustAmount(parseInt(e.target.value, 10) || 0)}
@@ -540,14 +526,6 @@ function EntryEditModal({
 
                 {transformType === 'shift' && (
                   <Box sx={{ mt: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
-                    <RadioGroup
-                      row
-                      value={shiftDir}
-                      onChange={e => setShiftDir(e.target.value)}
-                    >
-                      <FormControlLabel value="up" control={<Radio />} label="↑ Move to higher keys" />
-                      <FormControlLabel value="down" control={<Radio />} label="↓ Move to lower keys" />
-                    </RadioGroup>
                     <TextField
                       label="Move by"
                       type="number"
