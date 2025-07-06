@@ -65,10 +65,8 @@ Mappy uses an **Agent Pattern** where each agent encapsulates a single responsib
 - **Always maintain TODO.md** in the project root with brief summaries of all active plans
 - Each plan entry in TODO.md should include:
   - Plan name and file reference
-  - Priority level (High/Medium/Low)
-  - Estimated effort (hours/days)
   - Current status (Not Started/In Progress/Completed)
-  - Brief description (1-2 lines)
+  - Brief description (1-3 lines)
 
 ### **Plan Implementation Tracking**
 - **Update TODO.md immediately** when:
@@ -77,7 +75,7 @@ Mappy uses an **Agent Pattern** where each agent encapsulates a single responsib
   - Completing plan milestones
   - Finishing entire plans
 - **Reference plan files** in commit messages when implementing planned features
-- **Archive completed plans** by moving them to `/plans/completed/` folder
+- **ON plan completion** move the plan to `/plans/completed/`
 - **Update plan status** in both the plan file and TODO.md simultaneously
 
 ### **Plan Review Process**
