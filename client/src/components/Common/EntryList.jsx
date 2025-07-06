@@ -1,4 +1,4 @@
-import { Box, ListItemButton, Paper, Typography } from '@mui/material';
+import { Box, Paper, Typography } from '@mui/material';
 import useHighlightColors from '../../utils/useHighlightColors.js';
 import VirtualizedList from './VirtualizedList.jsx';
 import { useSearch } from '../../hooks/useSearch.jsx';
@@ -25,7 +25,7 @@ export default function EntryList({
 
   const defaultRow = (item, _i, style) => (
     <Box style={style} key={item.key}>
-      <ListItemButton
+      <Box
         sx={{
           height: '100%',
           minHeight: 0,
@@ -33,7 +33,6 @@ export default function EntryList({
           mb: 0.5,
           borderRadius: 1,
           transition: 'background-color 0.3s',
-          '&.Mui-selected': { bgcolor: 'action.selected' },
           ...(matchSet?.has(item.key) && { bgcolor: highlight }),
           ...(query && !matchSet?.has(item.key) && { opacity: 0.7 }),
           ...(currentResult?.key === item.key && { bgcolor: currentHighlight }),
@@ -53,7 +52,7 @@ export default function EntryList({
           {item.offset}
         </Box>
         </Box>
-      </ListItemButton>
+      </Box>
     </Box>
   );
 
