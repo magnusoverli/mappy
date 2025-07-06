@@ -42,3 +42,8 @@ Mappy uses an **Agent Pattern** where each agent encapsulates a single responsib
 - Hex values: 8-digit uppercase (00000000-FFFFFFFF)
 - Paths: Unix-style, typically ending with `/Matrix`
 - Preserve whitespace around `=` signs in INI output
+
+## Development Workflow
+- **Always commit when tasks are completed**: Create commits immediately after completing any task or feature
+- Use descriptive commit messages that explain the purpose of changes
+- Follow conventional commit format when possible
