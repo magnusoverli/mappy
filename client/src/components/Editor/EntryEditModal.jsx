@@ -24,13 +24,14 @@ import {
   Collapse,
   Tooltip,
 } from '@mui/material';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, memo } from 'react';
 import useHighlightColors from '../../utils/useHighlightColors.js';
 import { useSearch } from '../../hooks/useSearch.jsx';
 import AppToolbar from '../Layout/AppToolbar.jsx';
 import SearchField from '../Common/SearchField.jsx';
+import VirtualizedList from '../Common/VirtualizedList.jsx';
 
-export default function EntryEditModal({
+function EntryEditModal({
   open,
   onClose,
   onSave,
@@ -60,6 +61,8 @@ export default function EntryEditModal({
   const [shiftDir, setShiftDir] = useState('up');
   const [shiftAmount, setShiftAmount] = useState(1);
 
+  const search = useSearch();
+
 
   useEffect(() => {
     if (open) {
@@ -75,6 +78,12 @@ export default function EntryEditModal({
       setLastIndex(null);
     }
   }, [open, entries]);
+
+  useEffect(() => {
+    if (open && search && typeof search.setQuery === 'function') {
+      search.setQuery('');
+    }
+  }, [open, search]);
 
   const handleRowClick = (index, e) => {
     if (e.shiftKey && lastIndex !== null) {
@@ -228,6 +237,72 @@ export default function EntryEditModal({
   const { query, matchSet, currentResult } = useSearch() || {};
   const { highlight, currentHighlight } = useHighlightColors();
 
+  const renderRow = (row, i, style) => {
+    const isMatch = matchSet?.has(row.key);
+    const isCurrent = currentResult?.key === row.key;
+    return (
+      <Paper
+        style={style}
+        key={i}
+        onClick={e => handleRowClick(i, e)}
+        sx={theme => {
+          const base = {
+            mb: 0.5,
+            display: 'flex',
+            alignItems: 'center',
+            px: 1,
+            py: 0,
+            minHeight: 0,
+            borderRadius: 1,
+            transition: 'background-color 0.3s',
+            '&:hover': { bgcolor: 'action.hover' },
+          };
+          if (selected.includes(i)) {
+            base.boxShadow = `0 0 0 2px ${theme.palette.primary.main} inset`;
+            if (!isMatch) base.bgcolor = 'action.selected';
+          }
+          if (isMatch) base.bgcolor = highlight;
+          if (query && !isMatch) base.opacity = 0.7;
+          if (isCurrent) base.bgcolor = currentHighlight;
+          return base;
+        }}
+      >
+        <TextField
+          value={row.key}
+          onChange={e => handleCellChange(i, 'key', e.target.value)}
+          variant="standard"
+          error={!keyRegex.test(row.key)}
+          sx={{ width: '40%' }}
+          InputProps={{
+            disableUnderline: true,
+            sx: { fontFamily: '"JetBrains Mono", monospace' },
+          }}
+        />
+        <TextField
+          value={row.value}
+          onChange={e => handleCellChange(i, 'value', e.target.value)}
+          variant="standard"
+          error={!valRegex.test(row.value)}
+          sx={{ width: '40%' }}
+          InputProps={{
+            disableUnderline: true,
+            sx: { fontFamily: '"JetBrains Mono", monospace' },
+          }}
+        />
+        <Box
+          sx={{
+            width: '20%',
+            textAlign: 'right',
+            fontFamily: '"JetBrains Mono", monospace',
+            color: row.offset === 0 ? 'success.dark' : 'error.dark',
+          }}
+        >
+          {row.offset}
+        </Box>
+      </Paper>
+    );
+  };
+
   return (
     <Dialog
         fullScreen
@@ -262,70 +337,11 @@ export default function EntryEditModal({
             <Box sx={{ width: '40%' }}>Value</Box>
             <Box sx={{ width: '20%', textAlign: 'right' }}>Offset</Box>
           </Box>
-          {rows.map((row, i) => {
-            const isMatch = matchSet?.has(row.key);
-            const isCurrent = currentResult?.key === row.key;
-            return (
-              <Paper
-                key={i}
-                onClick={e => handleRowClick(i, e)}
-                sx={theme => {
-                  const base = {
-                    mb: 0.5,
-                    display: 'flex',
-                    alignItems: 'center',
-                    px: 1,
-                    py: 0,
-                    minHeight: 0,
-                    borderRadius: 1,
-                    transition: 'background-color 0.3s',
-                    '&:hover': { bgcolor: 'action.hover' },
-                  };
-                  if (selected.includes(i)) {
-                    base.boxShadow = `0 0 0 2px ${theme.palette.primary.main} inset`;
-                    if (!isMatch) base.bgcolor = 'action.selected';
-                  }
-                  if (isMatch) base.bgcolor = highlight;
-                  if (query && !isMatch) base.opacity = 0.7;
-                  if (isCurrent) base.bgcolor = currentHighlight;
-                  return base;
-                }}
-              >
-              <TextField
-                value={row.key}
-                onChange={e => handleCellChange(i, 'key', e.target.value)}
-                variant="standard"
-                error={!keyRegex.test(row.key)}
-                sx={{ width: '40%' }}
-                InputProps={{
-                  disableUnderline: true,
-                  sx: { fontFamily: '"JetBrains Mono", monospace' },
-                }}
-              />
-              <TextField
-                value={row.value}
-                onChange={e => handleCellChange(i, 'value', e.target.value)}
-                variant="standard"
-                error={!valRegex.test(row.value)}
-                sx={{ width: '40%' }}
-                InputProps={{
-                  disableUnderline: true,
-                  sx: { fontFamily: '"JetBrains Mono", monospace' },
-                }}
-              />
-              <Box
-                sx={{
-                  width: '20%',
-                  textAlign: 'right',
-                  fontFamily: '"JetBrains Mono", monospace',
-                  color: row.offset === 0 ? 'success.dark' : 'error.dark',
-                }}
-              >
-                {row.offset}
-              </Box>
-            </Paper>
-            );
-          })}
+          <VirtualizedList
+            items={rows}
+            itemHeight={36}
+            renderRow={renderRow}
+          />
         </Box>
         <Box sx={{ width: 300, borderLeft: 1, borderColor: 'divider', p: 2, display: 'flex', flexDirection: 'column', gap: 2 }}>
           <Typography variant="subtitle1">Add Entries</Typography>
@@ -539,3 +555,5 @@ export default function EntryEditModal({
     </Dialog>
   );
 }
+
+export default memo(EntryEditModal);
