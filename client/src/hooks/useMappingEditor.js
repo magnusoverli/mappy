@@ -9,7 +9,7 @@ import {
   groupSourcesByLayer,
   removeLayerSources,
 } from '../EntryAgent.js';
-import { setLayerEntries } from '../utils/entryHelpers.js';
+
 
 export default function useMappingEditor() {
   const [iniData, setIniData] = useState(null);
@@ -123,19 +123,7 @@ export default function useMappingEditor() {
     setSelectedLayer(nextKey);
   }, [iniData, layers]);
 
-  const saveTargets = useCallback((layerKey, entries) => {
-    const dataCopy = { ...iniData, Targets: { ...iniData.Targets } };
-    setLayerEntries(dataCopy.Targets, layerKey, entries);
-    setIniData(dataCopy);
-    setTargets(groupTargetsByLayer(dataCopy));
-  }, [iniData]);
 
-  const saveSources = useCallback((layerKey, entries) => {
-    const dataCopy = { ...iniData, Sources: { ...iniData.Sources } };
-    setLayerEntries(dataCopy.Sources, layerKey, entries);
-    setIniData(dataCopy);
-    setSources(groupSourcesByLayer(dataCopy));
-  }, [iniData]);
 
   const reset = useCallback(() => {
     setIniData(null);
@@ -166,8 +154,7 @@ export default function useMappingEditor() {
     handlePathChange,
     handleAddLayer,
     handleRemoveLayer,
-    saveTargets,
-    saveSources,
+
     reset,
   };
 }

@@ -1,24 +1,16 @@
 import { Box, Button } from '@mui/material';
-import { memo, useState } from 'react';
+import { memo } from 'react';
 import { useSearch } from '../../hooks/useSearch.jsx';
 import DataTable from '../Common/DataTable.jsx';
 import LayerSelector from './LayerSelector.jsx';
-import EntryEditModal from './EntryEditModal.jsx';
-import { formatLayerLabel } from '../../utils/formatLayerLabel.js';
+
 const LayerPanel = ({
   layers,
   targets,
   sources,
   selectedLayer,
   onSelectLayer,
-  onSaveTargets,
-  onSaveSources,
 }) => {
-  const [editTargetsOpen, setEditTargetsOpen] = useState(false);
-  const [editSourcesOpen, setEditSourcesOpen] = useState(false);
-
-  const layer = layers.find(l => l.key === selectedLayer);
-  const label = layer ? formatLayerLabel(layer.key, layer.value) : '';
   const { query, counts } = useSearch() || {};
   const active = Boolean(query);
 
@@ -36,7 +28,7 @@ const LayerPanel = ({
             <Button 
               variant="contained" 
               size="small" 
-              onClick={() => setEditTargetsOpen(true)}
+              onClick={() => {}}
               disabled={false}
             >
               Edit
@@ -52,7 +44,7 @@ const LayerPanel = ({
             <Button 
               variant="contained" 
               size="small" 
-              onClick={() => setEditSourcesOpen(true)}
+              onClick={() => {}}
               disabled={false}
             >
               Edit
@@ -61,24 +53,7 @@ const LayerPanel = ({
         }
         items={sources}
       />
-      <EntryEditModal
-        open={editTargetsOpen}
-        onClose={() => setEditTargetsOpen(false)}
-        onSave={entries => onSaveTargets(selectedLayer, entries)}
-        entries={targets}
-        layerLabel={label}
-        layerKey={selectedLayer}
-        type="Targets"
-      />
-      <EntryEditModal
-        open={editSourcesOpen}
-        onClose={() => setEditSourcesOpen(false)}
-        onSave={entries => onSaveSources(selectedLayer, entries)}
-        entries={sources}
-        layerLabel={label}
-        layerKey={selectedLayer}
-        type="Sources"
-      />
+
     </Box>
   );
 };

@@ -17,12 +17,7 @@ export function removeLayerEntries(entries = {}, layer) {
   });
 }
 
-export function setLayerEntries(entries = {}, layer, newEntries = []) {
-  removeLayerEntries(entries, layer);
-  newEntries.forEach(e => {
-    entries[e.key] = e.value;
-  });
-}
+
 
 export function validateLayerOrder(data) {
   if (!data.Layers) return data;
