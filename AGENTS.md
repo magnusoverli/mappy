@@ -29,7 +29,7 @@ Mappy uses an **Agent Pattern** where each agent encapsulates a single responsib
 ## Code Style Guidelines
 
 ### File Structure & Naming
-- Components: PascalCase (e.g., `LayerPanel`, `EntryEditModal`)
+- Components: PascalCase (e.g., `LayerPanel`, `DataTable`)
 - Agent files: PascalCase ending in "Agent" (e.g., `FileAgent.js`)
 - Utilities: camelCase (e.g., `entryHelpers.js`, `formatLayerLabel.js`)
 - React components use `.jsx`, utilities use `.js`
@@ -46,6 +46,9 @@ Mappy uses an **Agent Pattern** where each agent encapsulates a single responsib
 - **Error handling**: Use try/catch with meaningful error messages
 - **State management**: Single source of truth via useMappingEditor hook
 - **Validation**: Format-specific rules (2-digit layers, 8-digit hex values)
+- **Reuse validation logic**: Use existing validators in `/src/utils/validationUtils.js`
+- **Consistent data transformations**: Leverage `/src/utils/conversionUtils.js` for format conversions
+- **Shared helper functions**: Utilize `/src/utils/entryHelpers.js` for common operations
 
 ### VSM File Format Rules
 - Layer keys: 2-digit zero-padded (00-99)
@@ -53,6 +56,57 @@ Mappy uses an **Agent Pattern** where each agent encapsulates a single responsib
 - Hex values: 8-digit uppercase (00000000-FFFFFFFF)
 - Paths: Unix-style, typically ending with `/Matrix`
 - Preserve whitespace around `=` signs in INI output
+
+## Coding Best Practices
+
+### **Component Reuse & Modularity**
+- **Reuse existing components** before creating new ones - check `/src/components/Common/` first
+- **Extract reusable logic** into utility functions in `/src/utils/`
+- **Create generic components** that accept props for customization rather than hardcoded variants
+- **Use composition over inheritance** - combine smaller components to build complex UIs
+- **Follow the DRY principle** (Don't Repeat Yourself) - if you write similar code twice, extract it
+
+### **Code Organization & Architecture**
+- **Single Responsibility Principle**: Each function/component should have one clear purpose
+- **Separation of Concerns**: Keep business logic separate from UI components
+- **Use custom hooks** for reusable stateful logic (see `/src/hooks/`)
+- **Agent pattern compliance**: Delegate specific responsibilities to appropriate agents
+- **Consistent interfaces**: Maintain predictable function signatures across similar operations
+
+### **Performance & Optimization**
+- **Memoization**: Use React.memo, useMemo, useCallback for expensive operations
+- **Lazy loading**: Import components dynamically when needed
+- **Avoid premature optimization**: Profile first, then optimize bottlenecks
+- **Efficient data structures**: Choose appropriate data types for your use case
+- **Minimize re-renders**: Structure state to prevent unnecessary component updates
+
+### **Error Handling & Robustness**
+- **Defensive programming**: Validate inputs and handle edge cases
+- **Graceful degradation**: Provide fallbacks when features fail
+- **Consistent error patterns**: Use try/catch blocks with meaningful error messages
+- **User-friendly errors**: Display helpful messages, not technical stack traces
+- **Error boundaries**: Implement React error boundaries for component isolation
+
+### **Code Quality & Maintainability**
+- **Self-documenting code**: Use descriptive variable and function names
+- **Small, focused functions**: Keep functions under 20-30 lines when possible
+- **Consistent formatting**: Follow ESLint rules and project conventions
+- **Type safety**: Use PropTypes or TypeScript for better development experience
+- **Regular refactoring**: Continuously improve code structure and readability
+
+### **Testing & Validation**
+- **Test-driven development**: Write tests before or alongside implementation
+- **Unit tests**: Test individual functions and components in isolation
+- **Integration tests**: Verify component interactions and data flow
+- **Edge case testing**: Test boundary conditions and error scenarios
+- **Regression testing**: Ensure changes don't break existing functionality
+
+### **Security & Data Handling**
+- **Input validation**: Sanitize and validate all user inputs
+- **Secure data storage**: Never store sensitive data in localStorage/sessionStorage
+- **XSS prevention**: Escape user-generated content properly
+- **CSRF protection**: Implement appropriate request validation
+- **Principle of least privilege**: Grant minimal necessary permissions
 
 ## Development Workflow
 
@@ -63,6 +117,9 @@ Mappy uses an **Agent Pattern** where each agent encapsulates a single responsib
 
 ### **Task Completion Process**
 1. **Complete the development work** (code, tests, documentation)
+   - **Check for reusable components** before creating new ones
+   - **Follow coding best practices** outlined in this document
+   - **Run linting and tests** to ensure code quality
 2. **MANDATORY: Execute Plan Completion Checklist** (see below)
 3. **NEVER commit changes unless explicitly requested**: Only create git commits when the user specifically asks for it
 4. **When asked to commit**: Use descriptive commit messages that explain the purpose of changes
