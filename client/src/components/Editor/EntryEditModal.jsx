@@ -1,5 +1,6 @@
 import {
   Dialog,
+  Modal,
   Typography,
   IconButton,
   Box,
@@ -112,8 +113,13 @@ function EntryEditModal({
         }
       }
     };
-    document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
+    
+    // Attach event listener to the dialog container instead of document
+    const dialogElement = dialogRef.current;
+    if (dialogElement) {
+      dialogElement.addEventListener('keydown', handleKeyDown);
+      return () => dialogElement.removeEventListener('keydown', handleKeyDown);
+    }
   }, [open, rows]);
 
 
@@ -317,7 +323,8 @@ function EntryEditModal({
         onClick={e => handleRowClick(index, e)}
         sx={theme => {
           const base = {
-                              mb: SPACING.MARGIN_SMALL,            display: 'flex',
+            mb: SPACING.MARGIN_SMALL,
+            display: 'flex',
             alignItems: 'center',
             px: SPACING.PADDING.SMALL,
             py: 0,
@@ -327,6 +334,16 @@ function EntryEditModal({
             '&:hover': { bgcolor: 'action.hover' },
             ...styles,
           };
+          
+          // Add subtle alternating row colors
+          if (!selected.includes(index) && !styles.bgcolor) {
+            base.bgcolor = index % 2 === 0 
+              ? 'transparent' 
+              : theme.palette.mode === 'dark' 
+                ? 'rgba(255, 255, 255, 0.02)' 
+                : 'rgba(0, 0, 0, 0.02)';
+          }
+          
           if (selected.includes(index)) {
             base.boxShadow = `0 0 0 2px ${theme.palette.primary.main} inset`;
             if (!styles.bgcolor) base.bgcolor = 'action.selected';
@@ -340,7 +357,7 @@ function EntryEditModal({
           onClick={handleFieldClick}
           onMouseDown={handleFieldMouseDown}
           error={!validateEntryKey(row.key)}
-          sx={{ width: '40%' }}
+          sx={{ width: '11ch', minWidth: '11ch' }}
         />
         <MonospaceTextField
           value={row.value}
@@ -348,14 +365,18 @@ function EntryEditModal({
           onClick={handleFieldClick}
           onMouseDown={handleFieldMouseDown}
           error={!validateHexValue(row.value)}
-          sx={{ width: '40%' }}
+          sx={{ width: '11ch', minWidth: '11ch', ml: 1 }}
         />
         <Box
           sx={{
-            width: '20%',
+            flex: 1,
             textAlign: 'right',
             fontFamily: FONTS.MONOSPACE,
             color: row.offset === 0 ? 'success.dark' : 'error.dark',
+            ml: 2,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'flex-end',
           }}
         >
           {row.offset}
@@ -367,24 +388,48 @@ function EntryEditModal({
   const renderRow = (row, i, style) => <EditableRow row={row} index={i} style={style} />;
 
   return (
-    <Dialog
-        ref={dialogRef}
-        fullScreen
+    <Modal
         open={open}
         onClose={onClose}
-        PaperProps={{ sx: { display: 'flex', flexDirection: 'column', bgcolor: 'background.default' } }}
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+        BackdropProps={{
+          sx: {
+            backgroundColor: 'rgba(0, 0, 0, 0.7)',
+            backdropFilter: 'blur(4px)',
+          }
+        }}
       >
+        <Paper
+          ref={dialogRef}
+          sx={{
+            width: '65vw',
+            height: '85vh',
+            borderRadius: 2,
+            display: 'flex',
+            flexDirection: 'column',
+            bgcolor: 'background.default',
+            outline: 'none',
+            transform: open ? 'translateY(0)' : 'translateY(50px)',
+            transition: 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+          }}
+        >
         <AppToolbar position="relative">
           <Typography
-            variant="h4"
+            variant="h5"
             component="div"
             sx={{ fontFamily: FONTS.BRAND, fontWeight: 'bold', mr: 2 }}
           >
             Mappy
           </Typography>
-          <SearchField />
+          <Box sx={{ maxWidth: 300 }}>
+            <SearchField />
+          </Box>
           <Typography
-            variant="h6"
+            variant="subtitle1"
             component="div"
             sx={{ flex: 1, ml: 2, fontFamily: FONTS.BRAND, fontWeight: 'bold' }}
           >
@@ -396,12 +441,11 @@ function EntryEditModal({
         </AppToolbar>
       <Box sx={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
         <Box sx={{ flex: 1, p: 2, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
-          <Box sx={{ display: 'flex', fontWeight: 'bold', mb: 1, fontFamily: FONTS.MONOSPACE }}>
-            <Box sx={{ width: '40%' }}>Key</Box>
-            <Box sx={{ width: '40%' }}>Value</Box>
-            <Box sx={{ width: '20%', textAlign: 'right' }}>Offset</Box>
-          </Box>
-          <Box sx={{ flex: 1, minHeight: 0 }}>
+           <Box sx={{ display: 'flex', fontWeight: 'bold', mb: 1, fontFamily: FONTS.MONOSPACE, alignItems: 'center' }}>
+             <Box sx={{ width: '11ch', minWidth: '11ch' }}>Key</Box>
+             <Box sx={{ width: '11ch', minWidth: '11ch', ml: 1 }}>Value</Box>
+             <Box sx={{ flex: 1, textAlign: 'right', ml: 2 }}>Offset</Box>
+           </Box>          <Box sx={{ flex: 1, minHeight: 0 }}>
             <VirtualizedList
               items={rows}
               itemHeight={36}
@@ -409,7 +453,17 @@ function EntryEditModal({
             />
           </Box>
         </Box>
-        <Box sx={{ width: 500, borderLeft: 1, borderColor: 'divider', p: 2, display: 'flex', flexDirection: 'column', gap: 2 }}>
+        <Box sx={{ 
+          width: 400, 
+          minWidth: 350, 
+          maxWidth: 450, 
+          borderLeft: 1, 
+          borderColor: 'divider', 
+          p: 2, 
+          display: 'flex', 
+          flexDirection: 'column', 
+          gap: 2 
+        }}>
           <Typography variant="subtitle1">Add Entries</Typography>
           <MonospaceTextField
             label="Quantity"
@@ -593,13 +647,14 @@ function EntryEditModal({
           </Box>
         </Box>
       </Box>
-      <DialogActions>
-        <Button onClick={onClose}>Cancel</Button>
-        <Button variant="contained" onClick={handleSave} disabled={!hasChanges()}>
-          Save
-        </Button>
-      </DialogActions>
-    </Dialog>
+          <Box sx={{ p: 2, borderTop: 1, borderColor: 'divider', display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
+            <Button onClick={onClose}>Cancel</Button>
+            <Button variant="contained" onClick={handleSave} disabled={!hasChanges()}>
+              Save
+            </Button>
+          </Box>
+        </Paper>
+    </Modal>
   );
 }
 

@@ -2,54 +2,40 @@
 
 ## Active Plans
 
-### 🎨 Entry Edit Modal Field Width Optimization (`/plans/entry-edit-modal-field-width-optimization.md`)
-- **Priority**: Medium | **Assignee**: @opencode
-- **Status**: Not Started
-- **Enhancement**: Reduce the width of editable fields to better match content while maintaining horizontal positioning
-- **Goal**: Make bordered fields more proportional to their 7-8 character content, improving visual balance
-
 ---
 
 ## Completed Plans
 
-### 🧹 Code Cleanup and Refactoring (`/plans/completed/code-cleanup-and-refactoring.md`)
+### 🎨 Large Centered Modal UI Enhancement (`/plans/completed/large-centered-modal-ui.md`)
 - **Priority**: High | **Assignee**: @opencode
 - **Status**: Completed
-- **Enhancement**: Remove unused code, eliminate redundant patterns, and create utility functions for better maintainability
-- **Goal**: Reduce bundle size, improve code quality, and eliminate redundancy while maintaining 100% backward compatibility
+- **Enhancement**: Transform fullscreen modal to large centered modal (75% width, 85% height) with blurred background, smooth animations, and multiple exit methods
+- **Goal**: Improve visual focus, better content proportions, clear context boundaries, and enhanced readability while preserving all functionality
 
 
 
-### 🔧 Code Quality Improvements (`/plans/completed/code-quality-improvements.md`)
-- **Priority**: High | **Assignee**: @opencode
-- **Status**: Completed
-- **Enhancement**: Comprehensive code quality improvements focusing on code reuse, UI component consolidation, and implementation enhancements
-- **Goal**: Reduce code duplication, improve maintainability, and enhance developer experience while preserving all functionality
-
-
-
-### ✅ Layer Context Menu Removal (`/plans/completed/layer-context-menu-removal.md`)
+### ✅ Layer Context Menu Removal
 Successfully removed context menu and added red delete button next to "Add Layer" button. Simplified UX, better discoverability, reduced code complexity.
 
-### ✅ Entry Edit Modal Field Borders (`/plans/completed/entry-edit-modal-field-borders.md`)
+### ✅ Entry Edit Modal Field Borders
 Added subtle borders around editable fields in EntryEditModal with hover and focus states. Improved UX by making editable fields clearly distinguishable while maintaining clean aesthetic.
 
-### ✅ Search Optimization (`/plans/completed/search-optimization.md`)
+### ✅ Search Optimization
 Comprehensive search performance optimization with 2-5x improvements across 4 milestones: duplicate string storage removal (50% memory reduction), consolidated useMemo hooks (200% performance improvement), incremental index updates (300% speed improvement), and Web Workers for large datasets (500% speed improvement).
 
-### ✅ Entry Editor Transformation Button Fix (`/plans/completed/entry-editor-button-fix.md`)
+### ✅ Entry Editor Transformation Button Fix
 Fixed "Apply to X entries" transformation button that never activated due to case sensitivity bug. Updated hex validation regex to support both uppercase and lowercase hex digits.
 
-### ✅ Entry Field Editing Fix (`/plans/completed/entry-field-editing-fix.md`)
+### ✅ Entry Field Editing Fix
 Fixed TextField editing that immediately deactivated when clicking on fields in EntryEditModal. Added event handlers to prevent TextField event bubbling to row selection handlers.
 
-### ✅ Planning System Sync Fix (`/plans/completed/planning-system-sync-fix.md`)
+### ✅ Planning System Sync Fix
 Fixed plans not being properly archived when completed and TODO.md/plan files being out of sync. Implemented automated sync tools, improved validation, and consistent metadata format.
 
-### ✅ Reset Button Freeze Fix (`/plans/completed/reset-button-freeze-fix.md`)
+### ✅ Reset Button Freeze Fix
 Fixed reset button causing browser tab to freeze and become unresponsive. Added reset-specific optimization to bypass expensive change detection when clearing all data.
 
-### ✅ File Upload Reset Bug (`/plans/completed/fileupload-reset-bug.md`)
+### ✅ File Upload Reset Bug
 Fixed file input not triggering second onChange after reset. Clear the file input's value after file selection.
 
 ---
