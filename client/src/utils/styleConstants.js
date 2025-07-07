@@ -28,18 +28,41 @@ export const FONTS = {
 export const FIELD_STYLES = {
   MONOSPACE_INPUT: {
     fontFamily: FONTS.MONOSPACE,
-    border: '1px solid',
-    borderColor: 'divider',
+    border: '1px solid transparent',
     borderRadius: SPACING.BORDER_RADIUS,
     px: SPACING.PADDING.SMALL,
+    py: '4px',
+    backgroundColor: 'transparent',
+    cursor: 'text',
+    transition: 'all 0.2s ease-in-out',
     '&:hover': {
-      borderColor: 'text.secondary',
+      backgroundColor: 'action.hover',
+      borderColor: 'divider',
     },
     '&.Mui-focused': {
+      backgroundColor: 'action.selected',
       borderColor: 'primary.main',
+      outline: 'none',
+      boxShadow: theme => `0 0 0 1px ${theme.palette.primary.main}25`,
     },
     '&.Mui-error': {
       borderColor: 'error.main',
+      backgroundColor: theme => theme.palette.mode === 'dark' 
+        ? 'rgba(244, 67, 54, 0.05)' 
+        : 'rgba(244, 67, 54, 0.02)',
+      '&:hover': {
+        borderColor: 'error.main',
+        backgroundColor: theme => theme.palette.mode === 'dark' 
+          ? 'rgba(244, 67, 54, 0.08)' 
+          : 'rgba(244, 67, 54, 0.04)',
+      },
+      '&.Mui-focused': {
+        borderColor: 'error.main',
+        backgroundColor: theme => theme.palette.mode === 'dark' 
+          ? 'rgba(244, 67, 54, 0.1)' 
+          : 'rgba(244, 67, 54, 0.06)',
+        boxShadow: theme => `0 0 0 1px ${theme.palette.error.main}25`,
+      },
     },
   },
 };

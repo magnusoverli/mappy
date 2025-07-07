@@ -6,6 +6,14 @@
 
 ## Completed Plans
 
+### 🎨 Entry Field Editability Improvements (`/plans/completed/entry-field-editability-improvements.md`)
+- **Priority**: Medium | **Assignee**: @opencode
+- **Status**: Completed
+- **Description**: Replace bordered text fields with modern hover-reveal pattern or subtle visual cues to improve both visual design and user understanding of field editability
+- **Goal**: Cleaner interface design and better user discovery of editable fields through standard UX patterns
+
+
+
 ### 🎨 Large Centered Modal UI Enhancement (`/plans/completed/large-centered-modal-ui.md`)
 - **Priority**: High | **Assignee**: @opencode
 - **Status**: Completed
