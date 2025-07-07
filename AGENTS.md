@@ -76,11 +76,12 @@ When completing ANY planned work, you MUST execute ALL of these steps:
 
 **□ Step 2: Update TODO.md**
 - Change plan status from "Not Started/In Progress" to "Completed" 
-- Move plan from "Active Plans" to "Completed Plans" section
-- Update the plan description to reflect achievement
+- Update the plan description to use simplified format (remove Priority/Assignee, keep only achievement summary)
+- NOTE: Moving between "Active Plans" and "Completed Plans" sections is now AUTOMATIC
 
 **□ Step 3: Archive Plan**
 - Run `./scripts/sync-plans.sh auto-archive` to move plan to `/plans/completed/`
+- This step AUTOMATICALLY moves completed plans from "Active Plans" to "Completed Plans" section in TODO.md
 - This step is AUTOMATIC but must be executed
 
 **□ Step 4: Validate**
@@ -142,6 +143,23 @@ When completing ANY planned work, you MUST execute ALL of these steps:
   - **Assignee**: @opencode
   - **Type**: [Bug Fix/Feature/Enhancement/etc.]
   ```
+
+### **TODO.md Format Requirements**
+
+**Active Plans Format:**
+```markdown
+### 🎨 Plan Name (`/plans/plan-name.md`)
+- **Priority**: [High/Medium/Low] | **Assignee**: @opencode
+- **Status**: [Not Started/In Progress]
+- **Description**: Brief description of what needs to be done
+- **Goal**: Expected outcome or benefit
+```
+
+**Completed Plans Format (Simplified):**
+```markdown
+### ✅ Plan Name (`/plans/completed/plan-name.md`)
+Brief summary of what was accomplished and the benefits achieved. No priority, assignee, or status attributes needed.
+```
 
 ### **Plan Lifecycle Management**
 1. **Create Plan**: Use templates in `/plans/templates/`

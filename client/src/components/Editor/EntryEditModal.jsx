@@ -341,7 +341,22 @@ function EntryEditModal({
           sx={{ width: '40%' }}
           InputProps={{
             disableUnderline: true,
-            sx: { fontFamily: '"JetBrains Mono", monospace' },
+            sx: { 
+              fontFamily: '"JetBrains Mono", monospace',
+              border: '1px solid',
+              borderColor: 'divider',
+              borderRadius: 1,
+              px: 1,
+              '&:hover': {
+                borderColor: 'text.secondary',
+              },
+              '&.Mui-focused': {
+                borderColor: 'primary.main',
+              },
+              '&.Mui-error': {
+                borderColor: 'error.main',
+              },
+            },
           }}
         />
         <TextField
@@ -354,7 +369,22 @@ function EntryEditModal({
           sx={{ width: '40%' }}
           InputProps={{
             disableUnderline: true,
-            sx: { fontFamily: '"JetBrains Mono", monospace' },
+            sx: { 
+              fontFamily: '"JetBrains Mono", monospace',
+              border: '1px solid',
+              borderColor: 'divider',
+              borderRadius: 1,
+              px: 1,
+              '&:hover': {
+                borderColor: 'text.secondary',
+              },
+              '&.Mui-focused': {
+                borderColor: 'primary.main',
+              },
+              '&.Mui-error': {
+                borderColor: 'error.main',
+              },
+            },
           }}
         />
         <Box

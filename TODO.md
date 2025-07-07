@@ -2,69 +2,33 @@
 
 ## Active Plans
 
-### 🎨 Entry Edit Modal Field Borders (`/plans/entry-edit-modal-field-borders.md`)
-- **Priority**: Medium | **Assignee**: @opencode
-- **Status**: Not Started
-- **Enhancement**: Add subtle borders around editable fields in EntryEditModal to improve UX
-- **Goal**: Make editable fields clearly distinguishable while maintaining clean aesthetic
-
-### ✅ Layer Context Menu Removal (`/plans/completed/layer-context-menu-removal.md`)
-- **Priority**: High | **Assignee**: @opencode
-- **Status**: Completed
-- **Achievement**: Successfully removed context menu and added red delete button next to "Add Layer" button
-- **Benefits**: Simplified UX, better discoverability, reduced code complexity
-
-
-
 ---
 
 ## Completed Plans
 
+### ✅ Layer Context Menu Removal (`/plans/completed/layer-context-menu-removal.md`)
+Successfully removed context menu and added red delete button next to "Add Layer" button. Simplified UX, better discoverability, reduced code complexity.
+
+### ✅ Entry Edit Modal Field Borders (`/plans/completed/entry-edit-modal-field-borders.md`)
+Added subtle borders around editable fields in EntryEditModal with hover and focus states. Improved UX by making editable fields clearly distinguishable while maintaining clean aesthetic.
+
 ### ✅ Search Optimization (`/plans/completed/search-optimization.md`)
-- **Priority**: High | **Assignee**: @opencode
-- **Status**: Completed (4/4 milestones)
-- **Achievement**: Comprehensive search performance optimization with 2-5x improvements
-- **Milestones**: 
-  - ✅ Remove duplicate string storage (50% memory reduction)
-  - ✅ Consolidate useMemo hooks (200% performance improvement)
-  - ✅ Implement incremental index updates (300% speed improvement)
-  - ✅ Add Web Workers for large datasets (500% speed improvement)
+Comprehensive search performance optimization with 2-5x improvements across 4 milestones: duplicate string storage removal (50% memory reduction), consolidated useMemo hooks (200% performance improvement), incremental index updates (300% speed improvement), and Web Workers for large datasets (500% speed improvement).
 
 ### ✅ Entry Editor Transformation Button Fix (`/plans/completed/entry-editor-button-fix.md`)
-- **Priority**: High | **Assignee**: @opencode
-- **Status**: Completed
-- **Issue**: "Apply to X entries" transformation button never activates due to case sensitivity bug
-- **Solution**: Fixed hex validation regex to support both uppercase and lowercase hex digits
+Fixed "Apply to X entries" transformation button that never activated due to case sensitivity bug. Updated hex validation regex to support both uppercase and lowercase hex digits.
 
 ### ✅ Entry Field Editing Fix (`/plans/completed/entry-field-editing-fix.md`)
-- **Priority**: High | **Assignee**: @opencode
-- **Status**: Completed
-- **Issue**: TextField editing immediately deactivates when clicking on fields in EntryEditModal
-- **Solution**: Added event handlers to prevent TextField event bubbling to row selection handlers
+Fixed TextField editing that immediately deactivated when clicking on fields in EntryEditModal. Added event handlers to prevent TextField event bubbling to row selection handlers.
 
 ### ✅ Planning System Sync Fix (`/plans/completed/planning-system-sync-fix.md`)
-- **Priority**: High | **Assignee**: @opencode
-- **Status**: Completed
-- **Issue**: Plans not properly archived when completed, TODO.md and plan files out of sync
-- **Solution**: Automated sync tools, improved validation, and consistent metadata format
+Fixed plans not being properly archived when completed and TODO.md/plan files being out of sync. Implemented automated sync tools, improved validation, and consistent metadata format.
 
 ### ✅ Reset Button Freeze Fix (`/plans/completed/reset-button-freeze-fix.md`)
-- **Priority**: High | **Assignee**: @opencode
-- **Status**: Completed
-- **Issue**: Reset button causes browser tab to freeze and become unresponsive
-- **Solution**: Added reset-specific optimization to bypass expensive change detection when clearing all data
+Fixed reset button causing browser tab to freeze and become unresponsive. Added reset-specific optimization to bypass expensive change detection when clearing all data.
 
 ### ✅ File Upload Reset Bug (`/plans/completed/fileupload-reset-bug.md`)
-- **Priority**: High | **Assignee**: @opencode
-- **Status**: Completed
-- **Issue**: File input not triggering second onChange after reset
-- **Solution**: Clear the file input's value after file selection
-
----
-
-## Quick Tasks
-- [x] Create plan creation documentation
-- [x] Implement conditional "Save" button activation in EntryEditModal (only enable when changes exist)
+Fixed file input not triggering second onChange after reset. Clear the file input's value after file selection.
 
 ---
 
@@ -74,8 +38,8 @@
 - **Update Status**: `./scripts/plan-tools.sh update-status <plan> <status>`
 - **Archive Plan**: `./scripts/plan-tools.sh archive-plan <name>`
 - **Auto-Archive**: `./scripts/sync-plans.sh auto-archive`
+- **Move to Completed**: `./scripts/sync-plans.sh move-to-completed <plan>`
 - **Check Consistency**: `./scripts/sync-plans.sh check-consistency`
 
 ---
 
-**Last Updated**: 2025-01-07
