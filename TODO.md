@@ -2,14 +2,17 @@
 
 ## Active Plans
 
-### 🐛 Entry Range Selection Fix (`/plans/entry-range-selection-fix.md`)
-- **Priority**: High | **Assignee**: @opencode
+### 🎨 Entry Edit Modal Field Borders (`/plans/entry-edit-modal-field-borders.md`)
+- **Priority**: Medium | **Assignee**: @opencode
 - **Status**: Not Started
-- **Issue**: Range selection (shift-click) broken in EntryEditModal after field editing fix
-- **Root Cause**: Event handlers prevent ALL propagation, including shift-clicks needed for range selection
+- **Enhancement**: Add subtle borders around editable fields in EntryEditModal to improve UX
+- **Goal**: Make editable fields clearly distinguishable while maintaining clean aesthetic
 
-
-
+### ✅ Layer Context Menu Removal (`/plans/completed/layer-context-menu-removal.md`)
+- **Priority**: High | **Assignee**: @opencode
+- **Status**: Completed
+- **Achievement**: Successfully removed context menu and added red delete button next to "Add Layer" button
+- **Benefits**: Simplified UX, better discoverability, reduced code complexity
 
 
 
@@ -75,4 +78,4 @@
 
 ---
 
-**Last Updated**: 2025-07-06
+**Last Updated**: 2025-01-07

@@ -11,8 +11,6 @@ const LayerPanel = ({
   sources,
   selectedLayer,
   onSelectLayer,
-  onDeleteLayer,
-  onError,
   onSaveTargets,
   onSaveSources,
 }) => {
@@ -30,8 +28,6 @@ const LayerPanel = ({
         layers={layers}
         selected={selectedLayer}
         onSelect={onSelectLayer}
-        onDelete={onDeleteLayer}
-        onError={onError}
       />
       <EntryList
         title={

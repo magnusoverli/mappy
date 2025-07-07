@@ -13,7 +13,7 @@ export default function EntryList({
   paperProps = {},
 }) {
   const defaultHeader = (
-    <Box sx={{ display: 'flex', px: 1, fontWeight: 'bold', fontFamily: '"JetBrains Mono", monospace' }}>
+    <Box sx={{ display: 'flex', px: 2, fontWeight: 'bold', fontFamily: '"JetBrains Mono", monospace' }}>
       <Box sx={{ width: '40%' }}>Key</Box>
       <Box sx={{ width: '40%' }}>Value</Box>
       <Box sx={{ width: '20%', textAlign: 'right' }}>Offset</Box>
@@ -38,7 +38,7 @@ export default function EntryList({
           ...(currentResult?.key === item.key && { bgcolor: currentHighlight }),
         }}
       >
-        <Box sx={{ display: 'flex', width: '100%' }}>
+        <Box sx={{ display: 'flex', width: '100%', px: 2 }}>
           <Box sx={{ width: '40%', fontFamily: '"JetBrains Mono", monospace' }}>{item.key}</Box>
           <Box sx={{ width: '40%', fontFamily: '"JetBrains Mono", monospace' }}>{item.value}</Box>
         <Box

@@ -62,6 +62,9 @@ export default function App({ mode, toggleMode }) {
               layer={layers.find(l => l.key === selectedLayer)}
               onPathChange={handlePathChange}
               onAdd={handleAddLayer}
+              onDelete={() => handleRemoveLayer(selectedLayer)}
+              selectedLayer={selectedLayer}
+              layers={layers}
             />
           </Box>
           <Box sx={{ gridArea: 'lists', overflow: 'auto' }}>
@@ -71,8 +74,6 @@ export default function App({ mode, toggleMode }) {
               sources={sources[selectedLayer] || []}
               selectedLayer={selectedLayer}
               onSelectLayer={setSelectedLayer}
-              onDeleteLayer={handleRemoveLayer}
-              onError={setStatus}
               onSaveTargets={saveTargets}
               onSaveSources={saveSources}
             />
