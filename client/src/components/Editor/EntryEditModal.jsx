@@ -8,6 +8,7 @@ import {
   DialogActions,
   Paper,
 } from '@mui/material';
+import MonospaceTextField from '../Common/MonospaceTextField.jsx';
 import CloseIcon from '@mui/icons-material/Close';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -20,11 +21,11 @@ import {
   Collapse,
 } from '@mui/material';
 import { useEffect, useState, memo, useRef, useCallback } from 'react';
-import useHighlightColors from '../../utils/useHighlightColors.js';
-import { useSearch } from '../../hooks/useSearch.jsx';
+import { useSearchHighlight } from '../../hooks/useSearchHighlight.js';
 import AppToolbar from '../Layout/AppToolbar.jsx';
 import SearchField from '../Common/SearchField.jsx';
 import VirtualizedList from '../Common/VirtualizedList.jsx';
+import { SPACING, FONTS } from '../../utils/styleConstants.js';
 
 function EntryEditModal({
   open,
@@ -297,101 +298,58 @@ function EntryEditModal({
 
   const keyRegex = /^\d{2}\.\d{4}$/;
   const valRegex = /^[0-9A-Fa-f]{8}$/;
-  const { query, matchSet, currentResult } = useSearch() || {};
-  const { highlight, currentHighlight } = useHighlightColors();
 
-  const renderRow = (row, i, style) => {
-    const isMatch = matchSet?.has(row.key);
-    const isCurrent = currentResult?.key === row.key;
+  // Create a component for the row to use hooks properly
+  const EditableRow = ({ row, index, style }) => {
+    const { styles } = useSearchHighlight(row);
+    
     return (
       <Paper
         style={style}
-        key={i}
+        key={index}
         onMouseDown={handleRowMouseDown}
-        onClick={e => handleRowClick(i, e)}
+        onClick={e => handleRowClick(index, e)}
         sx={theme => {
           const base = {
             mb: 0.5,
             display: 'flex',
             alignItems: 'center',
-            px: 1,
+            px: SPACING.PADDING.SMALL,
             py: 0,
             minHeight: 0,
-            borderRadius: 1,
+            borderRadius: SPACING.BORDER_RADIUS,
             transition: 'background-color 0.3s',
             '&:hover': { bgcolor: 'action.hover' },
+            ...styles,
           };
-          if (selected.includes(i)) {
+          if (selected.includes(index)) {
             base.boxShadow = `0 0 0 2px ${theme.palette.primary.main} inset`;
-            if (!isMatch) base.bgcolor = 'action.selected';
+            if (!styles.bgcolor) base.bgcolor = 'action.selected';
           }
-          if (isMatch) base.bgcolor = highlight;
-          if (query && !isMatch) base.opacity = 0.7;
-          if (isCurrent) base.bgcolor = currentHighlight;
           return base;
         }}
       >
-        <TextField
+        <MonospaceTextField
           value={row.key}
-          onChange={e => handleCellChange(i, 'key', e.target.value)}
+          onChange={e => handleCellChange(index, 'key', e.target.value)}
           onClick={handleFieldClick}
           onMouseDown={handleFieldMouseDown}
-          variant="standard"
           error={!keyRegex.test(row.key)}
           sx={{ width: '40%' }}
-          InputProps={{
-            disableUnderline: true,
-            sx: { 
-              fontFamily: '"JetBrains Mono", monospace',
-              border: '1px solid',
-              borderColor: 'divider',
-              borderRadius: 1,
-              px: 1,
-              '&:hover': {
-                borderColor: 'text.secondary',
-              },
-              '&.Mui-focused': {
-                borderColor: 'primary.main',
-              },
-              '&.Mui-error': {
-                borderColor: 'error.main',
-              },
-            },
-          }}
         />
-        <TextField
+        <MonospaceTextField
           value={row.value}
-          onChange={e => handleCellChange(i, 'value', e.target.value)}
+          onChange={e => handleCellChange(index, 'value', e.target.value)}
           onClick={handleFieldClick}
           onMouseDown={handleFieldMouseDown}
-          variant="standard"
           error={!valRegex.test(row.value)}
           sx={{ width: '40%' }}
-          InputProps={{
-            disableUnderline: true,
-            sx: { 
-              fontFamily: '"JetBrains Mono", monospace',
-              border: '1px solid',
-              borderColor: 'divider',
-              borderRadius: 1,
-              px: 1,
-              '&:hover': {
-                borderColor: 'text.secondary',
-              },
-              '&.Mui-focused': {
-                borderColor: 'primary.main',
-              },
-              '&.Mui-error': {
-                borderColor: 'error.main',
-              },
-            },
-          }}
         />
         <Box
           sx={{
             width: '20%',
             textAlign: 'right',
-            fontFamily: '"JetBrains Mono", monospace',
+            fontFamily: FONTS.MONOSPACE,
             color: row.offset === 0 ? 'success.dark' : 'error.dark',
           }}
         >
@@ -400,6 +358,8 @@ function EntryEditModal({
       </Paper>
     );
   };
+
+  const renderRow = (row, i, style) => <EditableRow row={row} index={i} style={style} />;
 
   return (
     <Dialog
@@ -413,7 +373,7 @@ function EntryEditModal({
           <Typography
             variant="h4"
             component="div"
-            sx={{ fontFamily: '"Baloo 2", sans-serif', fontWeight: 'bold', mr: 2 }}
+            sx={{ fontFamily: FONTS.BRAND, fontWeight: 'bold', mr: 2 }}
           >
             Mappy
           </Typography>
@@ -421,7 +381,7 @@ function EntryEditModal({
           <Typography
             variant="h6"
             component="div"
-            sx={{ flex: 1, ml: 2, fontFamily: '"Baloo 2", sans-serif', fontWeight: 'bold' }}
+            sx={{ flex: 1, ml: 2, fontFamily: FONTS.BRAND, fontWeight: 'bold' }}
           >
             {layerLabel} - Editing {type}
           </Typography>
@@ -431,7 +391,7 @@ function EntryEditModal({
         </AppToolbar>
       <Box sx={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
         <Box sx={{ flex: 1, p: 2, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
-          <Box sx={{ display: 'flex', fontWeight: 'bold', mb: 1, fontFamily: '"JetBrains Mono", monospace' }}>
+          <Box sx={{ display: 'flex', fontWeight: 'bold', mb: 1, fontFamily: FONTS.MONOSPACE }}>
             <Box sx={{ width: '40%' }}>Key</Box>
             <Box sx={{ width: '40%' }}>Value</Box>
             <Box sx={{ width: '20%', textAlign: 'right' }}>Offset</Box>
@@ -446,29 +406,26 @@ function EntryEditModal({
         </Box>
         <Box sx={{ width: 500, borderLeft: 1, borderColor: 'divider', p: 2, display: 'flex', flexDirection: 'column', gap: 2 }}>
           <Typography variant="subtitle1">Add Entries</Typography>
-          <TextField
+          <MonospaceTextField
             label="Quantity"
             type="number"
             value={batchQty}
             onChange={e => setBatchQty(parseInt(e.target.value, 10) || 0)}
             size="small"
-            InputProps={{ sx: { fontFamily: '"JetBrains Mono", monospace' } }}
           />
-          <TextField
+          <MonospaceTextField
             label="First Key"
             type="number"
             value={batchStart}
             onChange={e => setBatchStart(parseInt(e.target.value, 10) || 0)}
             size="small"
-            InputProps={{ sx: { fontFamily: '"JetBrains Mono", monospace' } }}
           />
-          <TextField
+          <MonospaceTextField
             label="Offset"
             type="number"
             value={batchOffset}
             onChange={e => setBatchOffset(parseInt(e.target.value, 10) || 0)}
             size="small"
-            InputProps={{ sx: { fontFamily: '"JetBrains Mono", monospace' } }}
           />
           <Button variant="contained" startIcon={<AddIcon />} onClick={handleAddBatch}>
             Add Batch
@@ -511,13 +468,12 @@ function EntryEditModal({
 
                 {transformType === 'adjust' && (
                   <Box sx={{ mt: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
-                    <TextField
+                    <MonospaceTextField
                       label="Move by"
                       type="number"
                       value={adjustAmount}
                       onChange={e => setAdjustAmount(parseInt(e.target.value, 10) || 0)}
                       size="small"
-                      InputProps={{ sx: { fontFamily: '"JetBrains Mono", monospace' } }}
                     />
                     {hasAdjustConflict() && (
                       <Typography variant="body2" color="error.main">
@@ -529,30 +485,28 @@ function EntryEditModal({
 
                 {transformType === 'sequential' && (
                   <Box sx={{ mt: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
-                    <TextField
+                    <MonospaceTextField
                       label="Start counting from"
                       type="number"
                       value={seqStart}
                       onChange={e => setSeqStart(parseInt(e.target.value, 10) || 0)}
                       size="small"
                       helperText={`= 0x${(parseInt(seqStart, 10) >>> 0).toString(16).toLowerCase().padStart(8, '0')}`}
-                      InputProps={{ sx: { fontFamily: '"JetBrains Mono", monospace' } }}
                     />
-                    <TextField
+                    <MonospaceTextField
                       label="Count by"
                       type="number"
                       value={seqIncrement}
                       onChange={e => setSeqIncrement(parseInt(e.target.value, 10) || 0)}
                       size="small"
                       helperText={`= 0x${(parseInt(seqIncrement, 10) >>> 0).toString(16).toLowerCase().padStart(8, '0')}`}
-                      InputProps={{ sx: { fontFamily: '"JetBrains Mono", monospace' } }}
                     />
                   </Box>
                 )}
 
                 {transformType === 'fixed' && (
                   <Box sx={{ mt: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
-                    <TextField
+                    <MonospaceTextField
                       label="New value for all"
                       value={fixedValue}
                       onChange={e => setFixedValue(e.target.value.toLowerCase())}
@@ -560,7 +514,6 @@ function EntryEditModal({
                       inputProps={{ maxLength: 8 }}
                       helperText="8-digit hex value"
                       error={!/^([0-9A-Fa-f]{8})?$/.test(fixedValue)}
-                      InputProps={{ sx: { fontFamily: '"JetBrains Mono", monospace' } }}
                     />
                     <Box sx={{ display: 'flex', gap: 1 }}>
                       <Button size="small" onClick={() => setFixedValue('00000000')}>All 0</Button>
@@ -571,13 +524,12 @@ function EntryEditModal({
 
                 {transformType === 'shift' && (
                   <Box sx={{ mt: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
-                    <TextField
+                    <MonospaceTextField
                       label="Move by"
                       type="number"
                       value={shiftAmount}
                       onChange={e => setShiftAmount(parseInt(e.target.value, 10) || 0)}
                       size="small"
-                      InputProps={{ sx: { fontFamily: '"JetBrains Mono", monospace' } }}
                     />
                     {hasShiftConflict() && (
                       <Typography variant="body2" color="error.main">
@@ -605,7 +557,7 @@ function EntryEditModal({
                               gridTemplateColumns: '1fr auto 1fr',
                               columnGap: 2,
                               alignItems: 'center',
-                              fontFamily: '"JetBrains Mono", monospace',
+                              fontFamily: FONTS.MONOSPACE,
                               mb: 0.5,
                               whiteSpace: 'nowrap',
                             }}

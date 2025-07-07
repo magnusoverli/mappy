@@ -4,13 +4,14 @@ import Brightness4Icon from '@mui/icons-material/Brightness4';
 import FileUpload from '../Common/FileUpload.jsx';
 import SearchField from '../Common/SearchField.jsx';
 import AppToolbar from './AppToolbar.jsx';
+import { FONTS } from '../../utils/styleConstants.js';
 
 const Header = ({ mode, toggleMode, iniData, onFileSelect, onDownload, onReset, loading }) => (
   <AppToolbar>
     <Typography
       variant="h4"
       component="div"
-      sx={{ fontFamily: '"Baloo 2", sans-serif', fontWeight: 'bold', mr: 2 }}
+      sx={{ fontFamily: FONTS.BRAND, fontWeight: 'bold', mr: 2 }}
     >
       Mappy
     </Typography>

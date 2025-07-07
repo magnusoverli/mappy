@@ -1,12 +1,13 @@
 import { useTheme } from '@mui/material/styles';
+import { COLORS } from './styleConstants.js';
 
 export default function useHighlightColors() {
   const theme = useTheme();
   const highlight = theme.palette.mode === 'light'
-    ? 'rgba(255, 245, 157, 0.3)'
-    : 'rgba(249, 168, 37, 0.15)';
+    ? COLORS.HIGHLIGHT.LIGHT
+    : COLORS.HIGHLIGHT.DARK;
   const currentHighlight = theme.palette.mode === 'light'
-    ? 'rgba(255, 245, 157, 0.8)'
-    : 'rgba(249, 168, 37, 0.45)';
+    ? COLORS.CURRENT_HIGHLIGHT.LIGHT
+    : COLORS.CURRENT_HIGHLIGHT.DARK;
   return { highlight, currentHighlight };
 }

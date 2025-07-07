@@ -2,8 +2,9 @@ import { memo } from 'react';
 import { FixedSizeList } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { Box } from '@mui/material';
+import { SPACING } from '../../utils/styleConstants.js';
 
-const VirtualizedList = ({ items = [], itemHeight = 36, renderRow }) => {
+const VirtualizedList = ({ items = [], itemHeight = SPACING.ITEM_HEIGHT, renderRow }) => {
   if (typeof renderRow !== 'function') return null;
   return (
     <Box

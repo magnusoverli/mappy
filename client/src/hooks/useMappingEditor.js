@@ -6,11 +6,9 @@ import { loadState, saveState, clearState } from '../StorageAgent.js';
 import {
   groupTargetsByLayer,
   removeLayerTargets,
-} from '../TargetsAgent.js';
-import {
   groupSourcesByLayer,
   removeLayerSources,
-} from '../SourcesAgent.js';
+} from '../EntryAgent.js';
 import { setLayerEntries } from '../utils/entryHelpers.js';
 
 export default function useMappingEditor() {

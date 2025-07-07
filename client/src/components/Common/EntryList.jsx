@@ -1,7 +1,7 @@
 import { Box, Paper, Typography } from '@mui/material';
-import useHighlightColors from '../../utils/useHighlightColors.js';
 import VirtualizedList from './VirtualizedList.jsx';
-import { useSearch } from '../../hooks/useSearch.jsx';
+import { useSearchHighlight } from '../../hooks/useSearchHighlight.js';
+import { SPACING, FONTS } from '../../utils/styleConstants.js';
 
 export default function EntryList({
   title,
@@ -13,48 +13,50 @@ export default function EntryList({
   paperProps = {},
 }) {
   const defaultHeader = (
-    <Box sx={{ display: 'flex', px: 2, fontWeight: 'bold', fontFamily: '"JetBrains Mono", monospace' }}>
+    <Box sx={{ display: 'flex', px: SPACING.PADDING.MEDIUM, fontWeight: 'bold', fontFamily: FONTS.MONOSPACE }}>
       <Box sx={{ width: '40%' }}>Key</Box>
       <Box sx={{ width: '40%' }}>Value</Box>
       <Box sx={{ width: '20%', textAlign: 'right' }}>Offset</Box>
     </Box>
   );
 
-  const { query, matchSet, currentResult } = useSearch() || {};
-  const { highlight, currentHighlight } = useHighlightColors();
-
-  const defaultRow = (item, _i, style) => (
-    <Box style={style} key={item.key}>
-      <Box
-        sx={{
-          height: '100%',
-          minHeight: 0,
-          py: 0,
-          mb: 0.5,
-          borderRadius: 1,
-          transition: 'background-color 0.3s',
-          ...(matchSet?.has(item.key) && { bgcolor: highlight }),
-          ...(query && !matchSet?.has(item.key) && { opacity: 0.7 }),
-          ...(currentResult?.key === item.key && { bgcolor: currentHighlight }),
-        }}
-      >
-        <Box sx={{ display: 'flex', width: '100%', px: 2 }}>
-          <Box sx={{ width: '40%', fontFamily: '"JetBrains Mono", monospace' }}>{item.key}</Box>
-          <Box sx={{ width: '40%', fontFamily: '"JetBrains Mono", monospace' }}>{item.value}</Box>
+  // Create a component for the default row to use hooks properly
+  const DefaultRow = ({ item, style }) => {
+    const { styles } = useSearchHighlight(item);
+    
+    return (
+      <Box style={style} key={item.key}>
         <Box
           sx={{
-            width: '20%',
-            textAlign: 'right',
-            fontFamily: '"JetBrains Mono", monospace',
-            color: item.offset === 0 ? 'success.dark' : 'error.dark',
+            height: '100%',
+            minHeight: 0,
+            py: 0,
+            mb: 0.5,
+            borderRadius: SPACING.BORDER_RADIUS,
+            transition: 'background-color 0.3s',
+            ...styles,
           }}
         >
-          {item.offset}
-        </Box>
+          <Box sx={{ display: 'flex', width: '100%', px: SPACING.PADDING.MEDIUM }}>
+            <Box sx={{ width: '40%', fontFamily: FONTS.MONOSPACE }}>{item.key}</Box>
+            <Box sx={{ width: '40%', fontFamily: FONTS.MONOSPACE }}>{item.value}</Box>
+            <Box
+              sx={{
+                width: '20%',
+                textAlign: 'right',
+                fontFamily: FONTS.MONOSPACE,
+                color: item.offset === 0 ? 'success.dark' : 'error.dark',
+              }}
+            >
+              {item.offset}
+            </Box>
+          </Box>
         </Box>
       </Box>
-    </Box>
-  );
+    );
+  };
+
+  const defaultRow = (item, _i, style) => <DefaultRow item={item} style={style} />;
 
   return (
     <Paper

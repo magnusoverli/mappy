@@ -4,10 +4,11 @@ import {
   ListItemText,
 } from '@mui/material';
 import { memo, useLayoutEffect, useRef, useState } from 'react';
-import useHighlightColors from '../../utils/useHighlightColors.js';
 import { useSearch } from '../../hooks/useSearch.jsx';
+import { useSearchHighlight } from '../../hooks/useSearchHighlight.js';
 import EntryList from '../Common/EntryList.jsx';
 import { formatLayerLabel } from '../../utils/formatLayerLabel.js';
+import { SPACING, FONTS } from '../../utils/styleConstants.js';
 
 const LayerList = ({ layers = [], selected, onSelect }) => {
   const header = null;
@@ -15,12 +16,12 @@ const LayerList = ({ layers = [], selected, onSelect }) => {
 
 
 
-  const { query, matchSet, currentResult, counts } = useSearch() || {};
-  const { highlight, currentHighlight } = useHighlightColors();
+  const { query, counts } = useSearch() || {};
 
-  const renderRow = (layer, _i, style) => {
-    const isMatch = matchSet?.has(layer.key);
-    const isCurrent = currentResult?.key === layer.key;
+  // Create a component for the row to use hooks properly
+  const LayerRow = ({ layer, style }) => {
+    const { styles } = useSearchHighlight(layer);
+    
     return (
       <Box style={style} key={layer.key}>
         <ListItemButton
@@ -31,25 +32,25 @@ const LayerList = ({ layers = [], selected, onSelect }) => {
             minHeight: 0,
             py: 0,
             mb: 0.5,
-            borderRadius: 1,
+            borderRadius: SPACING.BORDER_RADIUS,
             transition: 'background-color 0.3s',
             '&.Mui-selected': { bgcolor: 'action.selected' },
-            ...(isMatch && { bgcolor: highlight }),
-            ...(query && !isMatch && { opacity: 0.7 }),
-            ...(isCurrent && { bgcolor: currentHighlight }),
+            ...styles,
           }}
         >
           <ListItemText
             primary={formatLayerLabel(layer.key, layer.value)}
             primaryTypographyProps={{
               noWrap: true,
-              sx: { fontFamily: '"JetBrains Mono", monospace' },
+              sx: { fontFamily: FONTS.MONOSPACE },
             }}
           />
         </ListItemButton>
       </Box>
     );
   };
+
+  const renderRow = (layer, _i, style) => <LayerRow layer={layer} style={style} />;
 
   const longestLabel = layers.reduce((acc, l) => {
     const label = formatLayerLabel(l.key, l.value);
@@ -112,17 +113,17 @@ const LayerList = ({ layers = [], selected, onSelect }) => {
         <ListItemButton
           ref={measureRef}
           sx={{
-            px: 2,
+            px: SPACING.PADDING.MEDIUM,
             mb: 0.5,
             height: '100%',
             minHeight: 0,
             py: 0,
-            borderRadius: 1,
+            borderRadius: SPACING.BORDER_RADIUS,
           }}
         >
           <ListItemText
             primary={longestLabel}
-            primaryTypographyProps={{ sx: { fontFamily: '"JetBrains Mono", monospace' } }}
+            primaryTypographyProps={{ sx: { fontFamily: FONTS.MONOSPACE } }}
           />
         </ListItemButton>
       </Box>
