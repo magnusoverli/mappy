@@ -3,8 +3,9 @@
 ## Active Plans
 
 ---
-
 ## Completed Plans
+### ✅ Entry Edit Modal Column Alignment (`/plans/completed/entry-edit-modal-column-alignment.md`)
+Aligned headers with column content and centered `=` separator for better readability.
 
 ### 🎨 Large Centered Modal UI Enhancement (`/plans/completed/large-centered-modal-ui.md`)
 - **Priority**: High | **Assignee**: @opencode

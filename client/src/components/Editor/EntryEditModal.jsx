@@ -324,7 +324,9 @@ function EntryEditModal({
         sx={theme => {
           const base = {
             mb: SPACING.MARGIN_SMALL,
-            display: 'flex',
+            display: 'grid',
+            gridTemplateColumns: '11ch 1ch 11ch 1fr',
+            columnGap: 1,
             alignItems: 'center',
             px: SPACING.PADDING.SMALL,
             py: 0,
@@ -359,21 +361,20 @@ function EntryEditModal({
           error={!validateEntryKey(row.key)}
           sx={{ width: '11ch', minWidth: '11ch' }}
         />
+        <Box sx={{ textAlign: 'center', fontFamily: FONTS.MONOSPACE }}>=</Box>
         <MonospaceTextField
           value={row.value}
           onChange={e => handleCellChange(index, 'value', e.target.value)}
           onClick={handleFieldClick}
           onMouseDown={handleFieldMouseDown}
           error={!validateHexValue(row.value)}
-          sx={{ width: '11ch', minWidth: '11ch', ml: 1 }}
+          sx={{ width: '11ch', minWidth: '11ch' }}
         />
         <Box
           sx={{
-            flex: 1,
             textAlign: 'right',
             fontFamily: FONTS.MONOSPACE,
             color: row.offset === 0 ? 'success.dark' : 'error.dark',
-            ml: 2,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'flex-end',
@@ -441,11 +442,24 @@ function EntryEditModal({
         </AppToolbar>
       <Box sx={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
         <Box sx={{ flex: 1, p: 2, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
-           <Box sx={{ display: 'flex', fontWeight: 'bold', mb: 1, fontFamily: FONTS.MONOSPACE, alignItems: 'center' }}>
-             <Box sx={{ width: '11ch', minWidth: '11ch' }}>Key</Box>
-             <Box sx={{ width: '11ch', minWidth: '11ch', ml: 1 }}>Value</Box>
-             <Box sx={{ flex: 1, textAlign: 'right', ml: 2 }}>Offset</Box>
-           </Box>          <Box sx={{ flex: 1, minHeight: 0 }}>
+      <Box
+        sx={{
+          display: 'grid',
+          gridTemplateColumns: '11ch 1ch 11ch 1fr',
+          columnGap: 1,
+          fontWeight: 'bold',
+          mb: 1,
+          fontFamily: FONTS.MONOSPACE,
+          alignItems: 'center',
+          px: SPACING.PADDING.SMALL,
+        }}
+      >
+        <Box sx={{ width: '11ch', minWidth: '11ch' }}>Key</Box>
+        <Box sx={{ textAlign: 'center' }}>=</Box>
+        <Box sx={{ width: '11ch', minWidth: '11ch' }}>Value</Box>
+        <Box sx={{ textAlign: 'right' }}>Offset</Box>
+      </Box>
+          <Box sx={{ flex: 1, minHeight: 0 }}>
             <VirtualizedList
               items={rows}
               itemHeight={36}
@@ -613,16 +627,21 @@ function EntryEditModal({
                             key={idx}
                             sx={{
                               display: 'grid',
-                              gridTemplateColumns: '1fr auto 1fr',
-                              columnGap: 2,
+                              gridTemplateColumns: '11ch 1ch 11ch auto 11ch 1ch 11ch',
+                              columnGap: 1,
                               alignItems: 'center',
                               fontFamily: FONTS.MONOSPACE,
-            mb: SPACING.MARGIN_SMALL,                              whiteSpace: 'nowrap',
+                              mb: SPACING.MARGIN_SMALL,
+                              whiteSpace: 'nowrap',
                             }}
                           >
-                            <Box sx={{ textAlign: 'right' }}>{`${p.oldKey} = ${p.oldValue}`}</Box>
+                            <Box sx={{ textAlign: 'right' }}>{p.oldKey}</Box>
+                            <Box sx={{ textAlign: 'center' }}>=</Box>
+                            <Box>{p.oldValue}</Box>
                             <ArrowRightAltIcon sx={{ fontSize: '1.3rem' }} />
-                            <Box>{`${p.newKey} = ${p.newValue}`}</Box>
+                            <Box sx={{ textAlign: 'right' }}>{p.newKey}</Box>
+                            <Box sx={{ textAlign: 'center' }}>=</Box>
+                            <Box>{p.newValue}</Box>
                           </Box>
                         ))}
                       {changedCount > 0 && changedCount - preview.length > 0 && (
