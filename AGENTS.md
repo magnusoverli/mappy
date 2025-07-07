@@ -1,5 +1,14 @@
 # AGENTS.md - Development Guidelines for Mappy
 
+## 🚨 CRITICAL REQUIREMENTS 🚨
+**PLAN MANAGEMENT IS MANDATORY** - When completing any planned work:
+1. ✅ Update plan status to "Completed" 
+2. ✅ Update TODO.md status and move to completed section
+3. ✅ Run `./scripts/sync-plans.sh auto-archive`
+4. ✅ Run `./scripts/validate-plans.sh`
+
+**NEVER SKIP THESE STEPS** unless explicitly told to ignore them.
+
 ## Build/Test Commands
 - **Client dev**: `cd client && npm run dev` (Vite dev server)
 - **Client build**: `cd client && npm run build` (production build)
@@ -45,10 +54,40 @@ Mappy uses an **Agent Pattern** where each agent encapsulates a single responsib
 - Preserve whitespace around `=` signs in INI output
 
 ## Development Workflow
-- **NEVER commit changes unless explicitly requested**: Only create git commits when the user specifically asks for it
-- **Complete tasks without committing**: Implement features, fix bugs, and complete work without automatically committing
-- **When asked to commit**: Use descriptive commit messages that explain the purpose of changes
-- Follow conventional commit format when possible
+
+### **CRITICAL: Plan Management is MANDATORY**
+- **NEVER skip plan management steps** unless explicitly told to ignore them
+- **ALWAYS follow the Plan Completion Checklist** when finishing any planned work
+- **Plan tracking is as important as the code itself** - incomplete tracking creates technical debt
+
+### **Task Completion Process**
+1. **Complete the development work** (code, tests, documentation)
+2. **MANDATORY: Execute Plan Completion Checklist** (see below)
+3. **NEVER commit changes unless explicitly requested**: Only create git commits when the user specifically asks for it
+4. **When asked to commit**: Use descriptive commit messages that explain the purpose of changes
+5. Follow conventional commit format when possible
+
+### **MANDATORY Plan Completion Checklist**
+When completing ANY planned work, you MUST execute ALL of these steps:
+
+**□ Step 1: Update Plan Status**
+- Mark plan status as "Completed" in the plan file metadata
+- Update "Last Updated" date in plan metadata
+
+**□ Step 2: Update TODO.md**
+- Change plan status from "Not Started/In Progress" to "Completed" 
+- Move plan from "Active Plans" to "Completed Plans" section
+- Update the plan description to reflect achievement
+
+**□ Step 3: Archive Plan**
+- Run `./scripts/sync-plans.sh auto-archive` to move plan to `/plans/completed/`
+- This step is AUTOMATIC but must be executed
+
+**□ Step 4: Validate**
+- Run `./scripts/validate-plans.sh` to ensure consistency
+- Fix any validation errors immediately
+
+**FAILURE TO COMPLETE ALL 4 STEPS IS UNACCEPTABLE** - These steps are not optional.
 
 ## Plan Management Guidelines
 
@@ -76,8 +115,11 @@ Mappy uses an **Agent Pattern** where each agent encapsulates a single responsib
   - Completing plan milestones
   - Finishing entire plans
 - **Reference plan files** in commit messages when implementing planned features
-- **ON plan completion** move the plan to `/plans/completed/`
-- **Update plan status** in both the plan file and TODO.md simultaneously
+
+### **CRITICAL REMINDER: Plan Completion is MANDATORY**
+- **EVERY completed plan MUST follow the Plan Completion Checklist** (see Development Workflow)
+- **NO EXCEPTIONS** - Plan tracking is not optional
+- **If you complete work without updating plans, you have failed the task**
 
 ### **Plan Review Process**
 - Review and update all active plans weekly
@@ -105,6 +147,12 @@ Mappy uses an **Agent Pattern** where each agent encapsulates a single responsib
 1. **Create Plan**: Use templates in `/plans/templates/`
 2. **Add to TODO.md**: Include in Active Plans section with proper formatting
 3. **Update Status**: Modify both plan file and TODO.md simultaneously
-4. **Complete Plan**: Mark status as "Completed" in plan file
-5. **Archive Plan**: Run `./scripts/sync-plans.sh auto-archive` to move to `/plans/completed/`
-6. **Validate**: Always run `./scripts/validate-plans.sh` after changes
+4. **Complete Plan**: **MANDATORY** - Follow the Plan Completion Checklist in Development Workflow
+5. **Archive Plan**: **MANDATORY** - Run `./scripts/sync-plans.sh auto-archive` to move to `/plans/completed/`
+6. **Validate**: **MANDATORY** - Always run `./scripts/validate-plans.sh` after changes
+
+### **ENFORCEMENT: Plan Management Compliance**
+- **Plan management steps are NOT suggestions - they are requirements**
+- **Completing code without completing plan tracking is an incomplete task**
+- **Always prioritize plan management equally with code development**
+- **Only skip plan management if explicitly instructed by the user**
