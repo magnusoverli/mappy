@@ -22,10 +22,10 @@ import {
   Collapse,
 } from '@mui/material';
 import { useEffect, useState, memo, useRef, useCallback } from 'react';
-import { useSearchHighlight } from '../../hooks/useSearchHighlight.js';
+
 import AppToolbar from '../Layout/AppToolbar.jsx';
 import SearchField from '../Common/SearchField.jsx';
-import VirtualizedList from '../Common/VirtualizedList.jsx';
+import EditableDataTable from '../Common/EditableDataTable.jsx';
 import { SPACING, FONTS } from '../../utils/styleConstants.js';
 import { 
   formatHexValue, 
@@ -54,7 +54,7 @@ function EntryEditModal({
   const [rows, setRows] = useState([]);
   const [originalEntries, setOriginalEntries] = useState([]);
   const [selected, setSelected] = useState([]);
-  const [lastIndex, setLastIndex] = useState(null);
+
   const [batchQty, setBatchQty] = useState(1);
   const [batchStart, setBatchStart] = useState(0);
   const [batchOffset, setBatchOffset] = useState(0);
@@ -93,57 +93,19 @@ function EntryEditModal({
       setBatchOffset(off);
       setBatchQty(1);
       setSelected([]);
-      setLastIndex(null);
+
       setTransformType('shift');
     }
   }, [open, entries]);
 
-  useEffect(() => {
-    if (!open) return undefined;
-    const handleKeyDown = e => {
-      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'a') {
-        if (dialogRef.current && dialogRef.current.contains(e.target)) {
-          const tag = e.target.tagName;
-          const editable = tag === 'INPUT' || tag === 'TEXTAREA' || e.target.isContentEditable;
-          if (!editable) {
-            e.preventDefault();
-            setSelected(rows.map((_, idx) => idx));
-            setLastIndex(rows.length - 1);
-          }
-        }
-      }
-    };
-    
-    // Attach event listener to the dialog container instead of document
-    const dialogElement = dialogRef.current;
-    if (dialogElement) {
-      dialogElement.addEventListener('keydown', handleKeyDown);
-      return () => dialogElement.removeEventListener('keydown', handleKeyDown);
-    }
-  }, [open, rows]);
 
 
-  const handleRowClick = (index, e) => {
-    if (e.shiftKey && lastIndex !== null) {
-      const start = Math.min(lastIndex, index);
-      const end = Math.max(lastIndex, index);
-      const range = [];
-      for (let i = start; i <= end; i++) range.push(i);
-      setSelected(range);
-    } else {
-      setSelected([index]);
-      setLastIndex(index);
-    }
+
+  const handleSelectionChange = (newSelected) => {
+    setSelected(newSelected);
   };
 
-  const handleRowMouseDown = (e) => {
-    if (e.shiftKey) {
-      e.preventDefault();
-      e.stopPropagation();
-    }
-  };
-
-  const handleCellChange = (index, field, value) => {
+  const handleItemChange = (index, field, value) => {
     const newRows = rows.slice();
     newRows[index][field] = value.toLowerCase();
     const dec = parseDecimalValue(newRows[index].key.split('.')[1]);
@@ -152,18 +114,7 @@ function EntryEditModal({
     setRows(newRows);
   };
 
-  const handleFieldClick = (e) => {
-    e.stopPropagation();
-    // Deselect range when user clicks to edit a field
-    if (selected.length > 1) {
-      setSelected([]);
-      setLastIndex(null);
-    }
-  };
 
-  const handleFieldMouseDown = (e) => {
-    e.stopPropagation();
-  };
 
   const handleDelete = () => {
     const remaining = rows.filter((_, i) => !selected.includes(i));
@@ -316,97 +267,7 @@ function EntryEditModal({
 
 
 
-  // Create a component for the row to use hooks properly
-  const EditableRow = ({ row, index, style }) => {
-    const { styles } = useSearchHighlight(row);
-    
-    return (
-      <Paper
-        style={style}
-        key={index}
-        onMouseDown={handleRowMouseDown}
-        onClick={e => handleRowClick(index, e)}
-        sx={theme => {
-          const base = {
-            mb: SPACING.MARGIN_SMALL,
-            display: 'flex',
-            alignItems: 'center',
-            px: SPACING.PADDING.SMALL,
-            py: 0,
-            minHeight: 0,
-            borderRadius: SPACING.BORDER_RADIUS,
-            transition: 'background-color 0.3s',
-            '&:hover': { bgcolor: 'action.hover' },
-            ...styles,
-          };
-          
-          // Add subtle alternating row colors
-          if (!selected.includes(index) && !styles.bgcolor) {
-            base.bgcolor = index % 2 === 0 
-              ? 'transparent' 
-              : theme.palette.mode === 'dark' 
-                ? 'rgba(255, 255, 255, 0.02)' 
-                : 'rgba(0, 0, 0, 0.02)';
-          }
-          
-          if (selected.includes(index)) {
-            base.boxShadow = `0 0 0 2px ${theme.palette.primary.main} inset`;
-            if (!styles.bgcolor) base.bgcolor = 'action.selected';
-          }
-          return base;
-        }}
-      >
-        <MonospaceTextField
-          value={row.key}
-          onChange={e => handleCellChange(index, 'key', e.target.value)}
-          onClick={handleFieldClick}
-          onMouseDown={handleFieldMouseDown}
-          error={!validateEntryKey(row.key)}
-          sx={{ width: '11ch', minWidth: '11ch' }}
-        />
-        <Box
-          sx={{
-            mx: 1.5,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontFamily: FONTS.MONOSPACE,
-            color: 'text.secondary',
-            fontSize: '0.875rem',
-            fontWeight: 'bold',
-            userSelect: 'none',
-            minWidth: '1ch',
-          }}
-        >
-          =
-        </Box>
-        <MonospaceTextField
-          value={row.value}
-          onChange={e => handleCellChange(index, 'value', e.target.value)}
-          onClick={handleFieldClick}
-          onMouseDown={handleFieldMouseDown}
-          error={!validateHexValue(row.value)}
-          sx={{ width: '11ch', minWidth: '11ch' }}
-        />
-        <Box
-          sx={{
-            flex: 1,
-            textAlign: 'right',
-            fontFamily: FONTS.MONOSPACE,
-            color: row.offset === 0 ? 'success.dark' : 'error.dark',
-            ml: 2,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'flex-end',
-          }}
-        >
-          {row.offset}
-        </Box>
-      </Paper>
-    );
-  };
 
-  const renderRow = (row, i, style) => <EditableRow row={row} index={i} style={style} />;
 
   return (
     <Modal
@@ -462,18 +323,16 @@ function EntryEditModal({
         </AppToolbar>
       <Box sx={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
         <Box sx={{ flex: 1, p: 2, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
-           <Box sx={{ display: 'flex', fontWeight: 'bold', mb: 1, fontFamily: FONTS.MONOSPACE, alignItems: 'center' }}>
-             <Box sx={{ width: '11ch', minWidth: '11ch' }}>Key</Box>
-             <Box sx={{ mx: 1.5, minWidth: '1ch', textAlign: 'center' }}></Box>
-             <Box sx={{ width: '11ch', minWidth: '11ch' }}>Value</Box>
-             <Box sx={{ flex: 1, textAlign: 'right', ml: 2 }}>Offset</Box>
-           </Box>          <Box sx={{ flex: 1, minHeight: 0 }}>
-            <VirtualizedList
-              items={rows}
-              itemHeight={36}
-              renderRow={renderRow}
-            />
-          </Box>
+          <EditableDataTable
+            items={rows}
+            selected={selected}
+            onSelectionChange={handleSelectionChange}
+            onItemChange={handleItemChange}
+            validateKey={validateEntryKey}
+            validateValue={validateHexValue}
+            itemHeight={36}
+            paperProps={{ sx: { flex: 1, p: 0 } }}
+          />
         </Box>
         <Box sx={{ 
           width: 450, 

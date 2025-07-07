@@ -1,8 +1,8 @@
 import { Box, Button } from '@mui/material';
 import { memo, useState } from 'react';
 import { useSearch } from '../../hooks/useSearch.jsx';
-import EntryList from '../Common/EntryList.jsx';
-import LayerList from './LayerList.jsx';
+import DataTable from '../Common/DataTable.jsx';
+import LayerSelector from './LayerSelector.jsx';
 import EntryEditModal from './EntryEditModal.jsx';
 import { formatLayerLabel } from '../../utils/formatLayerLabel.js';
 const LayerPanel = ({
@@ -24,7 +24,7 @@ const LayerPanel = ({
 
   return (
     <Box sx={{ display: 'flex', gap: 2, height: '100%' }}>
-      <LayerList
+      <LayerSelector
         layers={layers}
         selected={selectedLayer}
         onSelect={onSelectLayer}
