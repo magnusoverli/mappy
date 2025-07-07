@@ -2,15 +2,17 @@
 
 ## Active Plans
 
-### 🚀 List Optimization and Component Reuse (`/plans/list-optimization-and-reuse.md`)
-- **Priority**: High | **Assignee**: @opencode
-- **Status**: In Progress
-- **Description**: Optimize list implementations and create reusable components to eliminate code duplication and improve performance
-- **Goal**: Unified BaseList component, improved LayerList width calculation performance, and consistent interaction patterns across all lists
-
 ---
 
 ## Completed Plans
+
+### 🚀 List Optimization and Component Reuse (`/plans/completed/list-optimization-and-reuse.md`)
+- **Priority**: High | **Assignee**: @opencode
+- **Status**: Completed
+- **Description**: Optimize list implementations and create reusable components to eliminate code duplication and improve performance
+- **Goal**: Unified BaseList component, improved LayerList width calculation performance, and consistent interaction patterns across all lists
+
+
 
 ### 🎨 Entry Field Editability Improvements (`/plans/completed/entry-field-editability-improvements.md`)
 - **Priority**: Medium | **Assignee**: @opencode
