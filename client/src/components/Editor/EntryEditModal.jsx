@@ -359,13 +359,14 @@ function EntryEditModal({
           error={!validateEntryKey(row.key)}
           sx={{ width: '11ch', minWidth: '11ch' }}
         />
+        <Box sx={{ mx: 1, width: '1ch', textAlign: 'center', fontFamily: FONTS.MONOSPACE }}>=</Box>
         <MonospaceTextField
           value={row.value}
           onChange={e => handleCellChange(index, 'value', e.target.value)}
           onClick={handleFieldClick}
           onMouseDown={handleFieldMouseDown}
           error={!validateHexValue(row.value)}
-          sx={{ width: '11ch', minWidth: '11ch', ml: 1 }}
+          sx={{ width: '11ch', minWidth: '11ch' }}
         />
         <Box
           sx={{
@@ -441,11 +442,22 @@ function EntryEditModal({
         </AppToolbar>
       <Box sx={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
         <Box sx={{ flex: 1, p: 2, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
-           <Box sx={{ display: 'flex', fontWeight: 'bold', mb: 1, fontFamily: FONTS.MONOSPACE, alignItems: 'center' }}>
-             <Box sx={{ width: '11ch', minWidth: '11ch' }}>Key</Box>
-             <Box sx={{ width: '11ch', minWidth: '11ch', ml: 1 }}>Value</Box>
-             <Box sx={{ flex: 1, textAlign: 'right', ml: 2 }}>Offset</Box>
-           </Box>          <Box sx={{ flex: 1, minHeight: 0 }}>
+          <Box
+            sx={{
+              display: 'flex',
+              fontWeight: 'bold',
+              mb: 1,
+              fontFamily: FONTS.MONOSPACE,
+              alignItems: 'center',
+              px: SPACING.PADDING.SMALL,
+            }}
+          >
+            <Box sx={{ width: '11ch', minWidth: '11ch' }}>Key</Box>
+            <Box sx={{ mx: 1, width: '1ch', textAlign: 'center' }}>=</Box>
+            <Box sx={{ width: '11ch', minWidth: '11ch' }}>Value</Box>
+            <Box sx={{ flex: 1, textAlign: 'right', ml: 2 }}>Offset</Box>
+          </Box>
+          <Box sx={{ flex: 1, minHeight: 0 }}>
             <VirtualizedList
               items={rows}
               itemHeight={36}
