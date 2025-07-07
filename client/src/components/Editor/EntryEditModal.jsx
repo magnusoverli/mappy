@@ -26,6 +26,20 @@ import AppToolbar from '../Layout/AppToolbar.jsx';
 import SearchField from '../Common/SearchField.jsx';
 import VirtualizedList from '../Common/VirtualizedList.jsx';
 import { SPACING, FONTS } from '../../utils/styleConstants.js';
+import { 
+  formatHexValue, 
+  formatEntryKey, 
+  parseHexValue, 
+  parseDecimalValue, 
+  calculateOffset,
+  formatHexDisplay,
+  shiftEntryKey 
+} from '../../utils/conversionUtils.js';
+import { 
+  validateEntryKey, 
+  validateHexValue, 
+  validatePartialHexValue 
+} from '../../utils/validationUtils.js';
 
 function EntryEditModal({
   open,
@@ -126,9 +140,9 @@ function EntryEditModal({
   const handleCellChange = (index, field, value) => {
     const newRows = rows.slice();
     newRows[index][field] = value.toLowerCase();
-    const dec = parseInt(newRows[index].key.split('.')[1], 10);
-    const hex = parseInt(newRows[index].value, 16);
-    newRows[index].offset = dec - (isNaN(hex) ? 0 : hex);
+    const dec = parseDecimalValue(newRows[index].key.split('.')[1]);
+    const hex = parseHexValue(newRows[index].value);
+    newRows[index].offset = calculateOffset(dec, hex);
     setRows(newRows);
   };
 
@@ -150,11 +164,8 @@ function EntryEditModal({
     const newRows = rows.slice();
     for (let i = 0; i < batchQty; i++) {
       const decIndex = batchStart + i;
-      const key = `${layerKey}.${String(decIndex).padStart(4, '0')}`;
-      const val = (decIndex - batchOffset)
-        .toString(16)
-        .toLowerCase()
-        .padStart(8, '0');
+      const key = formatEntryKey(layerKey, decIndex);
+      const val = formatHexValue(decIndex - batchOffset);
       newRows.push({ key, value: val, offset: batchOffset });
     }
     setRows(newRows);
@@ -168,45 +179,43 @@ function EntryEditModal({
     if (transformType === 'adjust') {
       sel.forEach(i => {
         const row = updated[i];
-        const val = parseInt(row.value, 16) || 0;
-        const amt = parseInt(adjustAmount, 10) || 0;
+        const val = parseHexValue(row.value);
+        const amt = parseDecimalValue(adjustAmount);
         const newVal = val + amt;
-        row.value = (newVal >>> 0).toString(16).toLowerCase().padStart(8, '0');
-        const dec = parseInt(row.key.split('.')[1], 10);
-        row.offset = dec - newVal;
+        row.value = formatHexValue(newVal);
+        const dec = parseDecimalValue(row.key.split('.')[1]);
+        row.offset = calculateOffset(dec, newVal);
       });
     } else if (transformType === 'sequential') {
-      let current = parseInt(seqStart, 10) || 0;
+      let current = parseDecimalValue(seqStart);
       const order = sel.slice().sort((a, b) =>
-        parseInt(updated[a].key.split('.')[1], 10) -
-        parseInt(updated[b].key.split('.')[1], 10));
+        parseDecimalValue(updated[a].key.split('.')[1]) -
+        parseDecimalValue(updated[b].key.split('.')[1]));
       order.forEach(i => {
         const row = updated[i];
-        row.value = (current >>> 0).toString(16).toLowerCase().padStart(8, '0');
-        const dec = parseInt(row.key.split('.')[1], 10);
-        row.offset = dec - current;
-        current += parseInt(seqIncrement, 10) || 0;
+        row.value = formatHexValue(current);
+        const dec = parseDecimalValue(row.key.split('.')[1]);
+        row.offset = calculateOffset(dec, current);
+        current += parseDecimalValue(seqIncrement);
       });
     } else if (transformType === 'fixed') {
-      if (/^[0-9A-Fa-f]{8}$/.test(fixedValue)) {
-        const val = parseInt(fixedValue, 16);
+      if (validateHexValue(fixedValue)) {
+        const val = parseHexValue(fixedValue);
         sel.forEach(i => {
           const row = updated[i];
           row.value = fixedValue.toLowerCase();
-          const dec = parseInt(row.key.split('.')[1], 10);
-          row.offset = dec - val;
+          const dec = parseDecimalValue(row.key.split('.')[1]);
+          row.offset = calculateOffset(dec, val);
         });
       }
     } else if (transformType === 'shift') {
-      const amt = parseInt(shiftAmount, 10) || 0;
+      const amt = parseDecimalValue(shiftAmount);
       sel.forEach(i => {
         const row = updated[i];
-        const parts = row.key.split('.');
-        const dec = parseInt(parts[1], 10) + amt;
-        parts[1] = String(dec).padStart(4, '0');
-        row.key = parts.join('.');
-        const val = parseInt(row.value, 16) || 0;
-        row.offset = dec - val;
+        row.key = shiftEntryKey(row.key, amt);
+        const dec = parseDecimalValue(row.key.split('.')[1]);
+        const val = parseHexValue(row.value);
+        row.offset = calculateOffset(dec, val);
       });
     }
     return updated;
@@ -236,13 +245,11 @@ function EntryEditModal({
 
   const hasShiftConflict = () => {
     if (transformType !== 'shift') return false;
-    const amt = parseInt(shiftAmount, 10) || 0;
+    const amt = parseDecimalValue(shiftAmount);
     const newKeys = new Set();
     const existing = new Set(rows.map(r => r.key));
     selected.forEach(i => {
-      const parts = rows[i].key.split('.');
-      const dec = parseInt(parts[1], 10) + amt;
-      const key = `${parts[0]}.${String(dec).padStart(4, '0')}`;
+      const key = shiftEntryKey(rows[i].key, amt);
       newKeys.add(key);
     });
     for (const key of newKeys) {
@@ -253,13 +260,13 @@ function EntryEditModal({
 
   const hasAdjustConflict = () => {
     if (transformType !== 'adjust') return false;
-    const amt = parseInt(adjustAmount, 10) || 0;
+    const amt = parseDecimalValue(adjustAmount);
     const newVals = new Set();
     const existing = new Set(rows.map(r => r.value));
     selected.forEach(i => {
-      const val = parseInt(rows[i].value, 16) || 0;
-      const newVal = (val + amt) >>> 0;
-      const valStr = newVal.toString(16).toLowerCase().padStart(8, '0');
+      const val = parseHexValue(rows[i].value);
+      const newVal = val + amt;
+      const valStr = formatHexValue(newVal);
       newVals.add(valStr);
     });
     for (const val of newVals) {
@@ -271,7 +278,7 @@ function EntryEditModal({
   const canApply = () => {
     if (selected.length < 2) return false;
     if (changedCount === 0) return false;
-    if (transformType === 'fixed' && !/^[0-9A-Fa-f]{8}$/.test(fixedValue)) return false;
+    if (transformType === 'fixed' && !validateHexValue(fixedValue)) return false;
     if (transformType === 'shift' && hasShiftConflict()) return false;
     if (transformType === 'adjust' && hasAdjustConflict()) return false;
     return true;
@@ -296,8 +303,7 @@ function EntryEditModal({
     onClose();
   };
 
-  const keyRegex = /^\d{2}\.\d{4}$/;
-  const valRegex = /^[0-9A-Fa-f]{8}$/;
+
 
   // Create a component for the row to use hooks properly
   const EditableRow = ({ row, index, style }) => {
@@ -311,8 +317,7 @@ function EntryEditModal({
         onClick={e => handleRowClick(index, e)}
         sx={theme => {
           const base = {
-            mb: 0.5,
-            display: 'flex',
+                              mb: SPACING.MARGIN_SMALL,            display: 'flex',
             alignItems: 'center',
             px: SPACING.PADDING.SMALL,
             py: 0,
@@ -334,7 +339,7 @@ function EntryEditModal({
           onChange={e => handleCellChange(index, 'key', e.target.value)}
           onClick={handleFieldClick}
           onMouseDown={handleFieldMouseDown}
-          error={!keyRegex.test(row.key)}
+          error={!validateEntryKey(row.key)}
           sx={{ width: '40%' }}
         />
         <MonospaceTextField
@@ -342,7 +347,7 @@ function EntryEditModal({
           onChange={e => handleCellChange(index, 'value', e.target.value)}
           onClick={handleFieldClick}
           onMouseDown={handleFieldMouseDown}
-          error={!valRegex.test(row.value)}
+          error={!validateHexValue(row.value)}
           sx={{ width: '40%' }}
         />
         <Box
@@ -491,7 +496,7 @@ function EntryEditModal({
                       value={seqStart}
                       onChange={e => setSeqStart(parseInt(e.target.value, 10) || 0)}
                       size="small"
-                      helperText={`= 0x${(parseInt(seqStart, 10) >>> 0).toString(16).toLowerCase().padStart(8, '0')}`}
+                      helperText={`= ${formatHexDisplay(parseDecimalValue(seqStart))}`}
                     />
                     <MonospaceTextField
                       label="Count by"
@@ -499,7 +504,7 @@ function EntryEditModal({
                       value={seqIncrement}
                       onChange={e => setSeqIncrement(parseInt(e.target.value, 10) || 0)}
                       size="small"
-                      helperText={`= 0x${(parseInt(seqIncrement, 10) >>> 0).toString(16).toLowerCase().padStart(8, '0')}`}
+                      helperText={`= ${formatHexDisplay(parseDecimalValue(seqIncrement))}`}
                     />
                   </Box>
                 )}
@@ -513,7 +518,7 @@ function EntryEditModal({
                       size="small"
                       inputProps={{ maxLength: 8 }}
                       helperText="8-digit hex value"
-                      error={!/^([0-9A-Fa-f]{8})?$/.test(fixedValue)}
+                      error={!validatePartialHexValue(fixedValue)}
                     />
                     <Box sx={{ display: 'flex', gap: 1 }}>
                       <Button size="small" onClick={() => setFixedValue('00000000')}>All 0</Button>
@@ -558,8 +563,7 @@ function EntryEditModal({
                               columnGap: 2,
                               alignItems: 'center',
                               fontFamily: FONTS.MONOSPACE,
-                              mb: 0.5,
-                              whiteSpace: 'nowrap',
+            mb: SPACING.MARGIN_SMALL,                              whiteSpace: 'nowrap',
                             }}
                           >
                             <Box sx={{ textAlign: 'right' }}>{`${p.oldKey} = ${p.oldValue}`}</Box>

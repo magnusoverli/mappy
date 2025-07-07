@@ -31,7 +31,7 @@ export default function EntryList({
             height: '100%',
             minHeight: 0,
             py: 0,
-            mb: 0.5,
+            mb: SPACING.MARGIN_SMALL,
             borderRadius: SPACING.BORDER_RADIUS,
             transition: 'background-color 0.3s',
             ...styles,

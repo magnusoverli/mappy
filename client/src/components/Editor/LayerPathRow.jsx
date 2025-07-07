@@ -1,6 +1,7 @@
 import { Paper, Box, Typography, TextField, Button, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { memo, useState } from 'react';
+import { SPACING } from '../../utils/styleConstants.js';
 
 const LayerPathRow = ({ layer, onPathChange, onAdd, onDelete, selectedLayer, layers = [] }) => {
   const [confirmDelete, setConfirmDelete] = useState(false);
@@ -20,9 +21,8 @@ const LayerPathRow = ({ layer, onPathChange, onAdd, onDelete, selectedLayer, lay
 
   if (!layer) return null;
   return (
-    <Paper sx={{ p: 2, borderRadius: 2, boxShadow: 1, width: '100%' }}>
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, width: '100%' }}>
-        <Typography variant="h6" component="div" sx={{ whiteSpace: 'nowrap' }}>
+    <Paper sx={{ p: SPACING.PADDING.MEDIUM, borderRadius: SPACING.BORDER_RADIUS_LARGE, boxShadow: 1, width: '100%' }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: SPACING.PADDING.MEDIUM, width: '100%' }}>        <Typography variant="h6" component="div" sx={{ whiteSpace: 'nowrap' }}>
           Layer {layer.key}
         </Typography>
         <TextField

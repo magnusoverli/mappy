@@ -31,7 +31,7 @@ const LayerList = ({ layers = [], selected, onSelect }) => {
             height: '100%',
             minHeight: 0,
             py: 0,
-            mb: 0.5,
+            mb: SPACING.MARGIN_SMALL,
             borderRadius: SPACING.BORDER_RADIUS,
             transition: 'background-color 0.3s',
             '&.Mui-selected': { bgcolor: 'action.selected' },
@@ -114,7 +114,7 @@ const LayerList = ({ layers = [], selected, onSelect }) => {
           ref={measureRef}
           sx={{
             px: SPACING.PADDING.MEDIUM,
-            mb: 0.5,
+            mb: SPACING.MARGIN_SMALL,
             height: '100%',
             minHeight: 0,
             py: 0,

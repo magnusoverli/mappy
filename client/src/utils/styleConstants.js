@@ -1,6 +1,8 @@
 export const SPACING = {
   ITEM_HEIGHT: 36,
   BORDER_RADIUS: 1,
+  BORDER_RADIUS_LARGE: 2,
+  MARGIN_SMALL: 0.5,
   PADDING: {
     SMALL: 1,
     MEDIUM: 2,
@@ -40,4 +42,12 @@ export const FIELD_STYLES = {
       borderColor: 'error.main',
     },
   },
+};
+
+export const VALIDATION = {
+  PATTERNS: {
+    ENTRY_KEY: /^\d{2}\.\d{4}$/,
+    HEX_VALUE: /^[0-9A-Fa-f]{8}$/,
+    LAYER_KEY: /^\d{2}$/,
+  }
 };

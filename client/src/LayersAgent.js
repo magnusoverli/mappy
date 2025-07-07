@@ -1,6 +1,8 @@
+import { parseDecimalValue, formatLayerKey } from './utils/conversionUtils.js';
+
 export function listLayers(data) {
   return Object.entries(data.Layers || {})
-    .sort((a, b) => parseInt(a[0], 10) - parseInt(b[0], 10))
+    .sort((a, b) => parseDecimalValue(a[0]) - parseDecimalValue(b[0]))
     .map(([key, value]) => ({ key, value }));
 }
 
@@ -31,10 +33,10 @@ export function addLayer(data) {
 }
 
 function findNextKey(data) {
-  const keys = Object.keys(data.Layers).map(k => parseInt(k, 10)).sort((a, b) => a - b);
+  const keys = Object.keys(data.Layers).map(k => parseDecimalValue(k)).sort((a, b) => a - b);
   let next = 0;
   while (keys.includes(next)) next += 1;
-  return String(next).padStart(2, '0');
+  return formatLayerKey(next);
 }
 
 export function removeLayer(data, key) {
