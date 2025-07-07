@@ -45,8 +45,9 @@ Mappy uses an **Agent Pattern** where each agent encapsulates a single responsib
 - Preserve whitespace around `=` signs in INI output
 
 ## Development Workflow
-- **Always commit when tasks are completed**: Create commits immediately after completing any task or feature
-- Use descriptive commit messages that explain the purpose of changes
+- **NEVER commit changes unless explicitly requested**: Only create git commits when the user specifically asks for it
+- **Complete tasks without committing**: Implement features, fix bugs, and complete work without automatically committing
+- **When asked to commit**: Use descriptive commit messages that explain the purpose of changes
 - Follow conventional commit format when possible
 
 ## Plan Management Guidelines
