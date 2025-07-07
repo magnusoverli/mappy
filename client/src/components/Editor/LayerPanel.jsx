@@ -29,7 +29,7 @@ const LayerPanel = ({
         selected={selectedLayer}
         onSelect={onSelectLayer}
       />
-      <EntryList
+      <DataTable
         title={
           <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             {`Targets${active ? ` (${counts?.targets || 0})` : ''}`}
@@ -40,7 +40,7 @@ const LayerPanel = ({
         }
         items={targets}
       />
-      <EntryList
+      <DataTable
         title={
           <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             {`Sources${active ? ` (${counts?.sources || 0})` : ''}`}
