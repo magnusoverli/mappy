@@ -1,4 +1,5 @@
 import ini from 'ini';
+import { validateLayerOrder } from './utils/entryHelpers.js';
 
 export function parseIni(text) {
   const data = ini.parse(text);
@@ -20,7 +21,7 @@ export function parseIni(text) {
     }
   }
   data.__layerOrder = order;
-  return data;
+  return validateLayerOrder(data);
 }
 
 export function stringifyIni(data, newline = '\n') {

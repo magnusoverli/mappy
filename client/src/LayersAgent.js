@@ -1,4 +1,5 @@
 import { parseDecimalValue, formatLayerKey } from './utils/conversionUtils.js';
+import { validateLayerOrder } from './utils/entryHelpers.js';
 
 export function listLayers(data) {
   return Object.entries(data.Layers || {})
@@ -18,6 +19,7 @@ export function updateLayer(data, index, newKey, newValue) {
     }
   }
   data.Layers[newKey] = newValue;
+  return validateLayerOrder(data);
 }
 
 export function addLayer(data) {
@@ -29,6 +31,7 @@ export function addLayer(data) {
   } else {
     data.__layerOrder = [newKey];
   }
+  validateLayerOrder(data);
   return newKey;
 }
 
@@ -47,4 +50,5 @@ export function removeLayer(data, key) {
     const idx = data.__layerOrder.indexOf(key);
     if (idx !== -1) data.__layerOrder.splice(idx, 1);
   }
+  return validateLayerOrder(data);
 }

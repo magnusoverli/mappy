@@ -1,5 +1,5 @@
 export const formatHexValue = (value) => 
-  (value >>> 0).toString(16).toLowerCase().padStart(8, '0');
+  (value >>> 0).toString(16).toUpperCase().padStart(8, '0');
 
 export const formatLayerKey = (value) => 
   String(value).padStart(2, '0');

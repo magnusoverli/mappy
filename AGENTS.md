@@ -15,7 +15,8 @@
 - **Client lint**: `cd client && npm run lint` (ESLint check)
 - **Server start**: `cd server && npm start` (Express server)
 - **Docker restart**: `docker compose down -v && docker compose build && docker compose up -d && docker compose logs -f` (restart container after changes)
-- **No test commands configured** - add tests using your preferred framework
+- **Client test**: `cd client && npm test` (Vitest interactive mode)
+- **Client test run**: `cd client && npm run test:run` (Vitest single run)
 
 ## Architecture Overview
 Mappy uses an **Agent Pattern** where each agent encapsulates a single responsibility:

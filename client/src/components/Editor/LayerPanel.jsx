@@ -33,7 +33,12 @@ const LayerPanel = ({
         title={
           <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             {`Targets${active ? ` (${counts?.targets || 0})` : ''}`}
-            <Button variant="contained" size="small" onClick={() => setEditTargetsOpen(true)}>
+            <Button 
+              variant="contained" 
+              size="small" 
+              onClick={() => setEditTargetsOpen(true)}
+              disabled={false}
+            >
               Edit
             </Button>
           </Box>
@@ -44,7 +49,12 @@ const LayerPanel = ({
         title={
           <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             {`Sources${active ? ` (${counts?.sources || 0})` : ''}`}
-            <Button variant="contained" size="small" onClick={() => setEditSourcesOpen(true)}>
+            <Button 
+              variant="contained" 
+              size="small" 
+              onClick={() => setEditSourcesOpen(true)}
+              disabled={false}
+            >
               Edit
             </Button>
           </Box>

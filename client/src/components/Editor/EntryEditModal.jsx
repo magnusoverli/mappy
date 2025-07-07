@@ -1,12 +1,9 @@
 import {
-  Dialog,
   Modal,
   Typography,
   IconButton,
   Box,
   Button,
-  TextField,
-  DialogActions,
   Paper,
 } from '@mui/material';
 import MonospaceTextField from '../Common/MonospaceTextField.jsx';
@@ -21,7 +18,7 @@ import {
   MenuItem,
   Collapse,
 } from '@mui/material';
-import { useEffect, useState, memo, useRef, useCallback } from 'react';
+import { useEffect, useState, memo, useRef, useCallback, useMemo } from 'react';
 
 import AppToolbar from '../Layout/AppToolbar.jsx';
 import SearchField from '../Common/SearchField.jsx';
@@ -69,8 +66,7 @@ function EntryEditModal({
 
   const [shiftAmount, setShiftAmount] = useState(1);
 
-  const [preview, setPreview] = useState([]);
-  const [changedCount, setChangedCount] = useState(0);
+
 
   const dialogRef = useRef(null);
 
@@ -82,21 +78,33 @@ function EntryEditModal({
   };
 
   useEffect(() => {
-    if (open) {
-      const mapped = entries.map(e => ({ ...e, value: e.value.toLowerCase() }));
-      setRows(mapped);
-      setOriginalEntries(mapped.map(e => ({ ...e })));
-      const last = mapped[mapped.length - 1];
-      const startIdx = last ? parseInt(last.key.split('.')[1], 10) + 1 : 0;
-      const off = last ? last.offset : 0;
-      setBatchStart(startIdx);
-      setBatchOffset(off);
+    if (!open) return;
+    
+    if (!entries || !Array.isArray(entries) || entries.length === 0) {
+      setRows([]);
+      setOriginalEntries([]);
+      setBatchStart(0);
+      setBatchOffset(0);
       setBatchQty(1);
       setSelected([]);
-
       setTransformType('shift');
+      return;
     }
-  }, [open, entries]);
+
+    const mapped = entries.map(e => ({ ...e, value: e.value.toUpperCase() }));
+    setRows(mapped);
+    setOriginalEntries(mapped.map(e => ({ ...e })));
+    
+    const last = mapped[mapped.length - 1];
+    const startIdx = last ? parseInt(last.key.split('.')[1], 10) + 1 : 0;
+    const offset = last ? last.offset || 0 : 0;
+    
+    setBatchStart(startIdx);
+    setBatchOffset(offset);
+    setBatchQty(1);
+    setSelected([]);
+    setTransformType('shift');
+  }, [open, entries, type]);
 
 
 
@@ -107,7 +115,7 @@ function EntryEditModal({
 
   const handleItemChange = (index, field, value) => {
     const newRows = rows.slice();
-    newRows[index][field] = value.toLowerCase();
+    newRows[index][field] = field === 'value' ? value.toUpperCase() : value;
     const dec = parseDecimalValue(newRows[index].key.split('.')[1]);
     const hex = parseHexValue(newRows[index].value);
     newRows[index].offset = calculateOffset(dec, hex);
@@ -122,87 +130,134 @@ function EntryEditModal({
     setSelected([]);
   };
 
-  const handleAddBatch = () => {
-    const newRows = rows.slice();
-    for (let i = 0; i < batchQty; i++) {
-      const decIndex = batchStart + i;
-      const key = formatEntryKey(layerKey, decIndex);
-      const val = formatHexValue(decIndex - batchOffset);
-      newRows.push({ key, value: val, offset: batchOffset });
-    }
-    setRows(newRows);
-    const nextStart = batchStart + batchQty;
-    setBatchStart(nextStart);
-  };
-
-  const transformRows = useCallback((sourceRows) => {
-    const updated = sourceRows.map(r => ({ ...r }));
-    const sel = selected.slice();
-    if (transformType === 'adjust') {
-      sel.forEach(i => {
-        const row = updated[i];
-        const val = parseHexValue(row.value);
-        const amt = parseDecimalValue(adjustAmount);
-        const newVal = val + amt;
-        row.value = formatHexValue(newVal);
-        const dec = parseDecimalValue(row.key.split('.')[1]);
-        row.offset = calculateOffset(dec, newVal);
-      });
-    } else if (transformType === 'sequential') {
-      let current = parseDecimalValue(seqStart);
-      const order = sel.slice().sort((a, b) =>
-        parseDecimalValue(updated[a].key.split('.')[1]) -
-        parseDecimalValue(updated[b].key.split('.')[1]));
-      order.forEach(i => {
-        const row = updated[i];
-        row.value = formatHexValue(current);
-        const dec = parseDecimalValue(row.key.split('.')[1]);
-        row.offset = calculateOffset(dec, current);
-        current += parseDecimalValue(seqIncrement);
-      });
-    } else if (transformType === 'fixed') {
-      if (validateHexValue(fixedValue)) {
-        const val = parseHexValue(fixedValue);
-        sel.forEach(i => {
-          const row = updated[i];
-          row.value = fixedValue.toLowerCase();
-          const dec = parseDecimalValue(row.key.split('.')[1]);
-          row.offset = calculateOffset(dec, val);
-        });
+  const handleAddBatch = useCallback(() => {
+    if (batchQty <= 0 || batchQty > 1000) return;
+    
+    try {
+      const newRows = rows.slice();
+      const existingKeys = new Set(newRows.map(r => r.key));
+      
+      for (let i = 0; i < batchQty; i++) {
+        const decIndex = batchStart + i;
+        const key = formatEntryKey(layerKey, decIndex);
+        
+        // Skip if key already exists
+        if (existingKeys.has(key)) continue;
+        
+        const val = formatHexValue(Math.max(0, decIndex - batchOffset));
+        newRows.push({ key, value: val, offset: batchOffset });
       }
-    } else if (transformType === 'shift') {
-      const amt = parseDecimalValue(shiftAmount);
-      sel.forEach(i => {
-        const row = updated[i];
-        row.key = shiftEntryKey(row.key, amt);
-        const dec = parseDecimalValue(row.key.split('.')[1]);
-        const val = parseHexValue(row.value);
-        row.offset = calculateOffset(dec, val);
-      });
+      
+      setRows(newRows);
+      const nextStart = batchStart + batchQty;
+      setBatchStart(nextStart);
+    } catch (error) {
+      console.error('Batch add error:', error);
     }
-    return updated;
-  }, [selected, transformType, adjustAmount, seqStart, seqIncrement, fixedValue, shiftAmount]);
+  }, [rows, batchQty, batchStart, batchOffset, layerKey]);
 
-  useEffect(() => {
-    const updated = transformRows(rows);
-    const pv = [];
-    let count = 0;
-    selected.forEach(i => {
-      const changed = rows[i].key !== updated[i].key || rows[i].value !== updated[i].value;
-      if (changed) {
-        count += 1;
-        if (pv.length < 10) {
-          pv.push({
-            oldKey: rows[i].key,
-            newKey: updated[i].key,
-            oldValue: rows[i].value,
-            newValue: updated[i].value,
+  const transformRows = useMemo(() => {
+    return (sourceRows) => {
+      if (!sourceRows || sourceRows.length === 0 || selected.length === 0) {
+        return sourceRows;
+      }
+
+      const updated = sourceRows.map(r => ({ ...r }));
+      const sel = selected.slice();
+      
+      try {
+        if (transformType === 'adjust') {
+          const amt = parseDecimalValue(adjustAmount);
+          sel.forEach(i => {
+            if (i >= 0 && i < updated.length) {
+              const row = updated[i];
+              const val = parseHexValue(row.value);
+              const newVal = val + amt;
+              row.value = formatHexValue(newVal);
+              const dec = parseDecimalValue(row.key.split('.')[1]);
+              row.offset = calculateOffset(dec, newVal);
+            }
+          });
+        } else if (transformType === 'sequential') {
+          let current = parseDecimalValue(seqStart);
+          const increment = parseDecimalValue(seqIncrement);
+          const order = sel.slice().sort((a, b) =>
+            parseDecimalValue(updated[a].key.split('.')[1]) -
+            parseDecimalValue(updated[b].key.split('.')[1]));
+          order.forEach(i => {
+            if (i >= 0 && i < updated.length) {
+              const row = updated[i];
+              row.value = formatHexValue(current);
+              const dec = parseDecimalValue(row.key.split('.')[1]);
+              row.offset = calculateOffset(dec, current);
+              current += increment;
+            }
+          });
+        } else if (transformType === 'fixed') {
+          if (validateHexValue(fixedValue)) {
+            const val = parseHexValue(fixedValue);
+            sel.forEach(i => {
+              if (i >= 0 && i < updated.length) {
+                const row = updated[i];
+                 row.value = fixedValue.toUpperCase();                const dec = parseDecimalValue(row.key.split('.')[1]);
+                row.offset = calculateOffset(dec, val);
+              }
+            });
+          }
+        } else if (transformType === 'shift') {
+          const amt = parseDecimalValue(shiftAmount);
+          sel.forEach(i => {
+            if (i >= 0 && i < updated.length) {
+              const row = updated[i];
+              row.key = shiftEntryKey(row.key, amt);
+              const dec = parseDecimalValue(row.key.split('.')[1]);
+              const val = parseHexValue(row.value);
+              row.offset = calculateOffset(dec, val);
+            }
           });
         }
+      } catch (error) {
+        console.error('Transform error:', error);
+        return sourceRows;
       }
-    });
-    setPreview(pv);
-    setChangedCount(count);
+      
+      return updated;
+    };
+  }, [selected, transformType, adjustAmount, seqStart, seqIncrement, fixedValue, shiftAmount]);
+
+  const { preview, changedCount } = useMemo(() => {
+    if (!rows || rows.length === 0 || selected.length === 0) {
+      return { preview: [], changedCount: 0 };
+    }
+
+    try {
+      const updated = transformRows(rows);
+      const pv = [];
+      let count = 0;
+      const maxPreview = 10;
+      
+      selected.forEach(i => {
+        if (i >= 0 && i < rows.length && i < updated.length) {
+          const changed = rows[i].key !== updated[i].key || rows[i].value !== updated[i].value;
+          if (changed) {
+            count += 1;
+            if (pv.length < maxPreview) {
+              pv.push({
+                oldKey: rows[i].key,
+                newKey: updated[i].key,
+                oldValue: rows[i].value,
+                newValue: updated[i].value,
+              });
+            }
+          }
+        }
+      });
+      
+      return { preview: pv, changedCount: count };
+    } catch (error) {
+      console.error('Preview calculation error:', error);
+      return { preview: [], changedCount: 0 };
+    }
   }, [rows, selected, transformType, adjustAmount, seqStart, seqIncrement, fixedValue, shiftAmount, transformRows]);
 
   const hasShiftConflict = () => {
@@ -323,16 +378,34 @@ function EntryEditModal({
         </AppToolbar>
       <Box sx={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
         <Box sx={{ flex: 1, p: 2, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
-          <EditableDataTable
-            items={rows}
-            selected={selected}
-            onSelectionChange={handleSelectionChange}
-            onItemChange={handleItemChange}
-            validateKey={validateEntryKey}
-            validateValue={validateHexValue}
-            itemHeight={36}
-            paperProps={{ sx: { flex: 1, p: 0 } }}
-          />
+          {rows.length === 0 ? (
+            <Box sx={{ 
+              flex: 1, 
+              display: 'flex', 
+              alignItems: 'center', 
+              justifyContent: 'center',
+              flexDirection: 'column',
+              gap: 2
+            }}>
+              <Typography variant="h6" color="text.secondary">
+                No entries to edit
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                Add some entries using the controls on the right to get started.
+              </Typography>
+            </Box>
+          ) : (
+            <EditableDataTable
+              items={rows}
+              selected={selected}
+              onSelectionChange={handleSelectionChange}
+              onItemChange={handleItemChange}
+              validateKey={validateEntryKey}
+              validateValue={validateHexValue}
+              itemHeight={36}
+              paperProps={{ sx: { flex: 1, p: 0 } }}
+            />
+          )}
         </Box>
         <Box sx={{ 
           width: 450, 
@@ -350,14 +423,16 @@ function EntryEditModal({
             label="Quantity"
             type="number"
             value={batchQty}
-            onChange={e => setBatchQty(parseInt(e.target.value, 10) || 0)}
+            onChange={e => setBatchQty(Math.max(0, Math.min(1000, parseInt(e.target.value, 10) || 0)))}
+            inputProps={{ min: 0, max: 1000 }}
             size="small"
           />
           <MonospaceTextField
             label="First Key"
             type="number"
             value={batchStart}
-            onChange={e => setBatchStart(parseInt(e.target.value, 10) || 0)}
+            onChange={e => setBatchStart(Math.max(0, Math.min(9999, parseInt(e.target.value, 10) || 0)))}
+            inputProps={{ min: 0, max: 9999 }}
             size="small"
           />
           <MonospaceTextField
@@ -365,6 +440,7 @@ function EntryEditModal({
             type="number"
             value={batchOffset}
             onChange={e => setBatchOffset(parseInt(e.target.value, 10) || 0)}
+            inputProps={{ min: -2147483648, max: 2147483647 }}
             size="small"
           />
           <Button variant="contained" startIcon={<AddIcon />} onClick={handleAddBatch}>
@@ -413,6 +489,7 @@ function EntryEditModal({
                       type="number"
                       value={adjustAmount}
                       onChange={e => setAdjustAmount(parseInt(e.target.value, 10) || 0)}
+                      inputProps={{ min: -2147483648, max: 2147483647 }}
                       size="small"
                     />
                     {hasAdjustConflict() && (
@@ -430,6 +507,7 @@ function EntryEditModal({
                       type="number"
                       value={seqStart}
                       onChange={e => setSeqStart(parseInt(e.target.value, 10) || 0)}
+                      inputProps={{ min: 0, max: 4294967295 }}
                       size="small"
                       helperText={`= ${formatHexDisplay(parseDecimalValue(seqStart))}`}
                     />
@@ -437,7 +515,8 @@ function EntryEditModal({
                       label="Count by"
                       type="number"
                       value={seqIncrement}
-                      onChange={e => setSeqIncrement(parseInt(e.target.value, 10) || 0)}
+                      onChange={e => setSeqIncrement(Math.max(1, parseInt(e.target.value, 10) || 1))}
+                      inputProps={{ min: 1, max: 1000 }}
                       size="small"
                       helperText={`= ${formatHexDisplay(parseDecimalValue(seqIncrement))}`}
                     />
@@ -449,8 +528,7 @@ function EntryEditModal({
                     <MonospaceTextField
                       label="New value for all"
                       value={fixedValue}
-                      onChange={e => setFixedValue(e.target.value.toLowerCase())}
-                      size="small"
+                       onChange={e => setFixedValue(e.target.value.toUpperCase())}                      size="small"
                       inputProps={{ maxLength: 8 }}
                       helperText="8-digit hex value"
                       error={!validatePartialHexValue(fixedValue)}
@@ -469,6 +547,7 @@ function EntryEditModal({
                       type="number"
                       value={shiftAmount}
                       onChange={e => setShiftAmount(parseInt(e.target.value, 10) || 0)}
+                      inputProps={{ min: -9999, max: 9999 }}
                       size="small"
                     />
                     {hasShiftConflict() && (

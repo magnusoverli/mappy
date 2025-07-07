@@ -6,6 +6,22 @@
 
 ## Completed Plans
 
+### 🐛 EntryEditModal Data Passing Issue Fix (`/plans/completed/entryeditmodal-data-passing-fix.md`)
+- **Priority**: High | **Assignee**: @opencode
+- **Status**: Completed
+- **Description**: Fix EntryEditModal not receiving/displaying data properly and ensure Edit buttons are always enabled for adding entries to empty layers
+- **Goal**: Correct data flow to modal and always-enabled Edit buttons for proper functionality
+
+
+
+### 🐛 EntryEditModal Data Display Issue Fix (`/plans/completed/entryeditmodal-data-fix.md`)
+- **Priority**: High | **Assignee**: @opencode
+- **Status**: Completed
+- **Description**: Fix EntryEditModal not displaying data when Edit button is clicked - root cause is incorrect button disable logic in LayerPanel
+- **Goal**: Ensure Edit buttons are properly enabled/disabled and modal displays correct data for selected layer
+
+
+
 ### 🚀 List Optimization and Component Reuse (`/plans/completed/list-optimization-and-reuse.md`)
 - **Priority**: High | **Assignee**: @opencode
 - **Status**: Completed

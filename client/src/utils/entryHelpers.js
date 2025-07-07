@@ -23,3 +23,21 @@ export function setLayerEntries(entries = {}, layer, newEntries = []) {
     entries[e.key] = e.value;
   });
 }
+
+export function validateLayerOrder(data) {
+  if (!data.Layers) return data;
+  
+  const layerKeys = Object.keys(data.Layers);
+  const orderKeys = data.__layerOrder || [];
+  
+  const missingFromOrder = layerKeys.filter(key => !orderKeys.includes(key));
+  const invalidInOrder = orderKeys.filter(key => !layerKeys.includes(key));
+  
+  if (missingFromOrder.length > 0 || invalidInOrder.length > 0 || !data.__layerOrder) {
+    const validOrder = orderKeys.filter(key => layerKeys.includes(key));
+    const sortedMissing = missingFromOrder.sort((a, b) => parseInt(a, 10) - parseInt(b, 10));
+    data.__layerOrder = [...validOrder, ...sortedMissing];
+  }
+  
+  return data;
+}
