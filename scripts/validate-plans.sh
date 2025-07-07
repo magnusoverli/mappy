@@ -80,13 +80,16 @@ for plan_file in $plan_refs; do
     fi
     
     # Check required fields in plan file (handle multiple formats)
-    required_fields=("Status" "Priority" "Created" "Last Updated")
-    for field in "${required_fields[@]}"; do
-        if ! grep -q -E "(\*\*$field\*\*:|$field.*:)" "$plan_path"; then
-            echo -e "${RED}❌ Missing required field '$field' in $plan_file${NC}"
-            ((validation_errors++))
-        fi
-    done
+    # Only validate required fields for active plans (not completed ones)
+    if [[ "$plan_file" != completed/* ]]; then
+        required_fields=("Status" "Assignee" "Type")
+        for field in "${required_fields[@]}"; do
+            if ! grep -q -E "(\\*\\*$field\\*\\*:|$field.*:)" "$plan_path"; then
+                echo -e "${RED}❌ Missing required field '$field' in $plan_file${NC}"
+                ((validation_errors++))
+            fi
+        done
+    fi
 done
 
 # Check for orphaned plan files

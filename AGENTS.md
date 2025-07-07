@@ -72,7 +72,6 @@ When completing ANY planned work, you MUST execute ALL of these steps:
 
 **□ Step 1: Update Plan Status**
 - Mark plan status as "Completed" in the plan file metadata
-- Update "Last Updated" date in plan metadata
 
 **□ Step 2: Update TODO.md**
 - Change plan status from "Not Started/In Progress" to "Completed" 
@@ -137,9 +136,6 @@ When completing ANY planned work, you MUST execute ALL of these steps:
   ```markdown
   ## Plan Metadata
   - **Status**: [Not Started/In Progress/Completed]
-  - **Priority**: [High/Medium/Low]
-  - **Created**: [YYYY-MM-DD]
-  - **Last Updated**: [YYYY-MM-DD]
   - **Assignee**: @opencode
   - **Type**: [Bug Fix/Feature/Enhancement/etc.]
   ```

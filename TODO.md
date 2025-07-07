@@ -2,6 +2,12 @@
 
 ## Active Plans
 
+### 🎨 Entry Edit Modal Field Width Optimization (`/plans/entry-edit-modal-field-width-optimization.md`)
+- **Priority**: Medium | **Assignee**: @opencode
+- **Status**: Not Started
+- **Enhancement**: Reduce the width of editable fields to better match content while maintaining horizontal positioning
+- **Goal**: Make bordered fields more proportional to their 7-8 character content, improving visual balance
+
 ---
 
 ## Completed Plans

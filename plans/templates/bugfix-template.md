@@ -2,10 +2,7 @@
 
 ## Plan Metadata
 - **Status**: Not Started
-- **Priority**: [High/Medium/Low]
-- **Created**: [YYYY-MM-DD]
-- **Last Updated**: [YYYY-MM-DD]
-- **Assignee**: [Name/Username]
+- **Assignee**: @opencode
 - **Type**: Bug Fix
 
 ## Bug Description
