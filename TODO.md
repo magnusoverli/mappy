@@ -2,6 +2,12 @@
 
 ## Active Plans
 
+### 🚀 EntryEditModal Implementation (`/plans/entry-edit-modal-implementation.md`)
+- **Priority**: High | **Assignee**: @opencode
+- **Status**: In Progress
+- **Description**: Implement a sophisticated EntryEditModal component for managing key-value pairs with hexadecimal values, featuring a three-panel layout with comprehensive editing, transformation, and batch operation capabilities
+- **Goal**: Create a fully-featured modal interface that maximizes reuse of existing components while providing intuitive entry management tools with real-time validation and conflict detection
+
 ---
 
 ## Completed Plans
