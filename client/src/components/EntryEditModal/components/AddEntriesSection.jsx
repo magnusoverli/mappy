@@ -71,7 +71,7 @@ export default function AddEntriesSection({
     return null;
   };
 
-  const handleAddBatch = () => {
+  const handleAddBatch = async () => {
     const validationError = validateInputs();
     if (validationError) {
       setError(validationError);
@@ -93,17 +93,17 @@ export default function AddEntriesSection({
       });
     }
     
-    onAddEntries(newEntries);
+    await onAddEntries(newEntries);
     
     // Update first key for next batch
     setFirstKey((keyNum + quantity).toString().padStart(4, '0'));
   };
 
-  const handleDeleteSelected = () => {
+  const handleDeleteSelected = async () => {
     if (selectedItems.size === 0) return;
     
     if (window.confirm(`Delete ${selectedItems.size} selected entries?`)) {
-      onDeleteSelected();
+      await onDeleteSelected();
     }
   };
 

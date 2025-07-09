@@ -118,7 +118,7 @@ export default function TransformSection({
     generatePreview();
   }, [transformType, moveBy, startValue, countBy, hexValue, selectedEntries, selectedCount, entries, selectedItems]);
 
-  const handleApply = () => {
+  const handleApply = async () => {
     if (conflicts.length > 0) return;
     
     const keyMapping = {};
@@ -140,7 +140,7 @@ export default function TransformSection({
       };
     });
     
-    onApplyTransform(transformedEntries, keyMapping);
+    await onApplyTransform(transformedEntries, keyMapping);
     
     // Reset form
     setTransformType('');

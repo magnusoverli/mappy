@@ -26,6 +26,7 @@ export default function EntryEditModal({
   const [entries, setEntries] = useState([]);
   const [hasChanges, setHasChanges] = useState(false);
   const [processing, setProcessing] = useState(false);
+  const [processingMessage, setProcessingMessage] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   
   const {
@@ -70,6 +71,7 @@ export default function EntryEditModal({
     if (!hasChanges) return;
     
     setProcessing(true);
+    setProcessingMessage('Saving changes...');
     try {
       await onSave(entries);
       setHasChanges(false);
@@ -78,6 +80,7 @@ export default function EntryEditModal({
       console.error('Save failed:', error);
     } finally {
       setProcessing(false);
+      setProcessingMessage('');
     }
   };
 
@@ -171,12 +174,15 @@ export default function EntryEditModal({
           selectedItems={selectedItems}
           onUpdateEntries={updateEntries}
           processing={processing}
+          setProcessing={setProcessing}
+          setProcessingMessage={setProcessingMessage}
         />
       </Box>
       
       <ModalFooter
         hasChanges={hasChanges}
         processing={processing}
+        processingMessage={processingMessage}
         onCancel={handleClose}
         onSave={handleSave}
       />

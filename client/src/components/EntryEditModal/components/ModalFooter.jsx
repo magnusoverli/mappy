@@ -5,7 +5,7 @@ export default function ModalFooter({
   processing, 
   onCancel, 
   onSave,
-  progressPercent = 0 
+  processingMessage = "Processing..."
 }) {
   return (
     <Box
@@ -23,38 +23,21 @@ export default function ModalFooter({
       <Box sx={{ display: 'flex', alignItems: 'center', minWidth: 120 }}>
         {processing && (
           <>
-            <Box sx={{ position: 'relative', mr: 2 }}>
-              <CircularProgress
-                size={40}
-                thickness={4}
-                variant="determinate"
-                value={progressPercent}
-                sx={{ color: 'primary.main' }}
-              />
-              <Box
-                sx={{
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  bottom: 0,
-                  right: 0,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}
-              >
-                <Typography
-                  variant="caption"
-                  component="div"
-                  color="text.secondary"
-                  sx={{ fontSize: '0.75rem', fontWeight: 'bold' }}
-                >
-                  {`${Math.round(progressPercent)}%`}
-                </Typography>
-              </Box>
-            </Box>
-            <Typography variant="body2" color="text.secondary">
-              Processing...
+            <CircularProgress
+              size={20}
+              thickness={4}
+              sx={{ 
+                color: 'primary.main',
+                mr: 1.5,
+                opacity: 0.8
+              }}
+            />
+            <Typography 
+              variant="body2" 
+              color="text.secondary"
+              sx={{ fontSize: '0.875rem' }}
+            >
+              {processingMessage}
             </Typography>
           </>
         )}
