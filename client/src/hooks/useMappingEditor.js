@@ -8,6 +8,7 @@ import {
   removeLayerTargets,
   groupSourcesByLayer,
   removeLayerSources,
+  updateLayerEntries,
 } from '../EntryAgent.js';
 
 
@@ -123,6 +124,21 @@ export default function useMappingEditor() {
     setSelectedLayer(nextKey);
   }, [iniData, layers]);
 
+  const handleUpdateEntries = useCallback(async (layerKey, entryType, entries) => {
+    const dataCopy = {
+      ...iniData,
+      Layers: { ...iniData.Layers },
+      Targets: { ...iniData.Targets },
+      Sources: { ...iniData.Sources },
+    };
+    
+    updateLayerEntries(dataCopy, layerKey, entryType, entries);
+    setIniData(dataCopy);
+    setTargets(groupTargetsByLayer(dataCopy));
+    setSources(groupSourcesByLayer(dataCopy));
+    setStatus(`Updated ${entryType.toLowerCase()} for layer ${layerKey}`);
+  }, [iniData]);
+
 
 
   const reset = useCallback(() => {
@@ -154,7 +170,7 @@ export default function useMappingEditor() {
     handlePathChange,
     handleAddLayer,
     handleRemoveLayer,
-
+    handleUpdateEntries,
     reset,
   };
 }

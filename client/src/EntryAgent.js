@@ -23,3 +23,17 @@ export function groupSourcesByLayer(data) {
 export function removeLayerSources(data, layer) {
   return removeLayerEntries(data, layer, 'Sources');
 }
+
+export function updateLayerEntries(data, layer, entryType, entries) {
+  if (!data[entryType]) {
+    data[entryType] = {};
+  }
+  
+  // Remove existing entries for this layer
+  removeLayerEntries(data, layer, entryType);
+  
+  // Add new entries
+  entries.forEach(entry => {
+    data[entryType][entry.key] = entry.value;
+  });
+}
