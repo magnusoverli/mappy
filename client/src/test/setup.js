@@ -29,3 +29,11 @@ globalThis.FileReader = class {
 // Mock URL.createObjectURL
 globalThis.URL.createObjectURL = vi.fn(() => 'mock-url');
 globalThis.URL.revokeObjectURL = vi.fn();
+
+// Mock Blob
+globalThis.Blob = class Blob {
+  constructor(parts, options) {
+    this.parts = parts;
+    this.options = options;
+  }
+};

@@ -10,10 +10,15 @@ export const validateHexValue = (value) => VALIDATION_PATTERNS.HEX_VALUE.test(va
 export const validateLayerKey = (key) => VALIDATION_PATTERNS.LAYER_KEY.test(key);
 export const validatePartialHexValue = (value) => VALIDATION_PATTERNS.HEX_VALUE_PARTIAL.test(value);
 
-export const isValidEntry = (entry) => 
-  validateEntryKey(entry.key) && validateHexValue(entry.value);
+export const isValidEntry = (entry) => {
+  if (!entry || typeof entry !== 'object') return false;
+  return validateEntryKey(entry.key) && validateHexValue(entry.value);
+};
 
 export const getValidationError = (entry) => {
+  if (!entry || typeof entry !== 'object' || !entry.key) {
+    return { field: 'key', message: 'Invalid key format (expected: XX.XXXX)' };
+  }
   if (!validateEntryKey(entry.key)) {
     return { field: 'key', message: 'Invalid key format (expected: XX.XXXX)' };
   }

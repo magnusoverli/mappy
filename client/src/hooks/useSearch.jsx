@@ -242,7 +242,8 @@ function applyIncrementalChanges(index, changes) {
 }
 
 // Threshold for using Web Workers (items count)
-const WORKER_THRESHOLD = 1000;
+// Lowered from 1000 to 100 for better performance with typical INI files
+const WORKER_THRESHOLD = 100;
 
 // Web Worker management
 let searchWorker = null;

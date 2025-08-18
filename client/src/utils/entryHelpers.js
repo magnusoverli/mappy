@@ -1,4 +1,5 @@
 export function groupByLayer(entries = {}) {
+  if (!entries || typeof entries !== 'object') return {};
   const result = {};
   Object.entries(entries).forEach(([key, value]) => {
     const [layer, indexPart] = key.split('.');
@@ -12,6 +13,7 @@ export function groupByLayer(entries = {}) {
 }
 
 export function removeLayerEntries(entries = {}, layer) {
+  if (!entries || typeof entries !== 'object') return;
   Object.keys(entries).forEach(key => {
     if (key.startsWith(`${layer}.`)) delete entries[key];
   });
