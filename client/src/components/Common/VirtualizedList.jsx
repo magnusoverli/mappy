@@ -1,10 +1,26 @@
-import { memo } from 'react';
+import { memo, forwardRef, useImperativeHandle, useRef } from 'react';
 import { FixedSizeList } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { Box } from '@mui/material';
 import { SPACING } from '../../utils/styleConstants.js';
 
-const VirtualizedList = ({ items = [], itemHeight = SPACING.ITEM_HEIGHT, renderRow }) => {
+const VirtualizedList = forwardRef(({ items = [], itemHeight = SPACING.ITEM_HEIGHT, renderRow }, ref) => {
+  const listRef = useRef(null);
+  
+  // Expose scroll methods to parent components
+  useImperativeHandle(ref, () => ({
+    scrollToItem: (index, align = 'start') => {
+      if (listRef.current && index >= 0 && index < items.length) {
+        listRef.current.scrollToItem(index, align);
+      }
+    },
+    scrollTo: (scrollOffset) => {
+      if (listRef.current) {
+        listRef.current.scrollTo(scrollOffset);
+      }
+    }
+  }));
+  
   if (typeof renderRow !== 'function') return null;
   return (
     <Box
@@ -41,6 +57,7 @@ const VirtualizedList = ({ items = [], itemHeight = SPACING.ITEM_HEIGHT, renderR
       <AutoSizer>
         {({ height, width }) => (
           <FixedSizeList
+            ref={listRef}
             height={height}
             width={width}
             itemCount={items.length}
@@ -52,6 +69,8 @@ const VirtualizedList = ({ items = [], itemHeight = SPACING.ITEM_HEIGHT, renderR
       </AutoSizer>
     </Box>
   );
-};
+});
+
+VirtualizedList.displayName = 'VirtualizedList';
 
 export default memo(VirtualizedList);

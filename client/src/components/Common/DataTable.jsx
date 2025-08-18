@@ -1,3 +1,4 @@
+import { forwardRef } from 'react';
 import { Box, Paper, Typography } from '@mui/material';
 import VirtualizedList from './VirtualizedList.jsx';
 import { useSearchHighlight } from '../../hooks/useSearchHighlight.js';
@@ -50,7 +51,7 @@ function DefaultHeader() {
   );
 }
 
-export default function DataTable({
+const DataTable = forwardRef(({
   title,
   items = [],
   renderRow,
@@ -58,7 +59,7 @@ export default function DataTable({
   footer,
   itemHeight = 36,
   paperProps = {},
-}) {
+}, ref) => {
   // Use custom renderer or default key-value-offset renderer
   const rowRenderer = renderRow || ((item, index, style) => <DefaultRow item={item} style={style} />);
 
@@ -87,6 +88,7 @@ export default function DataTable({
       {headerComponent}
       <Box sx={{ flex: 1, minHeight: 0 }}>
         <VirtualizedList
+          ref={ref}
           items={items}
           itemHeight={itemHeight}
           renderRow={rowRenderer}
@@ -95,4 +97,8 @@ export default function DataTable({
       {footer || null}
     </Paper>
   );
-}
+});
+
+DataTable.displayName = 'DataTable';
+
+export default DataTable;

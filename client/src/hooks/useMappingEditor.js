@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { openFile, exportFile } from '../FileAgent.js';
 import { parseIni, stringifyIni } from '../ParserAgent.js';
 import { listLayers, updateLayer, addLayer, removeLayer } from '../LayersAgent.js';
@@ -15,13 +15,23 @@ import {
 export default function useMappingEditor() {
   const [iniData, setIniData] = useState(null);
   const [layers, setLayers] = useState([]);
-  const [targets, setTargets] = useState({});
-  const [sources, setSources] = useState({});
   const [selectedLayer, setSelectedLayer] = useState(null);
   const [fileName, setFileName] = useState('mappingfile.ini');
   const [newline, setNewline] = useState('\n');
   const [status, setStatus] = useState('');
   const [loading, setLoading] = useState(false);
+  const saveTimeoutRef = useRef(null);
+
+  // Memoize expensive data transformations for better performance
+  const targets = useMemo(() => {
+    if (!iniData) return {};
+    return groupTargetsByLayer(iniData);
+  }, [iniData]);
+
+  const sources = useMemo(() => {
+    if (!iniData) return {};
+    return groupSourcesByLayer(iniData);
+  }, [iniData]);
 
   useEffect(() => {
     const saved = loadState();
@@ -31,8 +41,7 @@ export default function useMappingEditor() {
         setIniData(parsed);
         const layerList = listLayers(parsed);
         setLayers(layerList);
-        setTargets(groupTargetsByLayer(parsed));
-        setSources(groupSourcesByLayer(parsed));
+        // Targets and sources are now memoized, no need to set them
         setSelectedLayer(layerList[0]?.key || null);
         setFileName(saved.fileName || 'mappingfile.ini');
         setNewline(saved.newline || '\n');
@@ -45,12 +54,19 @@ export default function useMappingEditor() {
   }, []);
 
   useEffect(() => {
+    // Debounce localStorage saves to improve performance
     if (iniData) {
-      const text = stringifyIni(iniData, newline);
-      saveState({ text, fileName, newline });
+      clearTimeout(saveTimeoutRef.current);
+      saveTimeoutRef.current = setTimeout(() => {
+        const text = stringifyIni(iniData, newline);
+        saveState({ text, fileName, newline });
+      }, 500); // 500ms debounce
     } else {
       clearState();
     }
+    
+    // Cleanup timeout on unmount or when dependencies change
+    return () => clearTimeout(saveTimeoutRef.current);
   }, [iniData, fileName, newline]);
 
   const handleFileChange = useCallback(async e => {
@@ -63,8 +79,7 @@ export default function useMappingEditor() {
       setIniData(parsed);
       const layerList = listLayers(parsed);
       setLayers(layerList);
-      setTargets(groupTargetsByLayer(parsed));
-      setSources(groupSourcesByLayer(parsed));
+      // Targets and sources are now memoized, no need to set them
       setSelectedLayer(layerList[0]?.key || null);
       setFileName(file.name);
       setNewline(newline);
@@ -98,8 +113,7 @@ export default function useMappingEditor() {
     setIniData(dataCopy);
     const updated = listLayers(dataCopy);
     setLayers(updated);
-    setTargets(groupTargetsByLayer(dataCopy));
-    setSources(groupSourcesByLayer(dataCopy));
+    // Targets and sources are now memoized, no need to set them
     setSelectedLayer(newKey);
   }, [iniData]);
 
@@ -117,8 +131,7 @@ export default function useMappingEditor() {
     setIniData(dataCopy);
     const updated = listLayers(dataCopy);
     setLayers(updated);
-    setTargets(groupTargetsByLayer(dataCopy));
-    setSources(groupSourcesByLayer(dataCopy));
+    // Targets and sources are now memoized, no need to set them
     const nextKey =
       idx > 0 ? updated[idx - 1]?.key : updated[0]?.key || null;
     setSelectedLayer(nextKey);
@@ -134,8 +147,7 @@ export default function useMappingEditor() {
     
     updateLayerEntries(dataCopy, layerKey, entryType, entries);
     setIniData(dataCopy);
-    setTargets(groupTargetsByLayer(dataCopy));
-    setSources(groupSourcesByLayer(dataCopy));
+    // Targets and sources are now memoized, no need to set them
     setStatus(`Updated ${entryType.toLowerCase()} for layer ${layerKey}`);
   }, [iniData]);
 
@@ -144,8 +156,7 @@ export default function useMappingEditor() {
   const reset = useCallback(() => {
     setIniData(null);
     setLayers([]);
-    setTargets({});
-    setSources({});
+    // Targets and sources are now memoized, they'll reset automatically when iniData is null
     setSelectedLayer(null);
     setFileName('mappingfile.ini');
     setNewline('\n');
