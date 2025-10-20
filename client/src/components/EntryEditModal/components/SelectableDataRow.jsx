@@ -1,4 +1,4 @@
-import { Box, Checkbox } from '@mui/material';
+import { Box, Checkbox, useTheme, alpha } from '@mui/material';
 import { Check as CheckIcon } from '@mui/icons-material';
 import { SPACING, FONTS } from '../../../utils/styleConstants.js';
 
@@ -9,6 +9,8 @@ export default function SelectableDataRow({
   onSelection, 
   index 
 }) {
+  const theme = useTheme();
+  
   const handleClick = (event) => {
     onSelection(item, index, event);
   };
@@ -31,11 +33,11 @@ export default function SelectableDataRow({
           mb: SPACING.MARGIN_SMALL,
           borderRadius: SPACING.BORDER_RADIUS,
           transition: 'all 0.2s ease',
-          backgroundColor: isSelected ? 'primary.light' : 'transparent',
+          backgroundColor: isSelected ? alpha(theme.palette.primary.light, 0.8) : 'transparent',
           border: isSelected ? 2 : 1,
           borderColor: isSelected ? 'primary.main' : 'transparent',
           '&:hover': {
-            backgroundColor: isSelected ? 'primary.light' : 'action.hover',
+            backgroundColor: isSelected ? alpha(theme.palette.primary.light, 0.8) : 'action.hover',
             borderColor: isSelected ? 'primary.main' : 'action.hover',
           },
         }}
