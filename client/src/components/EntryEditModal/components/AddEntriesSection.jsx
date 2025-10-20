@@ -4,7 +4,12 @@ import {
   Typography, 
   TextField, 
   Button, 
-  Alert 
+  Alert,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions
 } from '@mui/material';
 import { Add as AddIcon, Delete as DeleteIcon } from '@mui/icons-material';
 import { FONTS } from '../../../utils/styleConstants.js';
@@ -20,6 +25,7 @@ export default function AddEntriesSection({
   const [firstKey, setFirstKey] = useState('');
   const [offset, setOffset] = useState(0);
   const [error, setError] = useState('');
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   // Auto-populate suggested values
   useEffect(() => {
@@ -99,16 +105,28 @@ export default function AddEntriesSection({
     setFirstKey((keyNum + quantity).toString().padStart(4, '0'));
   };
 
-  const handleDeleteSelected = async () => {
+  const handleDeleteSelected = () => {
     if (selectedItems.size === 0) return;
-    
-    if (window.confirm(`Delete ${selectedItems.size} selected entries?`)) {
-      await onDeleteSelected();
-    }
+    setShowDeleteConfirm(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    setShowDeleteConfirm(false);
+    await onDeleteSelected();
+  };
+
+  const handleCancelDelete = () => {
+    setShowDeleteConfirm(false);
   };
 
   return (
-    <Box sx={{ p: 2, borderBottom: 1, borderColor: 'divider' }}>
+    <Box sx={{ 
+      p: 2.5, 
+      borderBottom: 2, 
+      borderColor: 'divider',
+      backgroundColor: 'background.default',
+      mb: 1
+    }}>
       <Typography variant="subtitle1" sx={{ mb: 0.5, fontWeight: 'bold' }}>
         Add Entries
       </Typography>
@@ -188,6 +206,28 @@ export default function AddEntriesSection({
           </Button>
         </Box>
       </Box>
+
+      <Dialog
+        open={showDeleteConfirm}
+        onClose={handleCancelDelete}
+        maxWidth="xs"
+        fullWidth
+      >
+        <DialogTitle>Delete Entries</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Are you sure you want to delete {selectedItems.size} selected {selectedItems.size === 1 ? 'entry' : 'entries'}?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCancelDelete} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleConfirmDelete} color="error" variant="contained">
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 }

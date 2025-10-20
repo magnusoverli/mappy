@@ -3,7 +3,12 @@ import {
   Dialog, 
   Box, 
   Slide, 
-  useTheme 
+  useTheme,
+  Button,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions
 } from '@mui/material';
 import ModalHeader from './components/ModalHeader.jsx';
 import ModalFooter from './components/ModalFooter.jsx';
@@ -28,6 +33,7 @@ export default function EntryEditModal({
   const [processing, setProcessing] = useState(false);
   const [processingMessage, setProcessingMessage] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
+  const [showCloseConfirm, setShowCloseConfirm] = useState(false);
   
   const {
     selectedItems,
@@ -59,12 +65,19 @@ export default function EntryEditModal({
 
   const handleClose = () => {
     if (hasChanges) {
-      if (window.confirm('You have unsaved changes. Are you sure you want to close?')) {
-        onClose();
-      }
+      setShowCloseConfirm(true);
     } else {
       onClose();
     }
+  };
+
+  const handleConfirmClose = () => {
+    setShowCloseConfirm(false);
+    onClose();
+  };
+
+  const handleCancelClose = () => {
+    setShowCloseConfirm(false);
   };
 
   const handleSave = async () => {
@@ -124,31 +137,32 @@ export default function EntryEditModal({
   }, [open, handleKeyDown]);
 
   return (
-    <Dialog
-      open={open}
-      onClose={handleClose}
-      TransitionComponent={Transition}
-      transitionDuration={300}
-      maxWidth={false}
-      PaperProps={{
-        sx: {
-          width: '65vw',
-          height: '85vh',
-          maxWidth: 'none',
-          maxHeight: 'none',
-          borderRadius: 2,
-          overflow: 'hidden',
-          display: 'flex',
-          flexDirection: 'column',
-        }
-      }}
-      BackdropProps={{
-        sx: {
-          backgroundColor: 'rgba(0, 0, 0, 0.5)',
-          backdropFilter: 'blur(4px)',
-        }
-      }}
-    >
+    <>
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        TransitionComponent={Transition}
+        transitionDuration={300}
+        maxWidth={false}
+        PaperProps={{
+          sx: {
+            width: '65vw',
+            height: '85vh',
+            maxWidth: 'none',
+            maxHeight: 'none',
+            borderRadius: 2,
+            overflow: 'hidden',
+            display: 'flex',
+            flexDirection: 'column',
+          }
+        }}
+        BackdropProps={{
+          sx: {
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            backdropFilter: 'blur(4px)',
+          }
+        }}
+      >
       <ModalHeader
         layerName={layerData?.name || 'Unknown Layer'}
         entryType={entryType}
@@ -186,6 +200,29 @@ export default function EntryEditModal({
         onCancel={handleClose}
         onSave={handleSave}
       />
-    </Dialog>
+      </Dialog>
+
+      <Dialog
+        open={showCloseConfirm}
+        onClose={handleCancelClose}
+        maxWidth="xs"
+        fullWidth
+      >
+        <DialogTitle>Unsaved Changes</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            You have unsaved changes. Are you sure you want to close without saving?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCancelClose} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleConfirmClose} color="error" variant="contained">
+            Close Without Saving
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </>
   );
 }
