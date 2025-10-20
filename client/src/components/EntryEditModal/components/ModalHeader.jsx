@@ -1,13 +1,11 @@
 import { Box, Typography, IconButton } from '@mui/material';
 import { Close as CloseIcon } from '@mui/icons-material';
-import SearchField from '../../Common/SearchField.jsx';
+import { FONTS } from '../../../utils/styleConstants.js';
 
 export default function ModalHeader({ 
   layerName, 
   entryType, 
-  onClose, 
-  searchQuery, 
-  onSearchChange 
+  onClose
 }) {
   return (
     <Box
@@ -23,8 +21,9 @@ export default function ModalHeader({
     >
       {/* Brand Logo */}
       <Typography
-        variant="h6"
+        variant="h4"
         sx={{
+          fontFamily: FONTS.BRAND,
           fontWeight: 'bold',
           mr: 4,
         }}
@@ -46,36 +45,7 @@ export default function ModalHeader({
         </Typography>
       </Box>
 
-      {/* Search Field */}
-      <Box sx={{ ml: 'auto', mr: 2, minWidth: 200 }}>
-        <SearchField
-          value={searchQuery}
-          onChange={(e) => onSearchChange(e.target.value)}
-          placeholder="Search entries..."
-          size="small"
-          sx={{
-            '& .MuiOutlinedInput-root': {
-              backgroundColor: 'rgba(255, 255, 255, 0.1)',
-              '& fieldset': {
-                borderColor: 'rgba(255, 255, 255, 0.3)',
-              },
-              '&:hover fieldset': {
-                borderColor: 'rgba(255, 255, 255, 0.5)',
-              },
-              '&.Mui-focused fieldset': {
-                borderColor: 'rgba(255, 255, 255, 0.8)',
-              },
-            },
-            '& .MuiInputBase-input': {
-              color: 'white',
-              '&::placeholder': {
-                color: 'rgba(255, 255, 255, 0.7)',
-                opacity: 1,
-              },
-            },
-          }}
-        />
-      </Box>
+      <Box sx={{ flexGrow: 1 }} />
 
       {/* Close Button */}
       <IconButton

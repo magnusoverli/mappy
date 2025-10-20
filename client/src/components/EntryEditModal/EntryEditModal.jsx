@@ -32,7 +32,6 @@ export default function EntryEditModal({
   const [hasChanges, setHasChanges] = useState(false);
   const [processing, setProcessing] = useState(false);
   const [processingMessage, setProcessingMessage] = useState('');
-  const [searchQuery, setSearchQuery] = useState('');
   const [showCloseConfirm, setShowCloseConfirm] = useState(false);
   
   const {
@@ -49,19 +48,10 @@ export default function EntryEditModal({
       setEntries(entryList || []);
       clearSelection();
       setHasChanges(false);
-      setSearchQuery('');
     }
   }, [open, layerData, entryType, clearSelection]);
 
-  const filteredEntries = entries.filter(entry => {
-    if (!searchQuery) return true;
-    const query = searchQuery.toLowerCase();
-    return (
-      entry.key.toLowerCase().includes(query) ||
-      entry.value.toLowerCase().includes(query) ||
-      entry.offset.toString().includes(query)
-    );
-  });
+
 
   const handleClose = () => {
     if (hasChanges) {
@@ -119,12 +109,12 @@ export default function EntryEditModal({
                           target.closest('textarea') ||
                           target.closest('[contenteditable="true"]');
       
-      if (!isInputField && filteredEntries.length > 0) {
+      if (!isInputField && entries.length > 0) {
         event.preventDefault();
-        selectAll(filteredEntries);
+        selectAll(entries);
       }
     }
-  }, [filteredEntries, selectAll]);
+  }, [entries, selectAll]);
 
   // Add keyboard event listener
   useEffect(() => {
@@ -167,8 +157,6 @@ export default function EntryEditModal({
         layerName={layerData?.name || 'Unknown Layer'}
         entryType={entryType}
         onClose={handleClose}
-        searchQuery={searchQuery}
-        onSearchChange={setSearchQuery}
       />
       
       <Box sx={{ 
@@ -178,7 +166,7 @@ export default function EntryEditModal({
         backgroundColor: theme.palette.background.default
       }}>
         <DataPanel
-          entries={filteredEntries}
+          entries={entries}
           selectedItems={selectedItems}
           onSelection={handleSelection}
         />
