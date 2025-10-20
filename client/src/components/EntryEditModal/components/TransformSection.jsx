@@ -133,10 +133,17 @@ export default function TransformSection({
         keyMapping[previewItem.oldKey] = previewItem.newKey;
       }
       
+      // Recalculate offset based on new key and value
+      const keyParts = previewItem.newKey.split('.');
+      const keyIndex = parseInt(keyParts[1], 10);
+      const hexValue = parseInt(previewItem.newValue, 16);
+      const newOffset = keyIndex - hexValue;
+      
       return {
         ...entry,
         key: previewItem.newKey,
         value: previewItem.newValue,
+        offset: newOffset,
       };
     });
     
@@ -152,7 +159,13 @@ export default function TransformSection({
 
   if (selectedCount < 2) {
     return (
-      <Box sx={{ p: 2, borderBottom: 1, borderColor: 'divider' }}>
+      <Box sx={{ 
+        p: 2.5, 
+        borderBottom: 2, 
+        borderColor: 'divider',
+        backgroundColor: 'background.default',
+        mb: 1
+      }}>
         <Typography variant="subtitle1" sx={{ mb: 0.5, fontWeight: 'bold' }}>
           Transform Selected Entries (0 selected)
         </Typography>
@@ -164,7 +177,13 @@ export default function TransformSection({
   }
 
   return (
-    <Box sx={{ p: 2, borderBottom: 1, borderColor: 'divider' }}>
+    <Box sx={{ 
+      p: 2.5, 
+      borderBottom: 2, 
+      borderColor: 'divider',
+      backgroundColor: 'background.default',
+      mb: 1
+    }}>
       <Typography variant="subtitle1" sx={{ mb: 0.5, fontWeight: 'bold' }}>
         Transform Selected Entries ({selectedCount} selected)
       </Typography>
