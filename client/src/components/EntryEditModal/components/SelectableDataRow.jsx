@@ -43,6 +43,7 @@ export default function SelectableDataRow({
         <Box sx={{ 
           display: 'flex', 
           width: '100%', 
+          height: '100%',
           px: SPACING.PADDING.MEDIUM,
           alignItems: 'center',
         }}>
