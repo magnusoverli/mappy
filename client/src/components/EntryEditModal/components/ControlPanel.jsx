@@ -1,4 +1,5 @@
 import { Box } from '@mui/material';
+import EntryEditSection from './EntryEditSection.jsx';
 import AddEntriesSection from './AddEntriesSection.jsx';
 import TransformSection from './TransformSection.jsx';
 
@@ -64,6 +65,13 @@ export default function ControlPanel({
         backgroundColor: 'background.paper',
       }}
     >
+      <EntryEditSection
+        entries={entries}
+        selectedItems={selectedItems}
+        onUpdateEntries={onUpdateEntries}
+        processing={processing}
+      />
+      
       <AddEntriesSection
         entries={entries}
         selectedItems={selectedItems}
