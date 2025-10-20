@@ -157,39 +157,32 @@ export default function TransformSection({
 
   const isHexValid = (value) => /^[0-9A-Fa-f]{8}$/.test(value);
 
-  if (selectedCount < 2) {
-    return (
-      <Box sx={{ 
-        p: 2.5, 
-        borderBottom: 2, 
-        borderColor: 'divider',
-        backgroundColor: 'background.default',
-        mb: 1
-      }}>
-        <Typography variant="subtitle1" sx={{ mb: 0.5, fontWeight: 'bold' }}>
-          Transform Selected Entries (0 selected)
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
-          Select 2 or more entries to enable transformations.
-        </Typography>
-      </Box>
-    );
-  }
+  const getSubtitleText = () => {
+    if (selectedCount < 2) {
+      return 'Select 2 or more entries to enable transformations.';
+    }
+    return `Apply batch operations to ${selectedCount} selected entries`;
+  };
+
+  const isDisabled = selectedCount < 2 || processing;
 
   return (
     <Box sx={{ 
       p: 2.5, 
-      borderBottom: 2, 
-      borderColor: 'divider',
+      borderBottom: '4px solid',
+      borderImage: 'linear-gradient(135deg, #283593 0%, #8e24aa 100%) 1',
       backgroundColor: 'background.default',
       mb: 1
     }}>
       <Typography variant="subtitle1" sx={{ mb: 0.5, fontWeight: 'bold' }}>
         Transform Selected Entries ({selectedCount} selected)
       </Typography>
+      <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+        {getSubtitleText()}
+      </Typography>
       
-      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 2 }}>
-        <FormControl size="small" disabled={processing}>
+      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+        <FormControl size="small" disabled={isDisabled}>
           <InputLabel>Transform Type</InputLabel>
           <Select
             value={transformType}
@@ -219,7 +212,7 @@ export default function TransformSection({
             onChange={(e) => setMoveBy(parseInt(e.target.value) || 0)}
             size="small"
             inputProps={{ style: { fontFamily: FONTS.MONOSPACE } }}
-            disabled={processing}
+            disabled={isDisabled}
             helperText="Positive = up, negative = down"
           />
         )}
@@ -232,7 +225,7 @@ export default function TransformSection({
             onChange={(e) => setMoveBy(parseInt(e.target.value) || 0)}
             size="small"
             inputProps={{ style: { fontFamily: FONTS.MONOSPACE } }}
-            disabled={processing}
+            disabled={isDisabled}
             helperText="Positive = add, negative = subtract"
           />
         )}
@@ -246,7 +239,7 @@ export default function TransformSection({
               onChange={(e) => setStartValue(parseInt(e.target.value) || 1)}
               size="small"
               inputProps={{ style: { fontFamily: FONTS.MONOSPACE } }}
-              disabled={processing}
+              disabled={isDisabled}
               helperText={`Hex: ${startValue.toString(16).toLowerCase().padStart(8, '0')}`}
             />
             <TextField
@@ -256,7 +249,7 @@ export default function TransformSection({
               onChange={(e) => setCountBy(parseInt(e.target.value) || 1)}
               size="small"
               inputProps={{ style: { fontFamily: FONTS.MONOSPACE } }}
-              disabled={processing}
+              disabled={isDisabled}
               helperText={`Hex increment: ${countBy.toString(16).toLowerCase().padStart(8, '0')}`}
             />
           </>
@@ -275,7 +268,7 @@ export default function TransformSection({
               maxLength: 8,
               style: { fontFamily: FONTS.MONOSPACE }
             }}
-            disabled={processing}
+            disabled={isDisabled}
             error={hexValue.length === 8 && !isHexValid(hexValue)}
             helperText="8-character hexadecimal value"
             sx={{
@@ -294,11 +287,11 @@ export default function TransformSection({
           </Alert>
         )}
         
-        {preview.length > 0 && (
+        {preview.length > 0 && selectedCount >= 2 && (
           <PreviewBox 
             preview={preview} 
             onApply={handleApply}
-            disabled={conflicts.length > 0 || processing}
+            disabled={conflicts.length > 0 || isDisabled}
           />
         )}
       </Box>

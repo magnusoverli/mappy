@@ -122,8 +122,8 @@ export default function AddEntriesSection({
   return (
     <Box sx={{ 
       p: 2.5, 
-      borderBottom: 2, 
-      borderColor: 'divider',
+      borderBottom: '4px solid',
+      borderImage: 'linear-gradient(135deg, #283593 0%, #8e24aa 100%) 1',
       backgroundColor: 'background.default',
       mb: 1
     }}>

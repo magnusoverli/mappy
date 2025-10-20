@@ -63,6 +63,8 @@ export default function ControlPanel({
         flexDirection: 'column',
         overflow: 'auto',
         backgroundColor: 'background.paper',
+        borderLeft: '4px solid',
+        borderImage: 'linear-gradient(135deg, #283593 0%, #8e24aa 100%) 1',
       }}
     >
       <EntryEditSection

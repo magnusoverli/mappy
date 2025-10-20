@@ -82,8 +82,6 @@ export default function DataPanel({
     <Box
       sx={{
         flex: 1,
-        borderRight: 1,
-        borderColor: 'divider',
         display: 'flex',
         flexDirection: 'column',
         overflow: 'hidden',
